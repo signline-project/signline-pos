@@ -285,6 +285,48 @@ function tambahKeKeranjang() {
     }
 }
 
+    function renderKeranjang() {
+    try {
+        let t = document.querySelector('#t-keranjang tbody');
+        if (!t) {
+            console.error("Elemen tabel #t-keranjang tbody tidak ditemukan!");
+            return;
+        }
+        
+        t.innerHTML = ''; 
+        let tot = 0;
+        
+        keranjang.forEach((item, i) => { 
+            tot += item.subtotal; 
+            t.innerHTML += `
+                <tr>
+                    <td><strong>${item.layanan}</strong></td>
+                    <td>${item.qty}</td>
+                    <td>Rp ${Number(item.subtotal).toLocaleString('id-ID')}</td>
+                    <td align="center">
+                        <button class="btn-action btn-danger" style="padding: 5px 10px; font-size: 0.75rem; border-radius: 8px;" onclick="hapusItemKeranjang(${i})">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </td>
+                </tr>`; 
+        });
+        
+        // Update teks Total Akhir Pembayaran
+        let totalCartEl = document.getElementById('total-cart');
+        if (totalCartEl) {
+            totalCartEl.innerText = "Rp " + tot.toLocaleString('id-ID');
+        }
+    } catch (error) {
+        console.error("Error saat render keranjang: ", error);
+    }
+}
+
+// Tambahkan juga fungsi hapus item dari keranjang agar tidak error nanti
+function hapusItemKeranjang(i) {
+    keranjang.splice(i, 1);
+    renderKeranjang();
+}
+
 // 3. Kirim data transaksi ke Google Apps Script
 function bayarMulti() {
     let c = document.getElementById('cust').value; 
