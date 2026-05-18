@@ -8,108 +8,105 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-    --bg-main: #f1f5f9; --sidebar-bg: #1e293b; --accent: #3b82f6;
-    --success: #10b981; --danger: #ef4444; --white: #ffffff;
-    --text-main: #1e293b; --text-light: #64748b; --radius: 30px;
-}
+            --bg-main: #f1f5f9; --sidebar-bg: #1e293b; --accent: #3b82f6;
+            --success: #10b981; --danger: #ef4444; --white: #ffffff;
+            --text-main: #1e293b; --text-light: #64748b; --radius: 30px;
+        }
 
-body { font-family: 'Poppins', sans-serif; background: var(--bg-main); color: var(--text-main); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-main); color: var(--text-main); margin: 0; display: flex; height: 100vh; overflow: hidden; }
 
-/* --- SIDEBAR FLUID CURVE (DESKTOP) --- */
-.sidebar { width: 100px; background: var(--sidebar-bg); display: flex; flex-direction: column; padding: 30px 0; position: relative; flex-shrink: 0; }
-.sidebar-brand { text-align: center; color: white; font-size: 1.5rem; margin-bottom: 20px; }
-.nav-list { display: flex; flex-direction: column; width: 100%; }
+        /* --- SIDEBAR FLUID CURVE (DESKTOP) --- */
+        .sidebar { width: 100px; background: var(--sidebar-bg); display: flex; flex-direction: column; padding: 30px 0; position: relative; flex-shrink: 0; }
+        .sidebar-brand { text-align: center; color: white; font-size: 1.5rem; margin-bottom: 20px; }
+        .nav-list { display: flex; flex-direction: column; width: 100%; }
 
-.nav-item { position: relative; width: 100%; height: 70px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1; }
-.nav-item i { color: rgba(255,255,255,0.3); font-size: 1.4rem; transition: 0.3s; }
-.nav-item.active i { color: var(--sidebar-bg); }
-.nav-item.active::before { content: ""; position: absolute; top: 0; right: 0; width: 80%; height: 100%; background: var(--bg-main); border-radius: 40px 0 0 40px; z-index: -1; }
-.nav-item.active::after { content: ""; position: absolute; top: -50px; right: 0; width: 50px; height: 50px; background: transparent; border-radius: 50%; box-shadow: 25px 25px 0 0 var(--bg-main); pointer-events: none; }
-.curve-bottom { display: none; }
-.nav-item.active .curve-bottom { display: block; position: absolute; bottom: -50px; right: 0; width: 50px; height: 50px; background: transparent; border-radius: 50%; box-shadow: 25px -25px 0 0 var(--bg-main); pointer-events: none; }
+        .nav-item { position: relative; width: 100%; height: 70px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1; }
+        .nav-item i { color: rgba(255,255,255,0.3); font-size: 1.4rem; transition: 0.3s; }
+        .nav-item.active i { color: var(--sidebar-bg); }
+        .nav-item.active::before { content: ""; position: absolute; top: 0; right: 0; width: 80%; height: 100%; background: var(--bg-main); border-radius: 40px 0 0 40px; z-index: -1; }
+        .nav-item.active::after { content: ""; position: absolute; top: -50px; right: 0; width: 50px; height: 50px; background: transparent; border-radius: 50%; box-shadow: 25px 25px 0 0 var(--bg-main); pointer-events: none; }
+        .curve-bottom { display: none; }
+        .nav-item.active .curve-bottom { display: block; position: absolute; bottom: -50px; right: 0; width: 50px; height: 50px; background: transparent; border-radius: 50%; box-shadow: 25px -25px 0 0 var(--bg-main); pointer-events: none; }
 
-/* --- CONTENT --- */
-.main-content { flex: 1; overflow-y: auto; padding: 40px; box-sizing: border-box; height: 100vh; }
-.glass-card { background: var(--white); border-radius: var(--radius); padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); margin-bottom: 30px; }
+        /* --- CONTENT --- */
+        .main-content { flex: 1; overflow-y: auto; padding: 40px; box-sizing: border-box; height: 100vh; }
+        .glass-card { background: var(--white); border-radius: var(--radius); padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); margin-bottom: 30px; }
 
-/* --- GRID SYSTEM RESPONSIVE --- */
-.grid-kasir, .grid-katalog { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 20px; align-items: flex-end; }
+        /* --- GRID SYSTEM RESPONSIVE --- */
+        .grid-kasir, .grid-katalog { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 20px; align-items: flex-end; }
 
-/* --- TABLES --- */
-.table-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-table { width: 100%; border-collapse: separate; border-spacing: 0 12px; min-width: 500px; }
-th { color: var(--text-light); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; padding: 0 20px; text-align: left; }
-td { background: var(--white); padding: 15px 20px; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; }
-td:first-child { border-radius: 15px 0 0 15px; font-weight: 600; }
-td:last-child { border-radius: 0 15px 15px 0; }
+        /* --- TABLES --- */
+        .table-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0 12px; min-width: 500px; }
+        th { color: var(--text-light); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; padding: 0 20px; text-align: left; }
+        td { background: var(--white); padding: 15px 20px; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; }
+        td:first-child { border-radius: 15px 0 0 15px; font-weight: 600; }
+        td:last-child { border-radius: 0 15px 15px 0; }
 
-/* --- INPUTS & BUTTONS --- */
-.input-soft { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px 20px; border-radius: 15px; font-family: inherit; outline: none; width: 100%; box-sizing: border-box; font-size: 0.95rem; }
-.btn-action { border: none; padding: 12px 25px; border-radius: 15px; font-weight: 600; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; color: white; justify-content: center; font-size: 0.95rem; }
-.btn-blue { background: var(--accent); } .btn-success { background: var(--success); } .btn-danger { background: var(--danger); }
-.total-box { background: var(--sidebar-bg); color: white; padding: 25px; border-radius: var(--radius); display: flex; justify-content: space-between; align-items: center; gap: 15px; }
+        /* --- INPUTS & BUTTONS --- */
+        .input-soft { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px 20px; border-radius: 15px; font-family: inherit; outline: none; width: 100%; box-sizing: border-box; font-size: 0.95rem; }
+        .btn-action { border: none; padding: 12px 25px; border-radius: 15px; font-weight: 600; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; color: white; justify-content: center; font-size: 0.95rem; }
+        .btn-blue { background: var(--accent); } .btn-success { background: var(--success); } .btn-danger { background: var(--danger); }
+        .total-box { background: var(--sidebar-bg); color: white; padding: 25px; border-radius: var(--radius); display: flex; justify-content: space-between; align-items: center; gap: 15px; }
 
-/* --- GRAPHICS GRID --- */
-.chart-container { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 15px; }
+        /* --- GRAPHICS GRID --- */
+        .chart-container { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 15px; }
 
-/* --- PRINT STYLES --- */
-#print-area { display: none; }
-@media print {
-    body * { visibility: hidden; } 
-    #print-area, #print-area * { visibility: visible; }
-    #print-area { display: block !important; position: absolute; left: 0; top: 0; width: 100%; }
-    
-    /* Aturan Khusus Kertas Thermal */
-    .nota-thermal { width: 100%; max-width: 58mm; font-family: 'Courier New', monospace; padding: 0; color: black; }
-    
-    /* Aturan Khusus Kertas A4 Dokumen BA */
-    .ba-a4 { width: 100%; max-width: 190mm; font-family: 'Poppins', sans-serif; margin: 0 auto; color: #1e293b; background: white; }
-    .ba-a4 table { border-spacing: 0 !important; margin: 0 !important; }
-    .ba-a4 td, .ba-a4 th { background: transparent !important; border: 1px solid #cbd5e1 !important; padding: 10px !important; }
-}
+        /* --- PRINT STYLES --- */
+        #print-area { display: none; }
+        @media print {
+            body * { visibility: hidden; } 
+            #print-area, #print-area * { visibility: visible; }
+            #print-area { display: block !important; position: absolute; left: 0; top: 0; width: 100%; }
+            
+            /* Aturan Khusus Kertas Thermal */
+            .nota-thermal { width: 100%; max-width: 58mm; font-family: 'Courier New', monospace; padding: 0; color: black; }
+            
+            /* Aturan Khusus Kertas A4 Dokumen BA */
+            .ba-a4 { width: 100%; max-width: 190mm; font-family: 'Poppins', sans-serif; margin: 0 auto; color: #1e293b; background: white; }
+            .ba-a4 table { border-spacing: 0 !important; margin: 0 !important; }
+            .ba-a4 td, .ba-a4 th { background: transparent !important; border: 1px solid #cbd5e1 !important; padding: 10px !important; }
+        }
 
-/* ==========================================
-   🚨 RESPONSIVE MOBILE STRATEGY (MAX-WIDTH: 768px)
-   ========================================== */
-@media screen and (max-width: 768px) {
-    body { flex-direction: column; }
+        /* ==========================================
+           🚨 RESPONSIVE MOBILE STRATEGY (MAX-WIDTH: 768px)
+           ========================================== */
+        @media screen and (max-width: 768px) {
+            body { flex-direction: column; }
 
-    /* Ubah Sidebar menjadi Bottom Navigation Bar */
-    .sidebar {
-        width: 100%; height: 65px; padding: 0;
-        position: fixed; bottom: 0; left: 0; right: 0;
-        flex-direction: row; justify-content: space-around; align-items: center;
-        border-radius: 25px 25px 0 0; box-shadow: 0 -5px 25px rgba(0,0,0,0.1);
-        z-index: 999;
-    }
-    .sidebar-brand { display: none; } /* Hilangkan logo petir di HP */
-    .nav-list { flex-direction: row; justify-content: space-around; width: 100%; height: 100%; }
-    .nav-item { width: 60px; height: 100%; }
-    
-    /* Matikan efek fluid curve desktop di HP */
-    .nav-item.active::before, .nav-item.active::after, .nav-item.active .curve-bottom { display: none; }
-    .nav-item i { color: rgba(255,255,255,0.4); font-size: 1.3rem; }
-    .nav-item.active i { color: var(--accent); transform: translateY(-5px); transition: 0.3s; }
+            /* Ubah Sidebar menjadi Bottom Navigation Bar */
+            .sidebar {
+                width: 100%; height: 65px; padding: 0;
+                position: fixed; bottom: 0; left: 0; right: 0;
+                flex-direction: row; justify-content: space-around; align-items: center;
+                border-radius: 25px 25px 0 0; box-shadow: 0 -5px 25px rgba(0,0,0,0.1);
+                z-index: 999;
+            }
+            .sidebar-brand { display: none; } 
+            .nav-list { flex-direction: row; justify-content: space-around; width: 100%; height: 100%; }
+            .nav-item { width: 60px; height: 100%; }
+            
+            .nav-item.active::before, .nav-item.active::after, .nav-item.active .curve-bottom { display: none; }
+            .nav-item i { color: rgba(255,255,255,0.4); font-size: 1.3rem; }
+            .nav-item.active i { color: var(--accent); transform: translateY(-5px); transition: 0.3s; }
 
-    /* Sesuaikan kontainer konten agar tidak tertutup bottom bar */
-    .main-content { padding: 20px 15px 90px 15px; }
-    .glass-card { padding: 20px; border-radius: 20px; margin-bottom: 20px; }
+            .main-content { padding: 20px 15px 90px 15px; }
+            .glass-card { padding: 20px; border-radius: 20px; margin-bottom: 20px; }
 
-    /* Paksa Grid berbaris vertikal ke bawah */
-    .grid-kasir, .grid-katalog { grid-template-columns: 1fr; gap: 15px; }
-    .grid-kasir button, .grid-katalog button { width: 100%; margin-top: 5px; }
-    
-    .total-box { flex-direction: column; text-align: center; border-radius: 20px; }
-    .total-box button { width: 100%; }
+            .grid-kasir, .grid-katalog { grid-template-columns: 1fr; gap: 15px; }
+            .grid-kasir button, .grid-katalog button { width: 100%; margin-top: 5px; }
+            
+            .total-box { flex-direction: column; text-align: center; border-radius: 20px; }
+            .total-box button { width: 100%; }
 
-    .chart-container { grid-template-columns: 1fr; gap: 20px; }
-}
+            .chart-container { grid-template-columns: 1fr; gap: 20px; }
+        }
     </style>
 </head>
 <body>
 
 <div class="sidebar no-print">
-    <div class="sidebar-brand" style="text-align: center; color: white; font-size: 1.5rem; margin-bottom: 20px;"><i class="fa-solid fa-bolt"></i></div>
+    <div class="sidebar-brand"><i class="fa-solid fa-bolt"></i></div>
     <div class="nav-list">
         <div id="n1" class="nav-item active" onclick="buka('pos')"><i class="fa-solid fa-cash-register"></i><div class="curve-bottom"></div></div>
         <div id="n2" class="nav-item" onclick="buka('inv')"><i class="fa-solid fa-tags"></i><div class="curve-bottom"></div></div>
@@ -125,12 +122,12 @@ td:last-child { border-radius: 0 15px 15px 0; }
             <input type="text" id="cust" class="input-soft" placeholder="Masukkan nama...">
         </div>
         <div class="glass-card">
-                <div class="grid-kasir">
-    <div><label>Layanan</label><select id="prod" class="input-soft" onchange="pilihProd()"><option value="">-- Pilih --</option></select></div>
-    <div><label>Qty</label><input type="number" id="qty" class="input-soft" value="1"></div>
-    <div><label>Harga</label><input type="number" id="jual" class="input-soft"></div>
-    <button class="btn-action btn-blue" onclick="tambahKeKeranjang()">TAMBAH</button>
-</div>
+            <div class="grid-kasir">
+                <div><label>Layanan</label><select id="prod" class="input-soft" onchange="pilihProd()"><option value="">-- Pilih --</option></select></div>
+                <div><label>Qty</label><input type="number" id="qty" class="input-soft" value="1"></div>
+                <div><label>Harga</label><input type="number" id="jual" class="input-soft"></div>
+                <button class="btn-action btn-blue" onclick="tambahKeKeranjang()">TAMBAH</button>
+            </div>
         </div>
         <div class="glass-card">
             <div class="table-container">
@@ -150,17 +147,27 @@ td:last-child { border-radius: 0 15px 15px 0; }
     <div id="sec-inv" style="display:none">
         <div class="glass-card">
             <h3><i class="fa-solid fa-folder-plus"></i> Tambah Katalog</h3>
-            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 15px;">
-                <input type="text" id="pn" class="input-soft" placeholder="Jasa"><input type="number" id="ph" class="input-soft" placeholder="HPP"><input type="number" id="pj" class="input-soft" placeholder="Jual"><button class="btn-action btn-blue" onclick="tambahProduk()">SIMPAN</button>
+            <div class="grid-katalog">
+                <input type="text" id="pn" class="input-soft" placeholder="Nama Jasa/Produk">
+                <input type="number" id="ph" class="input-soft" placeholder="HPP (Modal)">
+                <input type="number" id="pj" class="input-soft" placeholder="Harga Jual">
+                <button class="btn-action btn-blue" onclick="tambahProduk()">SIMPAN</button>
             </div>
         </div>
         <div class="glass-card">
-            <div class="grid-katalog">
-    <input type="text" id="pn" class="input-soft" placeholder="Jasa">
-    <input type="number" id="ph" class="input-soft" placeholder="HPP">
-    <input type="number" id="pj" class="input-soft" placeholder="Jual">
-    <button class="btn-action btn-blue" onclick="tambahProduk()">SIMPAN</button>
-</div>
+            <h3><i class="fa-solid fa-list"></i> Daftar Jasa/Produk</h3>
+            <div class="table-container">
+                <table id="t-prod-list">
+                    <thead>
+                        <tr>
+                            <th>LAYANAN</th>
+                            <th>HARGA JUAL</th>
+                            <th style="text-align:center" width="100">AKSI</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -194,17 +201,14 @@ td:last-child { border-radius: 0 15px 15px 0; }
 <div id="print-area"></div>
 
 <script>
-    // ==========================================
-    // SILAKAN MASUKKAN URL API WEB APP ANDA DI SINI
-    // ==========================================
-    const API_URL = `https://script.google.com/macros/s/AKfycbxLlUJ9kF5I5oG_BKwlgIj8dMpWXCpNPL3IIVhLjQ-qsMqhr_tX7apd_-Mjx6f8yH4tNA/exec`; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbxLlUJ9kF5I5oG_BKwlgIj8dMpWXCpNPL3IIVhLjQ-qsMqhr_tX7apd_-Mjx6f8yH4tNA/exec"; 
 
     let dProduk = []; let keranjang = []; let riwayatData = [];
     let chartHarianInstance = null; let chartBulananInstance = null;
 
+    // Paksa load data dasar di awal aplikasi
     window.onload = () => { muatProduk(); muatRiwayat(); };
 
-    // --- STRUKTUR NAVIGASI UTAMA ---
     function buka(t) {
         try {
             document.getElementById('sec-pos').style.display = (t === 'pos' ? 'block' : 'none');
@@ -221,7 +225,7 @@ td:last-child { border-radius: 0 15px 15px 0; }
             let elActive = document.getElementById(targetMenu);
             if(elActive) elActive.classList.add('active');
             
-            if(t === 'inv') muatProduk(); 
+            if(t === 'pos' || t === 'inv') muatProduk(); 
             if(t === 'his') muatRiwayat();
             if(t === 'rep') muatGrafik();
         } catch (e) {
@@ -229,14 +233,12 @@ td:last-child { border-radius: 0 15px 15px 0; }
         }
     }
 
-    // --- LOGIKA UTAMA INTEGRASI GRAFIK CHART.JS ---
     function muatGrafik() {
         fetch(`${API_URL}?aksi=getDataGrafik`)
         .then(res => res.json())
         .then(resData => {
             if (!resData || !resData.harian || !resData.bulanan) return;
 
-            // 1. DATA HARIAN
             let labelHarian = Object.keys(resData.harian).sort();
             let omzetHarian = labelHarian.map(k => resData.harian[k].omzet || 0);
             let profitHarian = labelHarian.map(k => resData.harian[k].profit || 0);
@@ -257,7 +259,6 @@ td:last-child { border-radius: 0 15px 15px 0; }
                 });
             }
 
-            // 2. DATA BULANAN
             let labelBulanan = Object.keys(resData.bulanan).sort();
             let omzetBulanan = labelBulanan.map(k => resData.bulanan[k].omzet || 0);
             let profitBulanan = labelBulanan.map(k => resData.bulanan[k].profit || 0);
@@ -280,72 +281,38 @@ td:last-child { border-radius: 0 15px 15px 0; }
         }).catch(err => console.error("Gagal merender grafik:", err));
     }
 
-    // --- LOGIKA OPERASIONAL KASIR & DATA ---
     function muatProduk() {
-    console.log("Mencoba memuat data produk dari API...");
-    
-    fetch(`${API_URL}?aksi=getProduk`)
-    .then(res => {
-        if (!res.ok) throw new Error("Gagal mengambil data dari server");
-        return res.json();
-    })
-    .then(data => {
-        if (!data) {
-            console.error("Data produk kosong dari API");
-            return;
-        }
-        
-        // Lewati baris pertama (Header Google Sheets)
-        dProduk = data.slice(1);
-        console.log("Data katalog berhasil diterima:", dProduk);
+        console.log("Meminta data katalog...");
+        fetch(`${API_URL}?aksi=getProduk`)
+        .then(res => res.json())
+        .then(data => {
+            if (!data) return;
+            dProduk = data.slice(1);
 
-        // 1. ISI DROPDOWN PILIHAN PRODUK (KASIR)
-        let s = document.getElementById('prod');
-        if (s) {
-            s.innerHTML = '<option value="">-- Pilih --</option>';
-            dProduk.forEach(p => {
-                if (p[0]) {
-                    s.innerHTML += `<option value="${p[0]}">${p[0]}</option>`;
-                }
-            });
-        } else {
-            console.warn("Elemen dropdown dengan id='prod' tidak ditemukan di HTML.");
-        }
+            let s = document.getElementById('prod');
+            if (s) {
+                s.innerHTML = '<option value="">-- Pilih --</option>';
+                dProduk.forEach(p => { if (p[0]) s.innerHTML += `<option value="${p[0]}">${p[0]}</option>`; });
+            }
 
-        // 2. ISI TABEL DAFTAR KATALOG (INVENTORY)
-        let t = document.querySelector('#t-prod-list tbody');
-        if (t) {
-            t.innerHTML = '';
-            dProduk.forEach(p => {
-                if (p[0]) {
-                    let hargaJual = Number(p[2]) || 0;
-                    t.innerHTML += `
-                        <tr>
-                            <td>${p[0]}</td>
-                            <td>Rp ${hargaJual.toLocaleString('id-ID')}</td>
-                            <td align="center">
-                                <button class="btn-action btn-danger" style="padding: 5px 10px;" onclick="hapusProd('${p[0]}')">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>`;
-                }
-            });
-        } else {
-            console.warn("Elemen tabel dengan selector '#t-prod-list tbody' tidak ditemukan di HTML.");
-        }
-    })
-    .catch(err => {
-        console.error("Gagal total memuat data produk:", err);
-    });
-}
+            let t = document.querySelector('#t-prod-list tbody');
+            if (t) {
+                t.innerHTML = '';
+                dProduk.forEach(p => {
+                    if (p[0]) {
+                        t.innerHTML += `<tr><td>${p[0]}</td><td>Rp ${Number(p[2]).toLocaleString('id-ID')}</td><td align="center"><button class="btn-action btn-danger" style="padding: 5px 10px;" onclick="hapusProd('${p[0]}')"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+                    }
+                });
+            }
+        }).catch(err => console.error("Gagal muat produk:", err));
+    }
 
     function muatRiwayat() {
         fetch(`${API_URL}?aksi=getTransaksi`).then(res => res.json()).then(data => {
             let t = document.querySelector('#t-his tbody'); t.innerHTML = ''; if(!data) return;
             riwayatData = data;
             data.forEach((r, i) => {
-                t.innerHTML += `<tr><td>${r[1]}</td><td>${r[2]}</td><td>Rp ${Number(r[7]).toLocaleString()}</td>
+                t.innerHTML += `<tr><td>${r[1]}</td><td>${r[2]}</td><td>Rp ${Number(r[7]).toLocaleString('id-ID')}</td>
                 <td><div style="display:flex; gap:5px;"><button class="btn-action btn-blue" onclick="cetak(${i}, 'nota')">NOTA</button><button class="btn-action btn-success" onclick="cetak(${i}, 'ba')">BA</button><button class="btn-action btn-danger" onclick="konfirmasiHapusTransaksi('${r[1]}')"><i class="fa-solid fa-trash"></i></button></div></td></tr>`;
             });
         });
@@ -368,8 +335,8 @@ td:last-child { border-radius: 0 15px 15px 0; }
 
     function renderKeranjang() {
         let t = document.querySelector('#t-keranjang tbody'); t.innerHTML = ''; let tot = 0;
-        keranjang.forEach((item, i) => { tot += item.subtotal; t.innerHTML += `<tr><td>${item.layanan}</td><td>${item.qty}</td><td>Rp ${item.subtotal.toLocaleString()}</td><td align="center"><button class="btn-action btn-danger" style="padding:5px 10px;" onclick="hapusItemKeranjang(${i})"><i class="fa-solid fa-xmark"></i></button></td></tr>`; });
-        document.getElementById('total-cart').innerText = "Rp " + tot.toLocaleString();
+        keranjang.forEach((item, i) => { tot += item.subtotal; t.innerHTML += `<tr><td>${item.layanan}</td><td>${item.qty}</td><td>Rp ${item.subtotal.toLocaleString('id-ID')}</td><td align="center"><button class="btn-action btn-danger" style="padding:5px 10px;" onclick="hapusItemKeranjang(${i})"><i class="fa-solid fa-xmark"></i></button></td></tr>`; });
+        document.getElementById('total-cart').innerText = "Rp " + tot.toLocaleString('id-ID');
     }
 
     function hapusItemKeranjang(i) { keranjang.splice(i, 1); renderKeranjang(); }
@@ -391,107 +358,72 @@ td:last-child { border-radius: 0 15px 15px 0; }
     function konfirmasiHapusTransaksi(id) { if(confirm('Hapus transaksi '+id+'?')) { fetch(API_URL, { method: 'POST', body: JSON.stringify({ aksi: 'hapusTransaksi', id: id }) }).then(() => muatRiwayat()); } }
 
     function cetak(idx, tipe) {
-    let r = riwayatData[idx]; 
-    let area = document.getElementById('print-area');
-    if (!r, !area) return;
+        let r = riwayatData[idx]; let area = document.getElementById('print-area');
+        if (!r || !area) return;
+        
+        let idOrder = r[1]; let pelanggan = r[2]; let layanan = r[3];
+        let qty = Number(r[4]) || 0; let hargaSatuan = Number(r[6]) || 0;
+        let totalJual = Number(r[7]) || 0; let catatanMurni = r[11] || "-";
 
-    // PEMETAAN KOLOM BERDASARKAN DATABASE BARU ANDA:
-    // r[1] = ID Order, r[2] = Nama Pelanggan, r[3] = Layanan, r[4] = Qty
-    // r[6] = Harga Jual Satuan, r[7] = Total Jual (Omzet kotor)
-    // r[11] = Catatan Murni (Kolom L)
-    
-    let idOrder = r[1];
-    let pelanggan = r[2];
-    let layanan = r[3];
-    let qty = Number(r[4]) || 0;
-    let hargaSatuan = Number(r[6]) || 0;
-    let totalJual = Number(r[7]) || 0;
-    let catatanMurni = r[11] || "-"; // Mengunci Kolom L agar tidak memanggil angka modal lagi
-
-    if (tipe === 'nota') {
-        // --- PERBAIKAN NOTA THERMAL (GARIS ANTI MELUBER) ---
-        area.innerHTML = `
-            <div class="nota-thermal">
-                <center>
-                    <strong style="font-size: 11pt;">SIGNLINE STUDIO</strong><br>
-                    <small>Creative POS</small>
-                </center>
-                <div style="margin-top: 10px; font-size: 9pt;">
-                    ID  : ${idOrder}<br>
-                    Plg : ${pelanggan}<br>
-                </div>
-                <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
-                <div style="font-size: 9pt;">
-                    <strong>${layanan}</strong><br>
-                    ${qty} x @${hargaSatuan.toLocaleString('id-ID')}
-                </div>
-                <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
-                <div style="display: flex; justify-content: space-between; font-size: 10pt;">
-                    <strong>TOTAL:</strong>
-                    <strong>Rp ${totalJual.toLocaleString('id-ID')}</strong>
-                </div>
-                <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
-                <center style="font-size: 9pt; margin-top: 10px;">Terima Kasih</center>
-            </div>
-        `;
-    } else {
-        // --- PERBAIKAN BA (MENAMPILKAN TOTAL HARGA & STRUKTUR TABEL LENGKAP) ---
-        let tanggalFormat = new Date().toLocaleDateString('id-ID', {
-            weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-        });
-
-        area.innerHTML = `
-            <div class="ba-a4">
-                <center>
-                    <h2 style="color:#1e3a8a; margin:0; font-size: 1.6rem; letter-spacing: 1px;">BERITA ACARA SERAH TERIMA</h2>
-                    <p style="margin:5px 0 20px 0; font-size: 0.9rem; color: #64748b;">SIGNLINE STUDIO - CREATIVE SOLUTIONS</p>
-                    <hr style="border: 0; border-top: 2px solid #1e3a8a; margin-bottom: 25px;">
-                </center>
-                
-                <table style="width:100%; margin-bottom: 30px; font-size: 0.95rem; line-height: 1.6;">
-                    <tr><td width="160" style="padding: 4px 0; border:none; background:none;"><b>ID Transaksi</b></td><td style="padding: 4px 0; border:none; background:none;">: ${idOrder}</td></tr>
-                    <tr><td style="padding: 4px 0; border:none; background:none;"><b>Pelanggan</b></td><td style="padding: 4px 0; border:none; background:none;">: ${pelanggan}</td></tr>
-                    <tr><td style="padding: 4px 0; border:none; background:none;"><b>Tanggal</b></td><td style="padding: 4px 0; border:none; background:none;">: ${tanggalFormat}</td></tr>
-                </table>
-
-                <table width="100%" style="border-collapse:collapse; font-size: 0.95rem;">
-                    <thead>
-                        <tr style="background:#f1f5f9;">
-                            <th style="border:1px solid #cbd5e1; padding:12px; color:#1e293b; text-align:left;">Deskripsi Pekerjaan</th>
-                            <th style="border:1px solid #cbd5e1; padding:12px; color:#1e293b; text-align:center;" width="80">Qty</th>
-                            <th style="border:1px solid #cbd5e1; padding:12px; color:#1e293b; text-align:right;" width="150">Harga Satuan</th>
-                            <th style="border:1px solid #cbd5e1; padding:12px; color:#1e293b; text-align:right;" width="150">Total Harga</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td style="border:1px solid #cbd5e1; padding:12px; background:none; border-radius:0; font-weight:normal;">${layanan}</td>
-                            <td align="center" style="border:1px solid #cbd5e1; padding:12px; background:none; border-radius:0;">${qty}</td>
-                            <td align="right" style="border:1px solid #cbd5e1; padding:12px; background:none; border-radius:0;">Rp ${hargaSatuan.toLocaleString('id-ID')}</td>
-                            <td align="right" style="border:1px solid #cbd5e1; padding:12px; background:none; border-radius:0; font-weight:600;">Rp ${totalJual.toLocaleString('id-ID')}</td>
-                        </tr>
-                        <tr style="background:#f8fafc;">
-                            <td colspan="3" align="right" style="border:1px solid #cbd5e1; padding:12px; font-weight:700;">JUMLAH TOTAL MAL :</td>
-                            <td align="right" style="border:1px solid #cbd5e1; padding:12px; font-weight:700; color:#10b981;">Rp ${totalJual.toLocaleString('id-ID')}</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <div style="margin-top: 25px; font-size: 0.95rem; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px dashed #cbd5e1;">
-                    <b>Catatan Pekerjaan:</b><br>
-                    <span style="color: #475569;">${catatanMurni}</span>
-                </div>
-
-                <div style="display:flex; justify-content:space-between; margin-top:60px; text-align:center; font-size: 0.95rem;">
-                    <div style="width:220px;">Penerima,<br><br><br><br><br><b>( ${pelanggan} )</b></div>
-                    <div style="width:220px;">Hormat Kami,<br><br><br><br><br><b>( Signline Studio )</b></div>
-                </div>
-            </div>
-        `;
+        if (tipe === 'nota') {
+            area.innerHTML = `
+                <div class="nota-thermal">
+                    <center><strong style="font-size: 11pt;">SIGNLINE STUDIO</strong><br><small>Creative POS</small></center>
+                    <div style="margin-top: 10px; font-size: 9pt;">ID  : ${idOrder}<br>Plg : ${pelanggan}<br></div>
+                    <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
+                    <div style="font-size: 9pt;"><strong>${layanan}</strong><br>${qty} x @${hargaSatuan.toLocaleString('id-ID')}</div>
+                    <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
+                    <div style="display: flex; justify-content: space-between; font-size: 10pt;"><strong>TOTAL:</strong><strong>Rp ${totalJual.toLocaleString('id-ID')}</strong></div>
+                    <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
+                    <center style="font-size: 9pt; margin-top: 10px;">Terima Kasih</center>
+                </div>`;
+        } else {
+            let tanggalFormat = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            area.innerHTML = `
+                <div class="ba-a4">
+                    <center>
+                        <h2 style="color:#1e3a8a; margin:0; font-size: 1.6rem; letter-spacing: 1px;">BERITA ACARA SERAH TERIMA</h2>
+                        <p style="margin:5px 0 20px 0; font-size: 0.9rem; color: #64748b;">SIGNLINE STUDIO - CREATIVE SOLUTIONS</p>
+                        <hr style="border: 0; border-top: 2px solid #1e3a8a; margin-bottom: 25px;">
+                    </center>
+                    <table style="width:100%; margin-bottom: 30px; font-size: 0.95rem; line-height: 1.6;">
+                        <tr><td width="160" style="padding: 4px 0; border:none; background:none;"><b>ID Transaksi</b></td><td style="padding: 4px 0; border:none; background:none;">: ${idOrder}</td></tr>
+                        <tr><td style="padding: 4px 0; border:none; background:none;"><b>Pelanggan</b></td><td style="padding: 4px 0; border:none; background:none;">: ${pelanggan}</td></tr>
+                        <tr><td style="padding: 4px 0; border:none; background:none;"><b>Tanggal</b></td><td style="padding: 4px 0; border:none; background:none;">: ${tanggalFormat}</td></tr>
+                    </table>
+                    <table width="100%" style="border-collapse:collapse; font-size: 0.95rem;">
+                        <thead>
+                            <tr style="background:#f1f5f9;">
+                                <th style="border:1px solid #cbd5e1; padding:12px; color:#1e293b; text-align:left;">Deskripsi Pekerjaan</th>
+                                <th style="border:1px solid #cbd5e1; padding:12px; color:#1e293b; text-align:center;" width="80">Qty</th>
+                                <th style="border:1px solid #cbd5e1; padding:12px; color:#1e293b; text-align:right;" width="150">Harga Satuan</th>
+                                <th style="border:1px solid #cbd5e1; padding:12px; color:#1e293b; text-align:right;" width="150">Total Harga</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="border:1px solid #cbd5e1; padding:12px; background:none; border-radius:0;">${layanan}</td>
+                                <td align="center" style="border:1px solid #cbd5e1; padding:12px; background:none; border-radius:0;">${qty}</td>
+                                <td align="right" style="border:1px solid #cbd5e1; padding:12px; background:none; border-radius:0;">Rp ${hargaSatuan.toLocaleString('id-ID')}</td>
+                                <td align="right" style="border:1px solid #cbd5e1; padding:12px; background:none; border-radius:0; font-weight:600;">Rp ${totalJual.toLocaleString('id-ID')}</td>
+                            </tr>
+                            <tr style="background:#f8fafc;">
+                                <td colspan="3" align="right" style="border:1px solid #cbd5e1; padding:12px; font-weight:700;">JUMLAH TOTAL MAL :</td>
+                                <td align="right" style="border:1px solid #cbd5e1; padding:12px; font-weight:700; color:#10b981;">Rp ${totalJual.toLocaleString('id-ID')}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="margin-top: 25px; font-size: 0.95rem; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px dashed #cbd5e1;">
+                        <b>Catatan Pekerjaan:</b><br><span style="color: #475569;">${catatanMurni}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-top:60px; text-align:center; font-size: 0.95rem;">
+                        <div style="width:220px;">Penerima,<br><br><br><br><br><b>( ${pelanggan} )</b></div>
+                        <div style="width:220px;">Hormat Kami,<br><br><br><br><br><b>( Signline Studio )</b></div>
+                    </div>
+                </div>`;
+        }
+        window.print();
     }
-    // Eksekusi perintah cetak bawaan perangkat
-    window.print();
-}
 </script>
 </body>
 </html>
