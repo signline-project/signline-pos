@@ -423,39 +423,28 @@ function bayarMulti() {
     });
 }
 
-    function muatGrafik() {
-    // Beri indikator di konsol browser untuk memantau proses
-    console.log("Memulai fetch data grafik dari:", API_URL);
-
+   function muatGrafik() {
+    console.log("Memulai fetch data grafik...");
+    
     fetch(`${API_URL}?aksi=getDataGrafik`)
-    .then(res => {
-        if (!res.ok) throw new Error("Respon jaringan tidak mnormal");
-        return res.json();
-    })
+    .then(res => res.json())
     .then(resData => {
-        console.log("Data mentah dari API berhasil diterima:", resData);
+        console.log("Data grafik diterima:", resData);
 
         if (!resData || !resData.harian || !resData.bulanan) {
-            console.error("Format data grafik dari API tidak lengkap atau kosong.");
+            console.error("Data kosong atau tidak valid.");
             return;
         }
 
         // --- 1. PROSES DATA HARIAN ---
-        let labelHarian = Object.keys(resData.harian);
-        // Urutkan tanggal agar grafik mengalir maju dari kiri ke kanan
-        labelHarian.sort(); 
-        
-        let omzetHarian = labelHarian.map(key => resData.harian[key].omzet || 0);
-        let profitHarian = labelHarian.map(key => resData.harian[key].profit || 0);
+        let labelHarian = Object.keys(resData.harian).sort();
+        let omzetHarian = labelHarian.map(k => resData.harian[k].omzet || 0);
+        let profitHarian = labelHarian.map(k => resData.harian[k].profit || 0);
 
-        console.log("Labels Harian terproses:", labelHarian);
-        console.log("Omzet Harian terproses:", omzetHarian);
-
-        // Render Grafik Harian
-        if (chartHarianInstance) chartHarianInstance.destroy();
-        let ctxH = document.getElementById('chartHarian');
-        if (ctxH) {
-            chartHarianInstance = new Chart(ctxH.getContext('2d'), {
+        let canvasH = document.getElementById('chartHarian');
+        if (canvasH) {
+            if (chartHarianInstance) chartHarianInstance.destroy();
+            chartHarianInstance = new Chart(canvasH, {
                 type: 'line',
                 data: {
                     labels: labelHarian,
@@ -481,25 +470,21 @@ function bayarMulti() {
                     ]
                 },
                 options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true } } 
+                    responsive: true,
+                    scales: { y: { beginAtZero: true } }
                 }
             });
         }
 
         // --- 2. PROSES DATA BULANAN ---
-        let labelBulanan = Object.keys(resData.bulanan);
-        labelBulanan.sort();
+        let labelBulanan = Object.keys(resData.bulanan).sort();
+        let omzetBulanan = labelBulanan.map(k => resData.bulanan[k].omzet || 0);
+        let profitBulanan = labelBulanan.map(k => resData.bulanan[k].profit || 0);
 
-        let omzetBulanan = labelBulanan.map(key => resData.bulanan[key].omzet || 0);
-        let profitBulanan = labelBulanan.map(key => resData.bulanan[key].profit || 0);
-
-        // Render Grafik Bulanan
-        if (chartBulananInstance) chartBulananInstance.destroy();
-        let ctxB = document.getElementById('chartBulanan');
-        if (ctxB) {
-            chartBulananInstance = new Chart(ctxB.getContext('2d'), {
+        let canvasB = document.getElementById('chartBulanan');
+        if (canvasB) {
+            if (chartBulananInstance) chartBulananInstance.destroy();
+            chartBulananInstance = new Chart(canvasB, {
                 type: 'bar',
                 data: {
                     labels: labelBulanan,
@@ -519,15 +504,15 @@ function bayarMulti() {
                     ]
                 },
                 options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true } } 
+                    responsive: true,
+                    scales: { y: { beginAtZero: true } }
                 }
             });
         }
     })
     .catch(err => {
-        console.error("Terjadi error fatal saat memproses komponen Chart.js:", err);
+        // Pengaman ekstra: Jika Chart.js error, navigasi sistem tetap aman dan tidak ikut macet
+        console.error("Visualisasi Chart.js terhambat:", err);
     });
 }
 
