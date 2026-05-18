@@ -424,43 +424,112 @@ function bayarMulti() {
 }
 
     function muatGrafik() {
-    fetch(`${API_URL}?aksi=getDataGrafik`)
-    .then(res => res.json())
-    .then(resData => {
-        // 1. PENGOLAHAN GRAFIK HARIAN
-        let labelHarian = Object.keys(resData.harian).sort();
-        let omzetHarian = labelHarian.map(k => resData.harian[k].omzet);
-        let profitHarian = labelHarian.map(k => resData.harian[k].profit);
+    // Beri indikator di konsol browser untuk memantau proses
+    console.log("Memulai fetch data grafik dari:", API_URL);
 
-        if(chartHarianInstance) chartHarianInstance.destroy();
-        let ctxH = document.getElementById('chartHarian').getContext('2d');
-        chartHarianInstance = new Chart(ctxH, {
-            type: 'line',
-            data: {
-                labels: labelHarian,
-                datasets: [
-                    {
-                        label: 'Omzet Kotor (Rp)',
-                        data: omzetHarian,
-                        borderColor: '#3b82f6', // Biru
-                        backgroundColor: 'rgba(59, 130, 246, 0.05)',
-                        borderWidth: 3,
-                        tension: 0.3,
-                        fill: true
-                    },
-                    {
-                        label: 'Profit Bersih (Rp)',
-                        data: profitHarian,
-                        borderColor: '#10b981', // Hijau mentereng
-                        backgroundColor: 'rgba(16, 185, 129, 0.05)',
-                        borderWidth: 3,
-                        tension: 0.3,
-                        fill: true
-                    }
-                ]
-            },
-            options: { responsive: true, scales: { y: { beginAtZero: true } } }
-        });
+    fetch(`${API_URL}?aksi=getDataGrafik`)
+    .then(res => {
+        if (!res.ok) throw new Error("Respon jaringan tidak mnormal");
+        return res.json();
+    })
+    .then(resData => {
+        console.log("Data mentah dari API berhasil diterima:", resData);
+
+        if (!resData || !resData.harian || !resData.bulanan) {
+            console.error("Format data grafik dari API tidak lengkap atau kosong.");
+            return;
+        }
+
+        // --- 1. PROSES DATA HARIAN ---
+        let labelHarian = Object.keys(resData.harian);
+        // Urutkan tanggal agar grafik mengalir maju dari kiri ke kanan
+        labelHarian.sort(); 
+        
+        let omzetHarian = labelHarian.map(key => resData.harian[key].omzet || 0);
+        let profitHarian = labelHarian.map(key => resData.harian[key].profit || 0);
+
+        console.log("Labels Harian terproses:", labelHarian);
+        console.log("Omzet Harian terproses:", omzetHarian);
+
+        // Render Grafik Harian
+        if (chartHarianInstance) chartHarianInstance.destroy();
+        let ctxH = document.getElementById('chartHarian');
+        if (ctxH) {
+            chartHarianInstance = new Chart(ctxH.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: labelHarian,
+                    datasets: [
+                        {
+                            label: 'Omzet Kotor (Rp)',
+                            data: omzetHarian,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.05)',
+                            borderWidth: 3,
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Profit Bersih (Rp)',
+                            data: profitHarian,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.05)',
+                            borderWidth: 3,
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true } } 
+                }
+            });
+        }
+
+        // --- 2. PROSES DATA BULANAN ---
+        let labelBulanan = Object.keys(resData.bulanan);
+        labelBulanan.sort();
+
+        let omzetBulanan = labelBulanan.map(key => resData.bulanan[key].omzet || 0);
+        let profitBulanan = labelBulanan.map(key => resData.bulanan[key].profit || 0);
+
+        // Render Grafik Bulanan
+        if (chartBulananInstance) chartBulananInstance.destroy();
+        let ctxB = document.getElementById('chartBulanan');
+        if (ctxB) {
+            chartBulananInstance = new Chart(ctxB.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: labelBulanan,
+                    datasets: [
+                        {
+                            label: 'Omzet Kotor (Rp)',
+                            data: omzetBulanan,
+                            backgroundColor: '#3b82f6',
+                            borderRadius: 6
+                        },
+                        {
+                            label: 'Profit Bersih (Rp)',
+                            data: profitBulanan,
+                            backgroundColor: '#10b981',
+                            borderRadius: 6
+                        }
+                    ]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true } } 
+                }
+            });
+        }
+    })
+    .catch(err => {
+        console.error("Terjadi error fatal saat memproses komponen Chart.js:", err);
+    });
+}
 
         // 2. PENGOLAHAN GRAFIK BULANAN
         let labelBulanan = Object.keys(resData.bulanan).sort();
