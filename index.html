@@ -81,9 +81,9 @@
             <table id="t-keranjang"><thead><tr><th>ITEM</th><th>QTY</th><th>TOTAL</th><th>X</th></tr></thead><tbody></tbody></table>
             <textarea id="note" class="input-soft" placeholder="Catatan pekerjaan..." style="height: 60px; margin: 20px 0;"></textarea>
             <div class="total-box">
-                <div><small>TOTAL BAYAR</small><h1 id="total-cart" style="margin:0; color:var(--success);">Rp 0</h1></div>
-                <button class="btn-action btn-success" id="btn-save" onclick="bayarMulti()">SIMPAN TRANSAKSI</button>
-            </div>
+    <div><small>TOTAL BAYAR</small><h1 id="total-cart" style="margin:0; color:var(--success);">Rp 0</h1></div>
+    <button class="btn-action btn-success" id="btn-save" onclick="bayarMulti()">SIMPAN TRANSAKSI</button>
+</div>
         </div>
     </div>
 
@@ -236,23 +236,53 @@ function pilihProd() {
 
 // 2. Masukkan semua komponen (Layanan, Qty, Harga Jual, HPP) ke dalam list keranjang
 function tambahKeKeranjang() {
-    let selectProd = document.getElementById('prod');
-    let lay = selectProd.value; 
-    let q = parseInt(document.getElementById('qty').value) || 1; 
-    let j = parseFloat(document.getElementById('jual').value) || 0; 
-    let h = parseFloat(selectProd.getAttribute('data-hpp')) || 0; 
-    
-    if (!lay || q < 1) return alert("Pilih produk!");
-    
-    // Simpan objek data lengkap ke dalam array keranjang
-    keranjang.push({ 
-        layanan: lay, 
-        qty: q, 
-        harga: j, 
-        hpp: h, 
-        subtotal: q * j 
-    }); 
-    renderKeranjang();
+    try {
+        let selectProd = document.getElementById('prod');
+        if (!selectProd) {
+            alert("Elemen Dropdown Produk tidak ditemukan!");
+            return;
+        }
+
+        let lay = selectProd.value; 
+        let qtyInput = document.getElementById('qty');
+        let jualInput = document.getElementById('jual');
+
+        let q = parseInt(qtyInput.value) || 1; 
+        let j = parseFloat(jualInput.value) || 0; 
+        let h = parseFloat(selectProd.getAttribute('data-hpp')) || 0; 
+        
+        if (!lay || lay === "") {
+            alert("Silakan pilih produk/layanan terlebih dahulu!");
+            return;
+        }
+        
+        if (q < 1) {
+            alert("Quantity minimal adalah 1!");
+            return;
+        }
+        
+        // Masukkan data ke array keranjang publik
+        keranjang.push({ 
+            layanan: lay, 
+            qty: q, 
+            harga: j, 
+            hpp: h, 
+            subtotal: q * j 
+        }); 
+        
+        // Refresh tampilan tabel keranjang kasir
+        renderKeranjang();
+
+        // Reset input quantity dan pilihan produk setelah berhasil ditambah
+        qtyInput.value = 1;
+        jualInput.value = "";
+        selectProd.value = "";
+        selectProd.removeAttribute('data-hpp');
+
+    } catch (error) {
+        alert("Terjadi kesalahan pada sistem kasir: " + error.message);
+        console.error(error);
+    }
 }
 
 // 3. Kirim data transaksi ke Google Apps Script
