@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signline Studio - POS</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -31,7 +32,7 @@
         /* --- TABLES --- */
         .table-container { width: 100%; overflow-x: auto; }
         table { width: 100%; border-collapse: separate; border-spacing: 0 12px; min-width: 600px; }
-        th { color: var(--text-light); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; padding: 0 25px; }
+        th { color: var(--text-light); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; padding: 0 25px; text-align: left; }
         td { background: var(--white); padding: 18px 25px; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; }
         td:first-child { border-radius: 20px 0 0 20px; font-weight: 600; }
         td:last-child { border-radius: 0 20px 20px 0; }
@@ -42,6 +43,10 @@
         .btn-blue { background: var(--accent); } .btn-success { background: var(--success); } .btn-danger { background: var(--danger); }
         .total-box { background: var(--sidebar-bg); color: white; padding: 30px; border-radius: var(--radius); display: flex; justify-content: space-between; align-items: center; }
 
+        /* --- GRAPHICS GRID --- */
+        .chart-container { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 15px; }
+        @media screen and (max-width: 992px) { .chart-container { grid-template-columns: 1fr; } }
+
         /* --- PRINT STYLES --- */
         #print-area { display: none; }
         @media print {
@@ -49,31 +54,21 @@
             #print-area, #print-area * { visibility: visible; }
             #print-area { display: block !important; position: absolute; left: 0; top: 0; width: 100%; }
             .nota-thermal { width: 58mm; font-family: 'Courier New', monospace; font-size: 10pt; line-height: 1.2; padding: 2mm; color: black; }
-            .ba-a4 { width: 180mm; font-family: sans-serif; padding: 40px; border: 2px solid #1e3a8a; margin: auto; color: #1e293b; }
+            .ba-a4 { width: 180mm; font-family: sans-serif; padding: 40px; border: 1px solid #1e3a8a; margin: auto; color: #1e293b; }
         }
+
+        @media screen and (max-width: 768px) { .sidebar { display: none; } }
     </style>
 </head>
 <body>
 
 <div class="sidebar no-print">
-    <div class="sidebar-brand"><i class="fa-solid fa-bolt"></i></div>
- <div class="nav-list">
-        <div id="n1" class="nav-item active" onclick="buka('pos')">
-            <i class="fa-solid fa-cash-register"></i>
-            <div class="curve-bottom"></div>
-        </div>
-        <div id="n2" class="nav-item" onclick="buka('inv')">
-            <i class="fa-solid fa-tags"></i>
-            <div class="curve-bottom"></div>
-        </div>
-        <div id="n3" class="nav-item" onclick="buka('his')">
-            <i class="fa-solid fa-history"></i>
-            <div class="curve-bottom"></div>
-        </div>
-        <div id="n4" class="nav-item" onclick="buka('rep')">
-            <i class="fa-solid fa-chart-pie"></i>
-            <div class="curve-bottom"></div>
-        </div>
+    <div class="sidebar-brand" style="text-align: center; color: white; font-size: 1.5rem; margin-bottom: 20px;"><i class="fa-solid fa-bolt"></i></div>
+    <div class="nav-list">
+        <div id="n1" class="nav-item active" onclick="buka('pos')"><i class="fa-solid fa-cash-register"></i><div class="curve-bottom"></div></div>
+        <div id="n2" class="nav-item" onclick="buka('inv')"><i class="fa-solid fa-tags"></i><div class="curve-bottom"></div></div>
+        <div id="n3" class="nav-item" onclick="buka('his')"><i class="fa-solid fa-history"></i><div class="curve-bottom"></div></div>
+        <div id="n4" class="nav-item" onclick="buka('rep')"><i class="fa-solid fa-chart-pie"></i><div class="curve-bottom"></div></div>
     </div>
 </div>
 
@@ -92,12 +87,17 @@
             </div>
         </div>
         <div class="glass-card">
-            <table id="t-keranjang"><thead><tr><th>ITEM</th><th>QTY</th><th>TOTAL</th><th>X</th></tr></thead><tbody></tbody></table>
+            <div class="table-container">
+                <table id="t-keranjang">
+                    <thead><tr><th>ITEM</th><th>QTY</th><th>TOTAL</th><th>X</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
             <textarea id="note" class="input-soft" placeholder="Catatan pekerjaan..." style="height: 60px; margin: 20px 0;"></textarea>
             <div class="total-box">
-    <div><small>TOTAL BAYAR</small><h1 id="total-cart" style="margin:0; color:var(--success);">Rp 0</h1></div>
-    <button class="btn-action btn-success" id="btn-save" onclick="bayarMulti()">SIMPAN TRANSAKSI</button>
-</div>
+                <div><small>TOTAL BAYAR</small><h1 id="total-cart" style="margin:0; color:var(--success);">Rp 0</h1></div>
+                <button class="btn-action btn-success" id="btn-save" onclick="bayarMulti()">SIMPAN TRANSAKSI</button>
+            </div>
         </div>
     </div>
 
@@ -132,11 +132,11 @@
                 <button class="btn-action btn-blue" onclick="muatGrafik()"><i class="fa-solid fa-sync"></i> REFRESH GRAFIK</button>
             </div>
             <div class="chart-container">
-                <div style="background:#f8fafc; padding:20px; border-radius:20px; border:1px solid #e2e8f0; margin-bottom: 20px;">
+                <div style="background:#f8fafc; padding:20px; border-radius:20px; border:1px solid #e2e8f0; min-height: 300px;">
                     <h4 style="margin-top:0; color:var(--sidebar-bg); text-align:center;">Grafik Keuangan Harian</h4>
                     <canvas id="chartHarian"></canvas>
                 </div>
-                <div style="background:#f8fafc; padding:20px; border-radius:20px; border:1px solid #e2e8f0;">
+                <div style="background:#f8fafc; padding:20px; border-radius:20px; border:1px solid #e2e8f0; min-height: 300px;">
                     <h4 style="margin-top:0; color:var(--sidebar-bg); text-align:center;">Grafik Keuangan Bulanan</h4>
                     <canvas id="chartBulanan"></canvas>
                 </div>
@@ -148,47 +148,95 @@
 <div id="print-area"></div>
 
 <script>
-    // MASUKKAN URL WEB APP YANG ANDA SALIN DARI GOOGLE APPS SCRIPT DI SINI
-    const API_URL = `https://script.google.com/macros/s/AKfycbybemrgVgpw_VGL5ByHACe87YjNz7fOpciuW9RhGBySIWNJoMquC1iIWILn7VhrliDcfw/exec`;
+    // ==========================================
+    // SILAKAN MASUKKAN URL API WEB APP ANDA DI SINI
+    // ==========================================
+    const API_URL = `https://script.google.com/macros/s/AKfycbybemrgVgpw_VGL5ByHACe87YjNz7fOpciuW9RhGBySIWNJoMquC1iIWILn7VhrliDcfw/exec`; 
 
     let dProduk = []; let keranjang = []; let riwayatData = [];
+    let chartHarianInstance = null; let chartBulananInstance = null;
 
     window.onload = () => { muatProduk(); muatRiwayat(); };
 
+    // --- STRUKTUR NAVIGASI UTAMA ---
     function buka(t) {
-    try {
-        // Tampilkan section yang dipilih, sembunyikan yang lain
-        document.getElementById('sec-pos').style.display = (t === 'pos' ? 'block' : 'none');
-        document.getElementById('sec-inv').style.display = (t === 'inv' ? 'block' : 'none');
-        document.getElementById('sec-his').style.display = (t === 'his' ? 'block' : 'none');
-        document.getElementById('sec-rep').style.display = (t === 'rep' ? 'block' : 'none');
-        
-        // Atur efek aktif pada menu samping (Sekarang sampai n4)
-        ['n1','n2','n3','n4'].forEach(id => {
-            let el = document.getElementById(id);
-            if(el) el.classList.remove('active');
-        });
-        
-        // Aktifkan menu yang diklik
-        let targetMenu = t === 'pos' ? 'n1' : t === 'inv' ? 'n2' : t === 'his' ? 'n3' : 'n4';
-        let elActive = document.getElementById(targetMenu);
-        if(elActive) elActive.classList.add('active');
-        
-        // Otomatis muat data sesuai tab
-        if(t === 'inv') muatProduk(); 
-        if(t === 'his') muatRiwayat();
-        if(t === 'rep') muatGrafik();
-        
-    } catch (error) {
-        console.error("Gagal berpindah halaman: ", error);
+        try {
+            document.getElementById('sec-pos').style.display = (t === 'pos' ? 'block' : 'none');
+            document.getElementById('sec-inv').style.display = (t === 'inv' ? 'block' : 'none');
+            document.getElementById('sec-his').style.display = (t === 'his' ? 'block' : 'none');
+            document.getElementById('sec-rep').style.display = (t === 'rep' ? 'block' : 'none');
+            
+            ['n1','n2','n3','n4'].forEach(id => {
+                let el = document.getElementById(id);
+                if(el) el.classList.remove('active');
+            });
+            
+            let targetMenu = t === 'pos' ? 'n1' : t === 'inv' ? 'n2' : t === 'his' ? 'n3' : 'n4';
+            let elActive = document.getElementById(targetMenu);
+            if(elActive) elActive.classList.add('active');
+            
+            if(t === 'inv') muatProduk(); 
+            if(t === 'his') muatRiwayat();
+            if(t === 'rep') muatGrafik();
+        } catch (e) {
+            console.error("Gagal berpindah tab: ", e);
+        }
     }
-}
 
-    // --- SEKARANG MENGGUNAKAN METODE FETCH API (GET) ---
-    function muatProduk() {
-        fetch(`${API_URL}?aksi=getProduk`)
+    // --- LOGIKA UTAMA INTEGRASI GRAFIK CHART.JS ---
+    function muatGrafik() {
+        fetch(`${API_URL}?aksi=getDataGrafik`)
         .then(res => res.json())
-        .then(data => {
+        .then(resData => {
+            if (!resData || !resData.harian || !resData.bulanan) return;
+
+            // 1. DATA HARIAN
+            let labelHarian = Object.keys(resData.harian).sort();
+            let omzetHarian = labelHarian.map(k => resData.harian[k].omzet || 0);
+            let profitHarian = labelHarian.map(k => resData.harian[k].profit || 0);
+
+            let canvasH = document.getElementById('chartHarian');
+            if (canvasH) {
+                if (chartHarianInstance) chartHarianInstance.destroy();
+                chartHarianInstance = new Chart(canvasH, {
+                    type: 'line',
+                    data: {
+                        labels: labelHarian,
+                        datasets: [
+                            { label: 'Omzet Kotor', data: omzetHarian, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.05)', borderWidth: 3, tension: 0.3, fill: true },
+                            { label: 'Profit Bersih', data: profitHarian, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.05)', borderWidth: 3, tension: 0.3, fill: true }
+                        ]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+
+            // 2. DATA BULANAN
+            let labelBulanan = Object.keys(resData.bulanan).sort();
+            let omzetBulanan = labelBulanan.map(k => resData.bulanan[k].omzet || 0);
+            let profitBulanan = labelBulanan.map(k => resData.bulanan[k].profit || 0);
+
+            let canvasB = document.getElementById('chartBulanan');
+            if (canvasB) {
+                if (chartBulananInstance) chartBulananInstance.destroy();
+                chartBulananInstance = new Chart(canvasB, {
+                    type: 'bar',
+                    data: {
+                        labels: labelBulanan,
+                        datasets: [
+                            { label: 'Omzet Kotor', data: omzetBulanan, backgroundColor: '#3b82f6', borderRadius: 6 },
+                            { label: 'Profit Bersih', data: profitBulanan, backgroundColor: '#10b981', borderRadius: 6 }
+                        ]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+        }).catch(err => console.error("Gagal merender grafik:", err));
+    }
+
+    // --- LOGIKA OPERASIONAL KASIR & DATA ---
+    function muatProduk() {
+        fetch(`${API_URL}?aksi=getProduk`).then(res => res.json()).then(data => {
             if(!data) return; dProduk = data.slice(1);
             let s = document.getElementById('prod'); let t = document.querySelector('#t-prod-list tbody');
             s.innerHTML = '<option value="">-- Pilih --</option>'; t.innerHTML = '';
@@ -196,79 +244,59 @@
                 s.innerHTML += `<option value="${p[0]}">${p[0]}</option>`;
                 t.innerHTML += `<tr><td>${p[0]}</td><td>Rp ${Number(p[2]).toLocaleString()}</td><td align="center"><button class="btn-action btn-danger" onclick="hapusProd('${p[0]}')"><i class="fa-solid fa-trash"></i></button></td></tr>`;
             });
-        }).catch(err => console.error("Gagal muat produk:", err));
+        });
     }
 
     function muatRiwayat() {
-        fetch(`${API_URL}?aksi=getTransaksi`)
-        .then(res => res.json())
-        .then(data => {
-            let t = document.querySelector('#t-his tbody'); t.innerHTML = ''; 
-            if(!data) return;
+        fetch(`${API_URL}?aksi=getTransaksi`).then(res => res.json()).then(data => {
+            let t = document.querySelector('#t-his tbody'); t.innerHTML = ''; if(!data) return;
             riwayatData = data;
             data.forEach((r, i) => {
                 t.innerHTML += `<tr><td>${r[1]}</td><td>${r[2]}</td><td>Rp ${Number(r[7]).toLocaleString()}</td>
-                <td>
-                    <div style="display:flex; gap:5px;">
-                        <button class="btn-action btn-blue" onclick="cetak(${i}, 'nota')">NOTA</button>
-                        <button class="btn-action btn-success" onclick="cetak(${i}, 'ba')">BA</button>
-                        <button class="btn-action btn-danger" onclick="konfirmasiHapusTransaksi('${r[1]}')"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                </td></tr>`;
+                <td><div style="display:flex; gap:5px;"><button class="btn-action btn-blue" onclick="cetak(${i}, 'nota')">NOTA</button><button class="btn-action btn-success" onclick="cetak(${i}, 'ba')">BA</button><button class="btn-action btn-danger" onclick="konfirmasiHapusTransaksi('${r[1]}')"><i class="fa-solid fa-trash"></i></button></div></td></tr>`;
             });
-        }).catch(err => console.error("Gagal muat riwayat:", err));
+        });
     }
 
-    // --- SEKARANG MENGGUNAKAN METODE FETCH API (POST) ---
+    function pilihProd() { 
+        let p = dProduk.find(x => x[0] == document.getElementById('prod').value); 
+        if(p) { document.getElementById('jual').value = p[2]; document.getElementById('prod').setAttribute('data-hpp', p[1]); } 
+    }
+
+    function tambahKeKeranjang() {
+        let selectProd = document.getElementById('prod'); let lay = selectProd.value;
+        let q = parseInt(document.getElementById('qty').value) || 1;
+        let j = parseFloat(document.getElementById('jual').value) || 0;
+        let h = parseFloat(selectProd.getAttribute('data-hpp')) || 0;
+        if (!lay || q < 1) return alert("Pilih produk!");
+        keranjang.push({ layanan: lay, qty: q, harga: j, hpp: h, subtotal: q * j });
+        renderKeranjang();
+    }
+
+    function renderKeranjang() {
+        let t = document.querySelector('#t-keranjang tbody'); t.innerHTML = ''; let tot = 0;
+        keranjang.forEach((item, i) => { tot += item.subtotal; t.innerHTML += `<tr><td>${item.layanan}</td><td>${item.qty}</td><td>Rp ${item.subtotal.toLocaleString()}</td><td align="center"><button class="btn-action btn-danger" style="padding:5px 10px;" onclick="hapusItemKeranjang(${i})"><i class="fa-solid fa-xmark"></i></button></td></tr>`; });
+        document.getElementById('total-cart').innerText = "Rp " + tot.toLocaleString();
+    }
+
+    function hapusItemKeranjang(i) { keranjang.splice(i, 1); renderKeranjang(); }
+
     function bayarMulti() {
         let c = document.getElementById('cust').value; if (!c || keranjang.length === 0) return alert("Data kosong!");
-        
-        fetch(API_URL, {
-            method: 'POST',
-            body: JSON.stringify({ aksi: 'simpanOrder', data: { nama: c, catatan: document.getElementById('note').value, items: keranjang } })
-        })
-        .then(res => res.json())
-        .then(res => {
-            alert("Sukses!"); keranjang = []; renderKeranjang(); muatRiwayat();
+        document.getElementById('btn-save').disabled = true; document.getElementById('btn-save').innerText = "MENYIMPAN...";
+        fetch(API_URL, { method: 'POST', body: JSON.stringify({ aksi: 'simpanOrder', data: { nama: c, catatan: document.getElementById('note').value, items: keranjang } }) })
+        .then(res => res.json()).then(() => { 
+            alert("Sukses!"); keranjang = []; renderKeranjang(); muatRiwayat(); 
             document.getElementById('cust').value = ''; document.getElementById('note').value = '';
-        });
+        }).finally(() => { document.getElementById('btn-save').disabled = false; document.getElementById('btn-save').innerText = "SIMPAN TRANSAKSI"; });
     }
 
     function tambahProduk() {
-        let name = document.getElementById('pn').value;
-        let hpp = document.getElementById('ph').value;
-        let jual = document.getElementById('pj').value;
-        
-        fetch(API_URL, {
-            method: 'POST',
-            body: JSON.stringify({ aksi: 'tambahProduk', data: { nama: name, hpp: hpp, jual: jual } })
-        })
-        .then(res => res.json())
-        .then(() => { 
-            muatProduk(); 
-            document.getElementById('pn').value = ''; document.getElementById('ph').value = ''; document.getElementById('pj').value = '';
-        });
+        fetch(API_URL, { method: 'POST', body: JSON.stringify({ aksi: 'tambahProduk', data: { nama: document.getElementById('pn').value, hpp: document.getElementById('ph').value, jual: document.getElementById('pj').value } }) }).then(() => { muatProduk(); document.getElementById('pn').value = ''; document.getElementById('ph').value = ''; document.getElementById('pj').value = ''; });
     }
+    function hapusProd(n) { if(confirm('Hapus ' + n + '?')) { fetch(API_URL, { method: 'POST', body: JSON.stringify({ aksi: 'hapusProduk', nama: n }) }).then(() => muatProduk()); } }
+    function konfirmasiHapusTransaksi(id) { if(confirm('Hapus transaksi '+id+'?')) { fetch(API_URL, { method: 'POST', body: JSON.stringify({ aksi: 'hapusTransaksi', id: id }) }).then(() => muatRiwayat()); } }
 
-    function hapusProd(n) {
-        if(confirm('Hapus ' + n + '?')) {
-            fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify({ aksi: 'hapusProduk', nama: n })
-            }).then(() => muatProduk());
-        }
-    }
-
-    function konfirmasiHapusTransaksi(id) {
-        if(confirm('Hapus transaksi '+id+'?')) {
-            fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify({ aksi: 'hapusTransaksi', id: id })
-            }).then(() => muatRiwayat());
-        }
-    }
-
-    // --- LOGIKA CETAK DAN KERANJANG LOKAL (TETAP SAMA) ---
     function cetak(idx, tipe) {
         let r = riwayatData[idx]; let area = document.getElementById('print-area');
         if(tipe === 'nota') {
@@ -278,275 +306,6 @@
         }
         window.print();
     }
-   // 1. Ambil harga jual dan HPP saat produk dipilih di dropdown kasir
-function pilihProd() { 
-    let p = dProduk.find(x => x[0] == document.getElementById('prod').value); 
-    if(p) { 
-        document.getElementById('jual').value = p[2]; 
-        // Simpan nilai HPP ke dalam atribut elemen sebagai memori sementara
-        document.getElementById('prod').setAttribute('data-hpp', p[1]); 
-    } 
-}
-
-// 2. Masukkan semua komponen (Layanan, Qty, Harga Jual, HPP) ke dalam list keranjang
-function tambahKeKeranjang() {
-    try {
-        let selectProd = document.getElementById('prod');
-        if (!selectProd) {
-            alert("Elemen Dropdown Produk tidak ditemukan!");
-            return;
-        }
-
-        let lay = selectProd.value; 
-        let qtyInput = document.getElementById('qty');
-        let jualInput = document.getElementById('jual');
-
-        let q = parseInt(qtyInput.value) || 1; 
-        let j = parseFloat(jualInput.value) || 0; 
-        let h = parseFloat(selectProd.getAttribute('data-hpp')) || 0; 
-        
-        if (!lay || lay === "") {
-            alert("Silakan pilih produk/layanan terlebih dahulu!");
-            return;
-        }
-        
-        if (q < 1) {
-            alert("Quantity minimal adalah 1!");
-            return;
-        }
-        
-        // Masukkan data ke array keranjang publik
-        keranjang.push({ 
-            layanan: lay, 
-            qty: q, 
-            harga: j, 
-            hpp: h, 
-            subtotal: q * j 
-        }); 
-        
-        // Refresh tampilan tabel keranjang kasir
-        renderKeranjang();
-
-        // Reset input quantity dan pilihan produk setelah berhasil ditambah
-        qtyInput.value = 1;
-        jualInput.value = "";
-        selectProd.value = "";
-        selectProd.removeAttribute('data-hpp');
-
-    } catch (error) {
-        alert("Terjadi kesalahan pada sistem kasir: " + error.message);
-        console.error(error);
-    }
-}
-
-    function renderKeranjang() {
-    try {
-        let t = document.querySelector('#t-keranjang tbody');
-        if (!t) {
-            console.error("Elemen tabel #t-keranjang tbody tidak ditemukan!");
-            return;
-        }
-        
-        t.innerHTML = ''; 
-        let tot = 0;
-        
-        keranjang.forEach((item, i) => { 
-            tot += item.subtotal; 
-            t.innerHTML += `
-                <tr>
-                    <td><strong>${item.layanan}</strong></td>
-                    <td>${item.qty}</td>
-                    <td>Rp ${Number(item.subtotal).toLocaleString('id-ID')}</td>
-                    <td align="center">
-                        <button class="btn-action btn-danger" style="padding: 5px 10px; font-size: 0.75rem; border-radius: 8px;" onclick="hapusItemKeranjang(${i})">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
-                    </td>
-                </tr>`; 
-        });
-        
-        // Update teks Total Akhir Pembayaran
-        let totalCartEl = document.getElementById('total-cart');
-        if (totalCartEl) {
-            totalCartEl.innerText = "Rp " + tot.toLocaleString('id-ID');
-        }
-    } catch (error) {
-        console.error("Error saat render keranjang: ", error);
-    }
-}
-
-// Tambahkan juga fungsi hapus item dari keranjang agar tidak error nanti
-function hapusItemKeranjang(i) {
-    keranjang.splice(i, 1);
-    renderKeranjang();
-}
-
-// 3. Kirim data transaksi ke Google Apps Script
-function bayarMulti() {
-    let c = document.getElementById('cust').value; 
-    if (!c || keranjang.length === 0) return alert("Nama pelanggan atau keranjang masih kosong!");
-    
-    // nonaktifkan tombol sementara agar tidak terjadi double klik simpan
-    document.getElementById('btn-save').disabled = true;
-    document.getElementById('btn-save').innerText = "MENYIMPAN...";
-
-    fetch(API_URL, { 
-        method: 'POST', 
-        body: JSON.stringify({ 
-            aksi: 'simpanOrder', 
-            data: { 
-                nama: c, 
-                catatan: document.getElementById('note').value, 
-                items: keranjang 
-            } 
-        }) 
-    })
-    .then(res => res.json())
-    .then(res => { 
-        alert("Transaksi Berhasil Disimpan!"); 
-        keranjang = []; 
-        renderKeranjang(); 
-        muatRiwayat(); 
-        
-        // Reset form input
-        document.getElementById('cust').value = ''; 
-        document.getElementById('note').value = ''; 
-    })
-    .catch(err => {
-        alert("Gagal menyimpan transaksi, periksa koneksi internet atau URL API Anda.");
-        console.error(err);
-    })
-    .finally(() => {
-        // Kembalikan status tombol simpan
-        document.getElementById('btn-save').disabled = false;
-        document.getElementById('btn-save').innerText = "SIMPAN TRANSAKSI";
-    });
-}
-
-   function muatGrafik() {
-    console.log("Memulai fetch data grafik...");
-    
-    fetch(`${API_URL}?aksi=getDataGrafik`)
-    .then(res => res.json())
-    .then(resData => {
-        console.log("Data grafik diterima:", resData);
-
-        if (!resData || !resData.harian || !resData.bulanan) {
-            console.error("Data kosong atau tidak valid.");
-            return;
-        }
-
-        // --- 1. PROSES DATA HARIAN ---
-        let labelHarian = Object.keys(resData.harian).sort();
-        let omzetHarian = labelHarian.map(k => resData.harian[k].omzet || 0);
-        let profitHarian = labelHarian.map(k => resData.harian[k].profit || 0);
-
-        let canvasH = document.getElementById('chartHarian');
-        if (canvasH) {
-            if (chartHarianInstance) chartHarianInstance.destroy();
-            chartHarianInstance = new Chart(canvasH, {
-                type: 'line',
-                data: {
-                    labels: labelHarian,
-                    datasets: [
-                        {
-                            label: 'Omzet Kotor (Rp)',
-                            data: omzetHarian,
-                            borderColor: '#3b82f6',
-                            backgroundColor: 'rgba(59, 130, 246, 0.05)',
-                            borderWidth: 3,
-                            tension: 0.3,
-                            fill: true
-                        },
-                        {
-                            label: 'Profit Bersih (Rp)',
-                            data: profitHarian,
-                            borderColor: '#10b981',
-                            backgroundColor: 'rgba(16, 185, 129, 0.05)',
-                            borderWidth: 3,
-                            tension: 0.3,
-                            fill: true
-                        }
-                    ]
-                },
-                options: { 
-                    responsive: true,
-                    scales: { y: { beginAtZero: true } }
-                }
-            });
-        }
-
-        // --- 2. PROSES DATA BULANAN ---
-        let labelBulanan = Object.keys(resData.bulanan).sort();
-        let omzetBulanan = labelBulanan.map(k => resData.bulanan[k].omzet || 0);
-        let profitBulanan = labelBulanan.map(k => resData.bulanan[k].profit || 0);
-
-        let canvasB = document.getElementById('chartBulanan');
-        if (canvasB) {
-            if (chartBulananInstance) chartBulananInstance.destroy();
-            chartBulananInstance = new Chart(canvasB, {
-                type: 'bar',
-                data: {
-                    labels: labelBulanan,
-                    datasets: [
-                        {
-                            label: 'Omzet Kotor (Rp)',
-                            data: omzetBulanan,
-                            backgroundColor: '#3b82f6',
-                            borderRadius: 6
-                        },
-                        {
-                            label: 'Profit Bersih (Rp)',
-                            data: profitBulanan,
-                            backgroundColor: '#10b981',
-                            borderRadius: 6
-                        }
-                    ]
-                },
-                options: { 
-                    responsive: true,
-                    scales: { y: { beginAtZero: true } }
-                }
-            });
-        }
-    })
-    .catch(err => {
-        // Pengaman ekstra: Jika Chart.js error, navigasi sistem tetap aman dan tidak ikut macet
-        console.error("Visualisasi Chart.js terhambat:", err);
-    });
-}
-
-        // 2. PENGOLAHAN GRAFIK BULANAN
-        let labelBulanan = Object.keys(resData.bulanan).sort();
-        let omzetBulanan = labelBulanan.map(k => resData.bulanan[k].omzet);
-        let profitBulanan = labelBulanan.map(k => resData.bulanan[k].profit);
-
-        if(chartBulananInstance) chartBulananInstance.destroy();
-        let ctxB = document.getElementById('chartBulanan').getContext('2d');
-        chartBulananInstance = new Chart(ctxB, {
-            type: 'bar',
-            data: {
-                labels: labelBulanan,
-                datasets: [
-                    {
-                        label: 'Omzet Kotor (Rp)',
-                        data: omzetBulanan,
-                        backgroundColor: '#3b82f6',
-                        borderRadius: 6
-                    },
-                    {
-                        label: 'Profit Bersih (Rp)',
-                        data: profitBulanan,
-                        backgroundColor: '#10b981',
-                        borderRadius: 6
-                    }
-                ]
-            },
-            options: { responsive: true, scales: { y: { beginAtZero: true } } }
-        });
-    }).catch(err => console.error("Gagal memuat data grafik:", err));
-}
 </script>
-
 </body>
 </html>
