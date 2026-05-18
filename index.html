@@ -116,7 +116,7 @@
 
 <script>
     // MASUKKAN URL WEB APP YANG ANDA SALIN DARI GOOGLE APPS SCRIPT DI SINI
-    const API_URL = `https://script.google.com/macros/s/AKfycbwO9RHxvkdoeqoW6VzyBxLdZHNc8OOYLbBe8fAEg0jZntNr-4jaoal23pUq0km8_Ancdg/exec`;
+    const API_URL = `https://script.google.com/macros/s/AKfycbxHcxEUiHi01V2UkB8Z8HPoHAKIaWphcFGCFhkeOBT4SkKw4OAZ9NIxxUB2XnS5mUkoew/exec`;
 
     let dProduk = []; let keranjang = []; let riwayatData = [];
 
@@ -224,17 +224,40 @@
         }
         window.print();
     }
-    function pilihProd() { let p = dProduk.find(x => x[0] == document.getElementById('prod').value); if(p) { document.getElementById('jual').value = p[2]; } }
-    function tambahKeKeranjang() {
-        let lay = document.getElementById('prod').value; let q = document.getElementById('qty').value; let j = document.getElementById('jual').value;
-        if (!lay || q < 1) return alert("Pilih produk!");
-        keranjang.push({ layanan: lay, qty: q, harga: j, subtotal: q * j }); renderKeranjang();
-    }
-    function renderKeranjang() {
-        let t = document.querySelector('#t-keranjang tbody'); t.innerHTML = ''; let tot = 0;
-        keranjang.forEach((item, i) => { tot += item.subtotal; t.innerHTML += `<tr><td>${item.layanan}</td><td>${item.qty}</td><td>${item.subtotal.toLocaleString()}</td><td><button onclick="hapusItemKeranjang(${i})">X</button></td></tr>`; });
-        document.getElementById('total-cart').innerText = "Rp " + tot.toLocaleString();
-    }
+    // 1. Pastikan HPP ikut tersimpan saat produk dipilih
+function pilihProd() { 
+    let p = dProduk.find(x => x[0] == document.getElementById('prod').value); 
+    if(p) { 
+        document.getElementById('jual').value = p[2]; 
+        // Simpan HPP sementara di atribut global atau tersembunyi
+        document.getElementById('prod').setAttribute('data-hpp', p[1]); 
+    } 
+}
+
+// 2. Masukkan data HPP ke dalam array keranjang
+function tambahKeKeranjang() {
+    let selectProd = document.getElementById('prod');
+    let lay = selectProd.value; 
+    let q = document.getElementById('qty').value; 
+    let j = document.getElementById('jual').value; 
+    let h = selectProd.getAttribute('data-hpp') || 0; // Ambil nilai HPP-nya
+    
+    if (!lay || q < 1) return alert("Pilih produk!");
+    
+    // Simpan hpp ke dalam objek keranjang
+    keranjang.push({ layanan: lay, qty: q, harga: j, hpp: h, subtotal: q * j }); 
+    renderKeranjang();
+}
+
+// 3. Render keranjang (Tetap sama, hanya memastikan strukturnya aman)
+function renderKeranjang() {
+    let t = document.querySelector('#t-keranjang tbody'); t.innerHTML = ''; let tot = 0;
+    keranjang.forEach((item, i) => { 
+        tot += item.subtotal; 
+        t.innerHTML += `<tr><td>${item.layanan}</td><td>${item.qty}</td><td>${item.subtotal.toLocaleString()}</td><td><button onclick="hapusItemKeranjang(${i})">X</button></td></tr>`; 
+    });
+    document.getElementById('total-cart').innerText = "Rp " + tot.toLocaleString();
+}
     function hapusItemKeranjang(i) { keranjang.splice(i, 1); renderKeranjang(); }
 </script>
 
