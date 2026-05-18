@@ -116,7 +116,7 @@
 
 <script>
     // MASUKKAN URL WEB APP YANG ANDA SALIN DARI GOOGLE APPS SCRIPT DI SINI
-    const API_URL = `https://script.google.com/macros/s/AKfycbxHcxEUiHi01V2UkB8Z8HPoHAKIaWphcFGCFhkeOBT4SkKw4OAZ9NIxxUB2XnS5mUkoew/exec`;
+    const API_URL = `https://script.google.com/macros/s/AKfycbxqBZqALh6diJ2e9j_l2BSNo2sPUJT02MMKaKG3VNgfjBV6EgwN0k1WFhnajy6DYrRHUQ/exec`;
 
     let dProduk = []; let keranjang = []; let riwayatData = [];
 
@@ -224,41 +224,78 @@
         }
         window.print();
     }
-    // 1. Pastikan HPP ikut tersimpan saat produk dipilih
+   // 1. Ambil harga jual dan HPP saat produk dipilih di dropdown kasir
 function pilihProd() { 
     let p = dProduk.find(x => x[0] == document.getElementById('prod').value); 
     if(p) { 
         document.getElementById('jual').value = p[2]; 
-        // Simpan HPP sementara di atribut global atau tersembunyi
+        // Simpan nilai HPP ke dalam atribut elemen sebagai memori sementara
         document.getElementById('prod').setAttribute('data-hpp', p[1]); 
     } 
 }
 
-// 2. Masukkan data HPP ke dalam array keranjang
+// 2. Masukkan semua komponen (Layanan, Qty, Harga Jual, HPP) ke dalam list keranjang
 function tambahKeKeranjang() {
     let selectProd = document.getElementById('prod');
     let lay = selectProd.value; 
-    let q = document.getElementById('qty').value; 
-    let j = document.getElementById('jual').value; 
-    let h = selectProd.getAttribute('data-hpp') || 0; // Ambil nilai HPP-nya
+    let q = parseInt(document.getElementById('qty').value) || 1; 
+    let j = parseFloat(document.getElementById('jual').value) || 0; 
+    let h = parseFloat(selectProd.getAttribute('data-hpp')) || 0; 
     
     if (!lay || q < 1) return alert("Pilih produk!");
     
-    // Simpan hpp ke dalam objek keranjang
-    keranjang.push({ layanan: lay, qty: q, harga: j, hpp: h, subtotal: q * j }); 
+    // Simpan objek data lengkap ke dalam array keranjang
+    keranjang.push({ 
+        layanan: lay, 
+        qty: q, 
+        harga: j, 
+        hpp: h, 
+        subtotal: q * j 
+    }); 
     renderKeranjang();
 }
 
-// 3. Render keranjang (Tetap sama, hanya memastikan strukturnya aman)
-function renderKeranjang() {
-    let t = document.querySelector('#t-keranjang tbody'); t.innerHTML = ''; let tot = 0;
-    keranjang.forEach((item, i) => { 
-        tot += item.subtotal; 
-        t.innerHTML += `<tr><td>${item.layanan}</td><td>${item.qty}</td><td>${item.subtotal.toLocaleString()}</td><td><button onclick="hapusItemKeranjang(${i})">X</button></td></tr>`; 
+// 3. Kirim data transaksi ke Google Apps Script
+function bayarMulti() {
+    let c = document.getElementById('cust').value; 
+    if (!c || keranjang.length === 0) return alert("Nama pelanggan atau keranjang masih kosong!");
+    
+    // nonaktifkan tombol sementara agar tidak terjadi double klik simpan
+    document.getElementById('btn-save').disabled = true;
+    document.getElementById('btn-save').innerText = "MENYIMPAN...";
+
+    fetch(API_URL, { 
+        method: 'POST', 
+        body: JSON.stringify({ 
+            aksi: 'simpanOrder', 
+            data: { 
+                nama: c, 
+                catatan: document.getElementById('note').value, 
+                items: keranjang 
+            } 
+        }) 
+    })
+    .then(res => res.json())
+    .then(res => { 
+        alert("Transaksi Berhasil Disimpan!"); 
+        keranjang = []; 
+        renderKeranjang(); 
+        muatRiwayat(); 
+        
+        // Reset form input
+        document.getElementById('cust').value = ''; 
+        document.getElementById('note').value = ''; 
+    })
+    .catch(err => {
+        alert("Gagal menyimpan transaksi, periksa koneksi internet atau URL API Anda.");
+        console.error(err);
+    })
+    .finally(() => {
+        // Kembalikan status tombol simpan
+        document.getElementById('btn-save').disabled = false;
+        document.getElementById('btn-save').innerText = "SIMPAN TRANSAKSI";
     });
-    document.getElementById('total-cart').innerText = "Rp " + tot.toLocaleString();
 }
-    function hapusItemKeranjang(i) { keranjang.splice(i, 1); renderKeranjang(); }
 </script>
 
 </body>
