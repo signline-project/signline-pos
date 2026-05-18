@@ -119,8 +119,27 @@
 
     <div id="sec-his" style="display:none">
         <div class="glass-card">
-            <div style="display:flex; justify-content:space-between; align-items:center;"><h3>Riwayat</h3><button class="btn-action btn-blue" onclick="muatRiwayat()">REFRESH</button></div>
+            <div style="display:flex; justify-content:space-between; align-items:center;"><h3>Riwayat Transaksi</h3><button class="btn-action btn-blue" onclick="muatRiwayat()">REFRESH</button></div>
             <div class="table-container"><table id="t-his"><thead><tr><th>ID</th><th>PELANGGAN</th><th>TOTAL</th><th>AKSI</th></tr></thead><tbody></tbody></table></div>
+        </div>
+    </div>
+
+    <div id="sec-rep" style="display:none">
+        <div class="glass-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                <h3><i class="fa-solid fa-chart-line"></i> Analisis Omzet & Profit</h3>
+                <button class="btn-action btn-blue" onclick="muatGrafik()"><i class="fa-solid fa-sync"></i> REFRESH GRAFIK</button>
+            </div>
+            <div class="chart-container">
+                <div style="background:#f8fafc; padding:20px; border-radius:20px; border:1px solid #e2e8f0; margin-bottom: 20px;">
+                    <h4 style="margin-top:0; color:var(--sidebar-bg); text-align:center;">Grafik Keuangan Harian</h4>
+                    <canvas id="chartHarian"></canvas>
+                </div>
+                <div style="background:#f8fafc; padding:20px; border-radius:20px; border:1px solid #e2e8f0;">
+                    <h4 style="margin-top:0; color:var(--sidebar-bg); text-align:center;">Grafik Keuangan Bulanan</h4>
+                    <canvas id="chartBulanan"></canvas>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -136,12 +155,33 @@
     window.onload = () => { muatProduk(); muatRiwayat(); };
 
     function buka(t) {
+    try {
+        // Tampilkan section yang dipilih, sembunyikan yang lain
         document.getElementById('sec-pos').style.display = (t === 'pos' ? 'block' : 'none');
         document.getElementById('sec-inv').style.display = (t === 'inv' ? 'block' : 'none');
         document.getElementById('sec-his').style.display = (t === 'his' ? 'block' : 'none');
-        ['n1','n2','n3'].forEach(id => document.getElementById(id).classList.remove('active'));
-        document.getElementById(t === 'pos' ? 'n1' : t === 'inv' ? 'n2' : 'n3').classList.add('active');
+        document.getElementById('sec-rep').style.display = (t === 'rep' ? 'block' : 'none');
+        
+        // Atur efek aktif pada menu samping (Sekarang sampai n4)
+        ['n1','n2','n3','n4'].forEach(id => {
+            let el = document.getElementById(id);
+            if(el) el.classList.remove('active');
+        });
+        
+        // Aktifkan menu yang diklik
+        let targetMenu = t === 'pos' ? 'n1' : t === 'inv' ? 'n2' : t === 'his' ? 'n3' : 'n4';
+        let elActive = document.getElementById(targetMenu);
+        if(elActive) elActive.classList.add('active');
+        
+        // Otomatis muat data sesuai tab
+        if(t === 'inv') muatProduk(); 
+        if(t === 'his') muatRiwayat();
+        if(t === 'rep') muatGrafik();
+        
+    } catch (error) {
+        console.error("Gagal berpindah halaman: ", error);
     }
+}
 
     // --- SEKARANG MENGGUNAKAN METODE FETCH API (GET) ---
     function muatProduk() {
