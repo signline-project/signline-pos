@@ -58,6 +58,14 @@ td:last-child { border-radius: 0 15px 15px 0; }
     body * { visibility: hidden; } 
     #print-area, #print-area * { visibility: visible; }
     #print-area { display: block !important; position: absolute; left: 0; top: 0; width: 100%; }
+    
+    /* Aturan Khusus Kertas Thermal */
+    .nota-thermal { width: 100%; max-width: 58mm; font-family: 'Courier New', monospace; padding: 0; color: black; }
+    
+    /* Aturan Khusus Kertas A4 Dokumen BA */
+    .ba-a4 { width: 100%; max-width: 190mm; font-family: 'Poppins', sans-serif; margin: 0 auto; color: #1e293b; background: white; }
+    .ba-a4 table { border-spacing: 0 !important; margin: 0 !important; }
+    .ba-a4 td, .ba-a4 th { background: transparent !important; border: 1px solid #cbd5e1 !important; padding: 10px !important; }
 }
 
 /* ==========================================
@@ -336,14 +344,107 @@ td:last-child { border-radius: 0 15px 15px 0; }
     function konfirmasiHapusTransaksi(id) { if(confirm('Hapus transaksi '+id+'?')) { fetch(API_URL, { method: 'POST', body: JSON.stringify({ aksi: 'hapusTransaksi', id: id }) }).then(() => muatRiwayat()); } }
 
     function cetak(idx, tipe) {
-        let r = riwayatData[idx]; let area = document.getElementById('print-area');
-        if(tipe === 'nota') {
-            area.innerHTML = `<div class="nota-thermal"><center><strong>SIGNLINE STUDIO</strong><br>Creative POS</center><br>ID : ${r[1]}<br>Plg: ${r[2]}<br>--------------------------<br>${r[3]}<br>${r[4]} x @${(Number(r[7])/Number(r[4])).toLocaleString()}<br>--------------------------<br><strong>TOTAL: Rp ${Number(r[7]).toLocaleString()}</strong><br>--------------------------<br><center>Terima Kasih</center></div>`;
-        } else {
-            area.innerHTML = `<div class="ba-a4"><center><h2 style="color:#1e3a8a; margin:0;">BERITA ACARA SERAH TERIMA</h2><p style="margin:5px 0 20px 0; font-size: 0.9rem;">SIGNLINE STUDIO - CREATIVE SOLUTIONS</p><hr style="border: 1px solid #1e3a8a;"></center><table style="width:100%; margin:20px 0; font-size: 0.95rem;"><tr><td width="150"><b>ID Transaksi</b></td><td>: ${r[1]}</td></tr><tr><td><b>Pelanggan</b></td><td>: ${r[2]}</td></tr><tr><td><b>Tanggal</b></td><td>: ${new Date().toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long', year:'numeric'})}</td></tr></table><table width="100%" style="border-collapse:collapse; border:1px solid #1e3a8a; margin-top:10px;"><thead><tr style="background:#f1f5f9;"><th style="border:1px solid #1e3a8a; padding:10px;">Deskripsi Pekerjaan</th><th style="border:1px solid #1e3a8a; padding:10px;">Qty</th></tr></thead><tbody><tr><td style="border:1px solid #1e3a8a; padding:10px;">${r[3]}</td><td align="center" style="border:1px solid #1e3a8a; padding:10px;">${r[4]}</td></tr></tbody></table><p style="margin-top:20px;"><b>Catatan:</b> ${r[9] || '-'}</p><div style="display:flex; justify-content:space-between; margin-top:80px; text-align:center;"><div style="width:200px;">Penerima,<br><br><br><br>( ${r[2]} )</div><div style="width:200px;">Hormat Kami,<br><br><br><br>( Signline Studio )</div></div></div>`;
-        }
-        window.print();
+    let r = riwayatData[idx]; 
+    let area = document.getElementById('print-area');
+    if (!r, !area) return;
+
+    // PEMETAAN KOLOM BERDASARKAN DATABASE BARU ANDA:
+    // r[1] = ID Order, r[2] = Nama Pelanggan, r[3] = Layanan, r[4] = Qty
+    // r[6] = Harga Jual Satuan, r[7] = Total Jual (Omzet kotor)
+    // r[11] = Catatan Murni (Kolom L)
+    
+    let idOrder = r[1];
+    let pelanggan = r[2];
+    let layanan = r[3];
+    let qty = Number(r[4]) || 0;
+    let hargaSatuan = Number(r[6]) || 0;
+    let totalJual = Number(r[7]) || 0;
+    let catatanMurni = r[11] || "-"; // Mengunci Kolom L agar tidak memanggil angka modal lagi
+
+    if (tipe === 'nota') {
+        // --- PERBAIKAN NOTA THERMAL (GARIS ANTI MELUBER) ---
+        area.innerHTML = `
+            <div class="nota-thermal">
+                <center>
+                    <strong style="font-size: 11pt;">SIGNLINE STUDIO</strong><br>
+                    <small>Creative POS</small>
+                </center>
+                <div style="margin-top: 10px; font-size: 9pt;">
+                    ID  : ${idOrder}<br>
+                    Plg : ${pelanggan}<br>
+                </div>
+                <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
+                <div style="font-size: 9pt;">
+                    <strong>${layanan}</strong><br>
+                    ${qty} x @${hargaSatuan.toLocaleString('id-ID')}
+                </div>
+                <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
+                <div style="display: flex; justify-content: space-between; font-size: 10pt;">
+                    <strong>TOTAL:</strong>
+                    <strong>Rp ${totalJual.toLocaleString('id-ID')}</strong>
+                </div>
+                <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
+                <center style="font-size: 9pt; margin-top: 10px;">Terima Kasih</center>
+            </div>
+        `;
+    } else {
+        // --- PERBAIKAN BA (MENAMPILKAN TOTAL HARGA & STRUKTUR TABEL LENGKAP) ---
+        let tanggalFormat = new Date().toLocaleDateString('id-ID', {
+            weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+        });
+
+        area.innerHTML = `
+            <div class="ba-a4">
+                <center>
+                    <h2 style="color:#1e3a8a; margin:0; font-size: 1.6rem; letter-spacing: 1px;">BERITA ACARA SERAH TERIMA</h2>
+                    <p style="margin:5px 0 20px 0; font-size: 0.9rem; color: #64748b;">SIGNLINE STUDIO - CREATIVE SOLUTIONS</p>
+                    <hr style="border: 0; border-top: 2px solid #1e3a8a; margin-bottom: 25px;">
+                </center>
+                
+                <table style="width:100%; margin-bottom: 30px; font-size: 0.95rem; line-height: 1.6;">
+                    <tr><td width="160" style="padding: 4px 0; border:none; background:none;"><b>ID Transaksi</b></td><td style="padding: 4px 0; border:none; background:none;">: ${idOrder}</td></tr>
+                    <tr><td style="padding: 4px 0; border:none; background:none;"><b>Pelanggan</b></td><td style="padding: 4px 0; border:none; background:none;">: ${pelanggan}</td></tr>
+                    <tr><td style="padding: 4px 0; border:none; background:none;"><b>Tanggal</b></td><td style="padding: 4px 0; border:none; background:none;">: ${tanggalFormat}</td></tr>
+                </table>
+
+                <table width="100%" style="border-collapse:collapse; font-size: 0.95rem;">
+                    <thead>
+                        <tr style="background:#f1f5f9;">
+                            <th style="border:1px solid #cbd5e1; padding:12px; color:#1e293b; text-align:left;">Deskripsi Pekerjaan</th>
+                            <th style="border:1px solid #cbd5e1; padding:12px; color:#1e293b; text-align:center;" width="80">Qty</th>
+                            <th style="border:1px solid #cbd5e1; padding:12px; color:#1e293b; text-align:right;" width="150">Harga Satuan</th>
+                            <th style="border:1px solid #cbd5e1; padding:12px; color:#1e293b; text-align:right;" width="150">Total Harga</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="border:1px solid #cbd5e1; padding:12px; background:none; border-radius:0; font-weight:normal;">${layanan}</td>
+                            <td align="center" style="border:1px solid #cbd5e1; padding:12px; background:none; border-radius:0;">${qty}</td>
+                            <td align="right" style="border:1px solid #cbd5e1; padding:12px; background:none; border-radius:0;">Rp ${hargaSatuan.toLocaleString('id-ID')}</td>
+                            <td align="right" style="border:1px solid #cbd5e1; padding:12px; background:none; border-radius:0; font-weight:600;">Rp ${totalJual.toLocaleString('id-ID')}</td>
+                        </tr>
+                        <tr style="background:#f8fafc;">
+                            <td colspan="3" align="right" style="border:1px solid #cbd5e1; padding:12px; font-weight:700;">JUMLAH TOTAL MAL :</td>
+                            <td align="right" style="border:1px solid #cbd5e1; padding:12px; font-weight:700; color:#10b981;">Rp ${totalJual.toLocaleString('id-ID')}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="margin-top: 25px; font-size: 0.95rem; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px dashed #cbd5e1;">
+                    <b>Catatan Pekerjaan:</b><br>
+                    <span style="color: #475569;">${catatanMurni}</span>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; margin-top:60px; text-align:center; font-size: 0.95rem;">
+                    <div style="width:220px;">Penerima,<br><br><br><br><br><b>( ${pelanggan} )</b></div>
+                    <div style="width:220px;">Hormat Kami,<br><br><br><br><br><b>( Signline Studio )</b></div>
+                </div>
+            </div>
+        `;
     }
+    // Eksekusi perintah cetak bawaan perangkat
+    window.print();
+}
 </script>
 </body>
 </html>
