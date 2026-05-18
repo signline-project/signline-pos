@@ -282,16 +282,63 @@ td:last-child { border-radius: 0 15px 15px 0; }
 
     // --- LOGIKA OPERASIONAL KASIR & DATA ---
     function muatProduk() {
-        fetch(`${API_URL}?aksi=getProduk`).then(res => res.json()).then(data => {
-            if(!data) return; dProduk = data.slice(1);
-            let s = document.getElementById('prod'); let t = document.querySelector('#t-prod-list tbody');
-            s.innerHTML = '<option value="">-- Pilih --</option>'; t.innerHTML = '';
+    console.log("Mencoba memuat data produk dari API...");
+    
+    fetch(`${API_URL}?aksi=getProduk`)
+    .then(res => {
+        if (!res.ok) throw new Error("Gagal mengambil data dari server");
+        return res.json();
+    })
+    .then(data => {
+        if (!data) {
+            console.error("Data produk kosong dari API");
+            return;
+        }
+        
+        // Lewati baris pertama (Header Google Sheets)
+        dProduk = data.slice(1);
+        console.log("Data katalog berhasil diterima:", dProduk);
+
+        // 1. ISI DROPDOWN PILIHAN PRODUK (KASIR)
+        let s = document.getElementById('prod');
+        if (s) {
+            s.innerHTML = '<option value="">-- Pilih --</option>';
             dProduk.forEach(p => {
-                s.innerHTML += `<option value="${p[0]}">${p[0]}</option>`;
-                t.innerHTML += `<tr><td>${p[0]}</td><td>Rp ${Number(p[2]).toLocaleString()}</td><td align="center"><button class="btn-action btn-danger" onclick="hapusProd('${p[0]}')"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+                if (p[0]) {
+                    s.innerHTML += `<option value="${p[0]}">${p[0]}</option>`;
+                }
             });
-        });
-    }
+        } else {
+            console.warn("Elemen dropdown dengan id='prod' tidak ditemukan di HTML.");
+        }
+
+        // 2. ISI TABEL DAFTAR KATALOG (INVENTORY)
+        let t = document.querySelector('#t-prod-list tbody');
+        if (t) {
+            t.innerHTML = '';
+            dProduk.forEach(p => {
+                if (p[0]) {
+                    let hargaJual = Number(p[2]) || 0;
+                    t.innerHTML += `
+                        <tr>
+                            <td>${p[0]}</td>
+                            <td>Rp ${hargaJual.toLocaleString('id-ID')}</td>
+                            <td align="center">
+                                <button class="btn-action btn-danger" style="padding: 5px 10px;" onclick="hapusProd('${p[0]}')">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>`;
+                }
+            });
+        } else {
+            console.warn("Elemen tabel dengan selector '#t-prod-list tbody' tidak ditemukan di HTML.");
+        }
+    })
+    .catch(err => {
+        console.error("Gagal total memuat data produk:", err);
+    });
+}
 
     function muatRiwayat() {
         fetch(`${API_URL}?aksi=getTransaksi`).then(res => res.json()).then(data => {
