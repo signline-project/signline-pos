@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-main: #f1f5f9; --sidebar-bg: #1e293b; --accent: #3b82f6;
+            --success: #10b981; --danger: #ef4444; --white: #ffffff;
+            --text-main: #1e293b; --text-light: #64748b; --radius: 30px;
+        }
+        
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-main); color: var(--text-main); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* --- SIDEBAR FLUID CURVE --- */
+        .sidebar { width: 100px; background: var(--sidebar-bg); display: flex; flex-direction: column; padding: 30px 0; position: relative; flex-shrink: 0; }
+        .nav-item { position: relative; width: 100%; height: 70px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1; }
+        .nav-item i { color: rgba(255,255,255,0.3); font-size: 1.4rem; transition: 0.3s; }
+        .nav-item.active i { color: var(--sidebar-bg); }
+        .nav-item.active::before { content: ""; position: absolute; top: 0; right: 0; width: 80%; height: 100%; background: var(--bg-main); border-radius: 40px 0 0 40px; z-index: -1; }
+        .nav-item.active::after { content: ""; position: absolute; top: -50px; right: 0; width: 50px; height: 50px; background: transparent; border-radius: 50%; box-shadow: 25px 25px 0 0 var(--bg-main); pointer-events: none; }
+        .curve-bottom { display: none; }
+        .nav-item.active .curve-bottom { display: block; position: absolute; bottom: -50px; right: 0; width: 50px; height: 50px; background: transparent; border-radius: 50%; box-shadow: 25px -25px 0 0 var(--bg-main); pointer-events: none; }
+
+        /* --- CONTENT --- */
+        .main-content { flex: 1; overflow-y: auto; padding: 40px; box-sizing: border-box; }
+        .glass-card { background: var(--white); border-radius: var(--radius); padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); margin-bottom: 30px; }
+        
+        /* --- TABLES --- */
+        .table-container { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0 12px; min-width: 600px; }
+        th { color: var(--text-light); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; padding: 0 25px; }
+        td { background: var(--white); padding: 18px 25px; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; }
+        td:first-child { border-radius: 20px 0 0 20px; font-weight: 600; }
+        td:last-child { border-radius: 0 20px 20px 0; }
+
+        /* --- INPUTS & BUTTONS --- */
+        .input-soft { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px 20px; border-radius: 15px; font-family: inherit; outline: none; width: 100%; box-sizing: border-box; }
+        .btn-action { border: none; padding: 10px 20px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; color: white; justify-content: center; }
+        .btn-blue { background: var(--accent); } .btn-success { background: var(--success); } .btn-danger { background: var(--danger); }
+        .total-box { background: var(--sidebar-bg); color: white; padding: 30px; border-radius: var(--radius); display: flex; justify-content: space-between; align-items: center; }
+
+        /* --- PRINT STYLES --- */
+        #print-area { display: none; }
+        @media print {
+            body * { visibility: hidden; } 
+            #print-area, #print-area * { visibility: visible; }
+            #print-area { display: block !important; position: absolute; left: 0; top: 0; width: 100%; }
+            .nota-thermal { width: 58mm; font-family: 'Courier New', monospace; font-size: 10pt; line-height: 1.2; padding: 2mm; color: black; }
+            .ba-a4 { width: 180mm; font-family: sans-serif; padding: 40px; border: 2px solid #1e3a8a; margin: auto; color: #1e293b; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar no-print">
+    <div class="sidebar-brand"><i class="fa-solid fa-bolt"></i></div>
+    <div class="nav-list">
+        <div id="n1" class="nav-item active" onclick="buka('pos')"><i class="fa-solid fa-cash-register"></i><div class="curve-bottom"></div></div>
+        <div id="n2" class="nav-item" onclick="buka('inv')"><i class="fa-solid fa-tags"></i><div class="curve-bottom"></div></div>
+        <div id="n3" class="nav-item" onclick="buka('his')"><i class="fa-solid fa-history"></i><div class="curve-bottom"></div></div>
+    </div>
+</div>
+
+<div class="main-content no-print">
+    <div id="sec-pos">
+        <div class="glass-card">
+            <h3><i class="fa-solid fa-user"></i> Nama Pelanggan</h3>
+            <input type="text" id="cust" class="input-soft" placeholder="Masukkan nama...">
+        </div>
+        <div class="glass-card">
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 20px; align-items: flex-end;">
+                <div><label>Layanan</label><select id="prod" class="input-soft" onchange="pilihProd()"><option value="">-- Pilih --</option></select></div>
+                <div><label>Qty</label><input type="number" id="qty" class="input-soft" value="1"></div>
+                <div><label>Harga</label><input type="number" id="jual" class="input-soft"></div>
+                <button class="btn-action btn-blue" onclick="tambahKeKeranjang()">TAMBAH</button>
+            </div>
+        </div>
+        <div class="glass-card">
+            <table id="t-keranjang"><thead><tr><th>ITEM</th><th>QTY</th><th>TOTAL</th><th>X</th></tr></thead><tbody></tbody></table>
+            <textarea id="note" class="input-soft" placeholder="Catatan pekerjaan..." style="height: 60px; margin: 20px 0;"></textarea>
+            <div class="total-box">
+                <div><small>TOTAL BAYAR</small><h1 id="total-cart" style="margin:0; color:var(--success);">Rp 0</h1></div>
+                <button class="btn-action btn-success" id="btn-save" onclick="bayarMulti()">SIMPAN TRANSAKSI</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-inv" style="display:none">
+        <div class="glass-card">
+            <h3><i class="fa-solid fa-folder-plus"></i> Tambah Katalog</h3>
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 15px;">
+                <input type="text" id="pn" class="input-soft" placeholder="Jasa"><input type="number" id="ph" class="input-soft" placeholder="HPP"><input type="number" id="pj" class="input-soft" placeholder="Jual"><button class="btn-action btn-blue" onclick="tambahProduk()">SIMPAN</button>
+            </div>
+        </div>
+        <div class="glass-card">
+            <div class="table-container">
+                <table id="t-prod-list">
+                    <thead><tr><th>LAYANAN</th><th>JUAL</th><th style="text-align:center">AKSI</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-his" style="display:none">
+        <div class="glass-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;"><h3>Riwayat</h3><button class="btn-action btn-blue" onclick="muatRiwayat()">REFRESH</button></div>
+            <div class="table-container"><table id="t-his"><thead><tr><th>ID</th><th>PELANGGAN</th><th>TOTAL</th><th>AKSI</th></tr></thead><tbody></tbody></table></div>
+        </div>
+    </div>
+</div>
+
+<div id="print-area"></div>
+
+<script>
+    // MASUKKAN URL WEB APP YANG ANDA SALIN DARI GOOGLE APPS SCRIPT DI SINI
+    const API_URL = "CONTOH_URL_WEB_APP_ANDA_DARI_APPS_SCRIPT";
+
+    let dProduk = []; let keranjang = []; let riwayatData = [];
+
+    window.onload = () => { muatProduk(); muatRiwayat(); };
+
+    function buka(t) {
+        document.getElementById('sec-pos').style.display = (t === 'pos' ? 'block' : 'none');
+        document.getElementById('sec-inv').style.display = (t === 'inv' ? 'block' : 'none');
+        document.getElementById('sec-his').style.display = (t === 'his' ? 'block' : 'none');
+        ['n1','n2','n3'].forEach(id => document.getElementById(id).classList.remove('active'));
+        document.getElementById(t === 'pos' ? 'n1' : t === 'inv' ? 'n2' : 'n3').classList.add('active');
+    }
+
+    // --- SEKARANG MENGGUNAKAN METODE FETCH API (GET) ---
+    function muatProduk() {
+        fetch(`${API_URL}?aksi=getProduk`)
+        .then(res => res.json())
+        .then(data => {
+            if(!data) return; dProduk = data.slice(1);
+            let s = document.getElementById('prod'); let t = document.querySelector('#t-prod-list tbody');
+            s.innerHTML = '<option value="">-- Pilih --</option>'; t.innerHTML = '';
+            dProduk.forEach(p => {
+                s.innerHTML += `<option value="${p[0]}">${p[0]}</option>`;
+                t.innerHTML += `<tr><td>${p[0]}</td><td>Rp ${Number(p[2]).toLocaleString()}</td><td align="center"><button class="btn-action btn-danger" onclick="hapusProd('${p[0]}')"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+            });
+        }).catch(err => console.error("Gagal muat produk:", err));
+    }
+
+    function muatRiwayat() {
+        fetch(`${API_URL}?aksi=getTransaksi`)
+        .then(res => res.json())
+        .then(data => {
+            let t = document.querySelector('#t-his tbody'); t.innerHTML = ''; 
+            if(!data) return;
+            riwayatData = data;
+            data.forEach((r, i) => {
+                t.innerHTML += `<tr><td>${r[1]}</td><td>${r[2]}</td><td>Rp ${Number(r[7]).toLocaleString()}</td>
+                <td>
+                    <div style="display:flex; gap:5px;">
+                        <button class="btn-action btn-blue" onclick="cetak(${i}, 'nota')">NOTA</button>
+                        <button class="btn-action btn-success" onclick="cetak(${i}, 'ba')">BA</button>
+                        <button class="btn-action btn-danger" onclick="konfirmasiHapusTransaksi('${r[1]}')"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </td></tr>`;
+            });
+        }).catch(err => console.error("Gagal muat riwayat:", err));
+    }
+
+    // --- SEKARANG MENGGUNAKAN METODE FETCH API (POST) ---
+    function bayarMulti() {
+        let c = document.getElementById('cust').value; if (!c || keranjang.length === 0) return alert("Data kosong!");
+        
+        fetch(API_URL, {
+            method: 'POST',
+            body: JSON.stringify({ aksi: 'simpanOrder', data: { nama: c, catatan: document.getElementById('note').value, items: keranjang } })
+        })
+        .then(res => res.json())
+        .then(res => {
+            alert("Sukses!"); keranjang = []; renderKeranjang(); muatRiwayat();
+            document.getElementById('cust').value = ''; document.getElementById('note').value = '';
+        });
+    }
+
+    function tambahProduk() {
+        let name = document.getElementById('pn').value;
+        let hpp = document.getElementById('ph').value;
+        let jual = document.getElementById('pj').value;
+        
+        fetch(API_URL, {
+            method: 'POST',
+            body: JSON.stringify({ aksi: 'tambahProduk', data: { nama: name, hpp: hpp, jual: jual } })
+        })
+        .then(res => res.json())
+        .then(() => { 
+            muatProduk(); 
+            document.getElementById('pn').value = ''; document.getElementById('ph').value = ''; document.getElementById('pj').value = '';
+        });
+    }
+
+    function hapusProd(n) {
+        if(confirm('Hapus ' + n + '?')) {
+            fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ aksi: 'hapusProduk', nama: n })
+            }).then(() => muatProduk());
+        }
+    }
+
+    function konfirmasiHapusTransaksi(id) {
+        if(confirm('Hapus transaksi '+id+'?')) {
+            fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ aksi: 'hapusTransaksi', id: id })
+            }).then(() => muatRiwayat());
+        }
+    }
+
+    // --- LOGIKA CETAK DAN KERANJANG LOKAL (TETAP SAMA) ---
+    function cetak(idx, tipe) {
+        let r = riwayatData[idx]; let area = document.getElementById('print-area');
+        if(tipe === 'nota') {
+            area.innerHTML = `<div class="nota-thermal"><center><strong>SIGNLINE STUDIO</strong><br>Creative POS</center><br>ID : ${r[1]}<br>Plg: ${r[2]}<br>--------------------------<br>${r[3]}<br>${r[4]} x @${(Number(r[7])/Number(r[4])).toLocaleString()}<br>--------------------------<br><strong>TOTAL: Rp ${Number(r[7]).toLocaleString()}</strong><br>--------------------------<br><center>Terima Kasih</center></div>`;
+        } else {
+            area.innerHTML = `<div class="ba-a4"><center><h2 style="color:#1e3a8a; margin:0;">BERITA ACARA SERAH TERIMA</h2><p style="margin:5px 0 20px 0; font-size: 0.9rem;">SIGNLINE STUDIO - CREATIVE SOLUTIONS</p><hr style="border: 1px solid #1e3a8a;"></center><table style="width:100%; margin:20px 0; font-size: 0.95rem;"><tr><td width="150"><b>ID Transaksi</b></td><td>: ${r[1]}</td></tr><tr><td><b>Pelanggan</b></td><td>: ${r[2]}</td></tr><tr><td><b>Tanggal</b></td><td>: ${new Date().toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long', year:'numeric'})}</td></tr></table><table width="100%" style="border-collapse:collapse; border:1px solid #1e3a8a; margin-top:10px;"><thead><tr style="background:#f1f5f9;"><th style="border:1px solid #1e3a8a; padding:10px;">Deskripsi Pekerjaan</th><th style="border:1px solid #1e3a8a; padding:10px;">Qty</th></tr></thead><tbody><tr><td style="border:1px solid #1e3a8a; padding:10px;">${r[3]}</td><td align="center" style="border:1px solid #1e3a8a; padding:10px;">${r[4]}</td></tr></tbody></table><p style="margin-top:20px;"><b>Catatan:</b> ${r[9] || '-'}</p><div style="display:flex; justify-content:space-between; margin-top:80px; text-align:center;"><div style="width:200px;">Penerima,<br><br><br><br>( ${r[2]} )</div><div style="width:200px;">Hormat Kami,<br><br><br><br>( Signline Studio )</div></div></div>`;
+        }
+        window.print();
+    }
+    function pilihProd() { let p = dProduk.find(x => x[0] == document.getElementById('prod').value); if(p) { document.getElementById('jual').value = p[2]; } }
+    function tambahKeKeranjang() {
+        let lay = document.getElementById('prod').value; let q = document.getElementById('qty').value; let j = document.getElementById('jual').value;
+        if (!lay || q < 1) return alert("Pilih produk!");
+        keranjang.push({ layanan: lay, qty: q, harga: j, subtotal: q * j }); renderKeranjang();
+    }
+    function renderKeranjang() {
+        let t = document.querySelector('#t-keranjang tbody'); t.innerHTML = ''; let tot = 0;
+        keranjang.forEach((item, i) => { tot += item.subtotal; t.innerHTML += `<tr><td>${item.layanan}</td><td>${item.qty}</td><td>${item.subtotal.toLocaleString()}</td><td><button onclick="hapusItemKeranjang(${i})">X</button></td></tr>`; });
+        document.getElementById('total-cart').innerText = "Rp " + tot.toLocaleString();
+    }
+    function hapusItemKeranjang(i) { keranjang.splice(i, 1); renderKeranjang(); }
+</script>
+
+</body>
+</html>
