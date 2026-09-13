@@ -919,9 +919,332 @@
                 gap: 12px;
             }
         }
+
+        /* --- APP LOCKED STATE --- */
+        body.app-locked {
+            overflow: hidden !important;
+        }
+        body.app-locked .app-sidebar,
+        body.app-locked .app-main,
+        body.app-locked .mobile-sticky-checkout {
+            display: none !important;
+        }
+
+        /* --- LOGIN SCREEN STYLING --- */
+        .login-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background-color: var(--bg-base);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            overflow-y: auto;
+        }
+
+        body:not(.app-locked) .login-screen {
+            display: none !important;
+        }
+
+        .login-topbar {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .login-card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 360px;
+            padding: 30px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            margin: auto;
+        }
+
+        .login-brand {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .login-brand-logo {
+            width: 48px;
+            height: 48px;
+            background: var(--accent);
+            color: #ffffff;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .login-brand-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+            line-height: 1.2;
+        }
+
+        .login-brand-sub {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        .login-prompt {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .pin-display-wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 16px;
+            cursor: pointer;
+        }
+
+        .pin-dots-container {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            align-items: center;
+            padding: 14px 16px;
+            background-color: var(--bg-subtle);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            width: 100%;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+
+        .pin-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid var(--border-hover);
+            background-color: transparent;
+            transition: all 0.15s ease-in-out;
+        }
+
+        .pin-dot.filled {
+            background-color: var(--accent);
+            border-color: var(--accent);
+            transform: scale(1.15);
+        }
+
+        .pin-dots-container.pin-error {
+            border-color: var(--danger);
+            background-color: var(--danger-light);
+            animation: pinShake 0.4s ease-in-out;
+        }
+
+        .pin-dots-container.pin-error .pin-dot {
+            border-color: var(--danger);
+            background-color: var(--danger);
+        }
+
+        .pin-dots-container.pin-success {
+            border-color: var(--success);
+            background-color: var(--success-light);
+        }
+
+        .pin-dots-container.pin-success .pin-dot {
+            border-color: var(--success);
+            background-color: var(--success);
+        }
+
+        @keyframes pinShake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+
+        .pin-feedback {
+            min-height: 20px;
+            font-size: 0.8rem;
+            margin-top: 6px;
+            text-align: center;
+            color: var(--danger);
+            font-weight: 500;
+        }
+
+        .pin-hidden-input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            width: 1px;
+            height: 1px;
+            top: 0;
+            left: 0;
+        }
+
+        .numpad-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 18px;
+        }
+
+        .numpad-btn {
+            height: 52px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-surface);
+            color: var(--text-primary);
+            border-radius: var(--radius-md);
+            font-size: 1.3rem;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            transition: background-color 0.12s, transform 0.08s, border-color 0.12s;
+        }
+
+        .numpad-btn:hover {
+            background-color: var(--bg-subtle);
+            border-color: var(--border-hover);
+        }
+
+        .numpad-btn:active {
+            transform: scale(0.95);
+            background-color: var(--accent-light);
+        }
+
+        .numpad-btn.numpad-fn {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .numpad-btn.numpad-fn:hover {
+            color: var(--text-primary);
+        }
+
+        .login-options {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 8px;
+            margin-bottom: 16px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .login-options input[type="checkbox"] {
+            cursor: pointer;
+            accent-color: var(--accent);
+            width: 16px;
+            height: 16px;
+        }
+
+        .login-submit-btn {
+            width: 100%;
+            height: 44px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
     </style>
 </head>
-<body>
+<body class="app-locked">
+<script>
+    (function() {
+        var a = localStorage.getItem('signline_pos_auth') === '666353' || sessionStorage.getItem('signline_pos_auth') === '666353';
+        if (a) document.body.classList.remove('app-locked');
+    })();
+</script>
+
+<!-- LOGIN SCREEN (PIN ACCESS) -->
+<div id="login-screen" class="login-screen" aria-label="Layar Masuk Sistem">
+    <div class="login-topbar">
+        <button class="theme-toggle-btn" onclick="toggleTheme()" title="Ganti Tema Terang / Gelap" aria-label="Ganti Tema">
+            <i class="fa-solid fa-moon" id="theme-icon-login"></i>
+        </button>
+    </div>
+    
+    <div class="login-card">
+        <div class="login-brand">
+            <div class="login-brand-logo" aria-hidden="true"><i class="fa-solid fa-bolt"></i></div>
+            <h1 class="login-brand-title">Signline Studio</h1>
+            <span class="login-brand-sub">Sistem Kasir &amp; Manajemen Servis</span>
+        </div>
+
+        <div class="login-prompt">
+            Masukkan 6 digit PIN untuk membuka akses
+        </div>
+
+        <!-- Hidden accessible input to intercept virtual/physical keyboard -->
+        <input type="password" id="pin-hidden-input" class="pin-hidden-input" maxlength="6" inputmode="numeric" pattern="[0-9]*" autocomplete="current-password" aria-label="PIN Akses">
+
+        <!-- Visual PIN indicator dots -->
+        <div class="pin-display-wrapper" onclick="fokusInputPin()">
+            <div class="pin-dots-container" id="pin-dots" role="status" aria-label="Indikator PIN">
+                <span class="pin-dot" id="dot-0"></span>
+                <span class="pin-dot" id="dot-1"></span>
+                <span class="pin-dot" id="dot-2"></span>
+                <span class="pin-dot" id="dot-3"></span>
+                <span class="pin-dot" id="dot-4"></span>
+                <span class="pin-dot" id="dot-5"></span>
+            </div>
+            <div class="pin-feedback" id="pin-feedback" aria-live="polite"></div>
+        </div>
+
+        <!-- Touch / Click Numpad -->
+        <div class="numpad-grid">
+            <button type="button" class="numpad-btn" onclick="tekanNumpad('1')">1</button>
+            <button type="button" class="numpad-btn" onclick="tekanNumpad('2')">2</button>
+            <button type="button" class="numpad-btn" onclick="tekanNumpad('3')">3</button>
+            <button type="button" class="numpad-btn" onclick="tekanNumpad('4')">4</button>
+            <button type="button" class="numpad-btn" onclick="tekanNumpad('5')">5</button>
+            <button type="button" class="numpad-btn" onclick="tekanNumpad('6')">6</button>
+            <button type="button" class="numpad-btn" onclick="tekanNumpad('7')">7</button>
+            <button type="button" class="numpad-btn" onclick="tekanNumpad('8')">8</button>
+            <button type="button" class="numpad-btn" onclick="tekanNumpad('9')">9</button>
+            <button type="button" class="numpad-btn numpad-fn" onclick="resetPin()" title="Reset PIN">C</button>
+            <button type="button" class="numpad-btn" onclick="tekanNumpad('0')">0</button>
+            <button type="button" class="numpad-btn numpad-fn" onclick="hapusDigitPin()" title="Hapus Digit Terakhir" aria-label="Hapus Digit"><i class="fa-solid fa-delete-left"></i></button>
+        </div>
+
+        <label class="login-options">
+            <input type="checkbox" id="ingat-sesi" checked>
+            <span>Tetap masuk di perangkat ini</span>
+        </label>
+
+        <button type="button" class="btn btn-primary login-submit-btn" id="btn-login-submit" onclick="verifikasiPin()">
+            <i class="fa-solid fa-lock-open"></i> Buka Kunci
+        </button>
+    </div>
+</div>
 
 <!-- DESKTOP SIDEBAR / MOBILE BOTTOM NAV -->
 <aside class="app-sidebar no-print" aria-label="Navigasi Utama">
@@ -956,7 +1279,9 @@
         </button>
     </nav>
     <div class="sidebar-footer">
-        <span style="font-size: 0.72rem; color: var(--text-muted);">v2.2 Antislop</span>
+        <button class="btn btn-secondary btn-sm" onclick="kunciAplikasi()" title="Kunci Layar POS" aria-label="Kunci POS" style="gap:6px;">
+            <i class="fa-solid fa-lock"></i> <span>Kunci</span>
+        </button>
         <button class="theme-toggle-btn" onclick="toggleTheme()" title="Ganti Mode Terang / Gelap" aria-label="Ganti Tema">
             <i class="fa-solid fa-moon" id="theme-icon-sidebar"></i>
         </button>
@@ -990,6 +1315,12 @@
             <button class="btn btn-secondary btn-sm" onclick="bukaModalBackup()" title="Cadangkan Data Servis" aria-label="Cadangkan Data">
                 <i class="fa-solid fa-database"></i>
                 <span class="hide-mobile">Backup</span>
+            </button>
+
+            <!-- Tombol Kunci POS -->
+            <button class="btn btn-secondary btn-sm" onclick="kunciAplikasi()" title="Kunci Aplikasi POS" aria-label="Kunci POS">
+                <i class="fa-solid fa-lock"></i>
+                <span class="hide-mobile">Kunci</span>
             </button>
         </div>
     </header>
@@ -1810,16 +2141,16 @@ Timestamp	No_Nota	Tanggal_Masuk	Estimasi_Selesai	Teknisi	Nama_Pelanggan	No_HP	Al
     let chartBulananInstance = null;
     let tabAktif = 'pos';
 
+    // --- SISTEM OTORISASI PIN & KUNCI LAYAR ---
+    const APP_PIN = "666353";
+    let inputPin = "";
+    let appDataLoaded = false;
+
     // --- INISIALISASI SAAT HALAMAN DIMUAT ---
     window.onload = () => {
         initTheme();
-        initApiConnectionCheck();
-        muatDataServisLokal();
-        muatProduk();
-        muatRiwayat();
         initShortcutKeyboard();
-        initSrvNoBaru();
-        perbaruiTampilanStickyMobile();
+        initAuth();
     };
 
     // Keyboard accessibility: Close modals on Escape key
@@ -1862,9 +2193,225 @@ Timestamp	No_Nota	Tanggal_Masuk	Estimasi_Selesai	Teknisi	Nama_Pelanggan	No_HP	Al
     function updateThemeIcons(isDark) {
         const iconTop = document.getElementById('theme-icon');
         const iconSidebar = document.getElementById('theme-icon-sidebar');
+        const iconLogin = document.getElementById('theme-icon-login');
         const iconClass = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
         if (iconTop) iconTop.className = iconClass;
         if (iconSidebar) iconSidebar.className = iconClass;
+        if (iconLogin) iconLogin.className = iconClass;
+    }
+
+    // --- LOGIKA AUTENTIKASI PIN ---
+    function initAuth() {
+        initLoginInputListeners();
+        const isAuth = cekStatusAuth();
+        if (isAuth) {
+            document.body.classList.remove('app-locked');
+            const loginEl = document.getElementById('login-screen');
+            if (loginEl) loginEl.style.display = 'none';
+            inisialisasiDataAplikasi();
+        } else {
+            kunciAplikasi(false);
+        }
+    }
+
+    function cekStatusAuth() {
+        return localStorage.getItem('signline_pos_auth') === APP_PIN ||
+               sessionStorage.getItem('signline_pos_auth') === APP_PIN;
+    }
+
+    function inisialisasiDataAplikasi() {
+        if (appDataLoaded) return;
+        appDataLoaded = true;
+        initApiConnectionCheck();
+        muatDataServisLokal();
+        muatProduk();
+        muatRiwayat();
+        initSrvNoBaru();
+        perbaruiTampilanStickyMobile();
+    }
+
+    function kunciAplikasi(tampilkanNotif = true) {
+        localStorage.removeItem('signline_pos_auth');
+        sessionStorage.removeItem('signline_pos_auth');
+        document.body.classList.add('app-locked');
+        
+        // Tutup modal apapun yang sedang aktif
+        document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+            modal.classList.remove('active');
+        });
+
+        const loginEl = document.getElementById('login-screen');
+        if (loginEl) loginEl.style.display = 'flex';
+        
+        resetPin();
+        setTimeout(() => fokusInputPin(), 100);
+        
+        if (tampilkanNotif) {
+            tampilToast('Aplikasi terkunci. Masukkan PIN untuk melanjutkan.', 'info');
+        }
+    }
+
+    function fokusInputPin() {
+        const hiddenInput = document.getElementById('pin-hidden-input');
+        if (hiddenInput) {
+            hiddenInput.focus();
+        }
+    }
+
+    function tekanNumpad(digit) {
+        if (inputPin.length >= 6) return;
+        inputPin += digit;
+        perbaruiTampilanPin();
+        
+        const dotsContainer = document.getElementById('pin-dots');
+        const feedback = document.getElementById('pin-feedback');
+        if (dotsContainer) dotsContainer.classList.remove('pin-error');
+        if (feedback) feedback.textContent = '';
+        
+        if (inputPin.length === 6) {
+            setTimeout(() => {
+                verifikasiPin();
+            }, 120);
+        }
+    }
+
+    function hapusDigitPin() {
+        if (inputPin.length > 0) {
+            inputPin = inputPin.slice(0, -1);
+            perbaruiTampilanPin();
+            const dotsContainer = document.getElementById('pin-dots');
+            const feedback = document.getElementById('pin-feedback');
+            if (dotsContainer) dotsContainer.classList.remove('pin-error');
+            if (feedback) feedback.textContent = '';
+        }
+    }
+
+    function resetPin() {
+        inputPin = "";
+        perbaruiTampilanPin();
+        const dotsContainer = document.getElementById('pin-dots');
+        const feedback = document.getElementById('pin-feedback');
+        if (dotsContainer) {
+            dotsContainer.classList.remove('pin-error');
+            dotsContainer.classList.remove('pin-success');
+        }
+        if (feedback) feedback.textContent = '';
+        const hiddenInput = document.getElementById('pin-hidden-input');
+        if (hiddenInput) hiddenInput.value = '';
+    }
+
+    function perbaruiTampilanPin() {
+        for (let i = 0; i < 6; i++) {
+            const dot = document.getElementById(`dot-${i}`);
+            if (dot) {
+                if (i < inputPin.length) {
+                    dot.classList.add('filled');
+                } else {
+                    dot.classList.remove('filled');
+                }
+            }
+        }
+        const hiddenInput = document.getElementById('pin-hidden-input');
+        if (hiddenInput && hiddenInput.value !== inputPin) {
+            hiddenInput.value = inputPin;
+        }
+    }
+
+    function verifikasiPin() {
+        const dotsContainer = document.getElementById('pin-dots');
+        const feedback = document.getElementById('pin-feedback');
+
+        if (inputPin.length === 0) {
+            if (feedback) feedback.textContent = 'Silakan masukkan 6 digit PIN.';
+            return;
+        }
+
+        if (inputPin.length < 6) {
+            if (dotsContainer) {
+                dotsContainer.classList.remove('pin-error');
+                void dotsContainer.offsetWidth;
+                dotsContainer.classList.add('pin-error');
+            }
+            if (feedback) feedback.textContent = 'PIN harus terdiri dari 6 digit.';
+            return;
+        }
+
+        if (inputPin === APP_PIN) {
+            if (dotsContainer) {
+                dotsContainer.classList.remove('pin-error');
+                dotsContainer.classList.add('pin-success');
+            }
+            if (feedback) {
+                feedback.textContent = '';
+            }
+
+            // Simpan status otentikasi
+            const ingatSesi = document.getElementById('ingat-sesi');
+            if (ingatSesi && ingatSesi.checked) {
+                localStorage.setItem('signline_pos_auth', APP_PIN);
+            } else {
+                sessionStorage.setItem('signline_pos_auth', APP_PIN);
+            }
+
+            setTimeout(() => {
+                document.body.classList.remove('app-locked');
+                const loginEl = document.getElementById('login-screen');
+                if (loginEl) loginEl.style.display = 'none';
+                
+                resetPin();
+                inisialisasiDataAplikasi();
+                tampilToast('Login berhasil. Selamat bertugas!', 'success');
+            }, 250);
+        } else {
+            if (dotsContainer) {
+                dotsContainer.classList.remove('pin-error');
+                void dotsContainer.offsetWidth;
+                dotsContainer.classList.add('pin-error');
+            }
+            if (feedback) {
+                feedback.textContent = 'PIN salah, silakan coba lagi.';
+            }
+
+            setTimeout(() => {
+                resetPin();
+                fokusInputPin();
+            }, 700);
+        }
+    }
+
+    function initLoginInputListeners() {
+        window.addEventListener('keydown', (e) => {
+            const loginEl = document.getElementById('login-screen');
+            if (!loginEl || loginEl.style.display === 'none' || !document.body.classList.contains('app-locked')) {
+                return;
+            }
+
+            if (/^[0-9]$/.test(e.key)) {
+                e.preventDefault();
+                tekanNumpad(e.key);
+            } else if (e.key === 'Backspace') {
+                e.preventDefault();
+                hapusDigitPin();
+            } else if (e.key === 'Escape' || e.key === 'Delete') {
+                e.preventDefault();
+                resetPin();
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                verifikasiPin();
+            }
+        });
+
+        const hiddenInput = document.getElementById('pin-hidden-input');
+        if (hiddenInput) {
+            hiddenInput.addEventListener('input', (e) => {
+                const cleanVal = e.target.value.replace(/\D/g, '').slice(0, 6);
+                inputPin = cleanVal;
+                perbaruiTampilanPin();
+                if (inputPin.length === 6) {
+                    setTimeout(() => verifikasiPin(), 120);
+                }
+            });
+        }
     }
 
     // CEK STATUS KONEKSI GOOGLE SHEETS
