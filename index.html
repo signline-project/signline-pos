@@ -2047,151 +2047,7 @@ Timestamp	No_Nota	Tanggal_Masuk	Estimasi_Selesai	Teknisi	Nama_Pelanggan	No_HP	Al
     }
 
     function tampilkanScriptApps() {
-        const code = `// ========================================================
-// TAMBAHAN FUNGSI GOOGLE APPS SCRIPT UNTUK MENU SERVIS
-// ========================================================
-function doPost(e) {
-  var lock = LockService.getScriptLock();
-  lock.tryLock(10000);
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var param = JSON.parse(e.postData.contents);
-    var aksi = param.aksi;
-    
-    // --- 1. SIMPAN ORDER KASIR POS BIASA ---
-    if (aksi === 'simpanOrder') {
-      var sheet = ss.getSheetByName('Transaksi') || ss.getSheets()[0];
-      var d = param.data;
-      var now = new Date();
-      var idOrder = 'SL-' + Math.floor(1000 + Math.random() * 9000);
-      d.items.forEach(function(it) {
-        sheet.appendRow([
-          Utilities.formatDate(now, "GMT+7", "M/d/yyyy HH:mm:ss"),
-          idOrder,
-          d.nama,
-          it.layanan,
-          it.qty,
-          it.hpp,
-          it.harga,
-          it.subtotal,
-          it.hpp * it.qty,
-          it.subtotal - (it.hpp * it.qty),
-          d.catatan || '-'
-        ]);
-      });
-      return ContentService.createTextOutput(JSON.stringify({ status: 'sukses', id: idOrder }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-    
-    // --- 2. SIMPAN NOTA SERVIS ELEKTRONIK (FITUR BARU) ---
-    if (aksi === 'simpanService') {
-      var sheetSrv = ss.getSheetByName('Servis');
-      if (!sheetSrv) {
-        sheetSrv = ss.insertSheet('Servis');
-        sheetSrv.appendRow([
-          "Timestamp","No_Nota","Tanggal_Masuk","Estimasi_Selesai","Teknisi",
-          "Nama_Pelanggan","No_HP","Alamat_Pelanggan","Kategori_Perangkat","Tipe_Model",
-          "No_Seri_IMEI","Warna_Unit","Pola_Password","Kondisi_Fisik","Kelengkapan",
-          "Keluhan_Kerusakan","Kondisi_Masuk","Nama_Jasa","Biaya_Jasa","Rincian_Sparepart",
-          "Total_Sparepart","Grand_Total","Uang_Muka_DP","Sisa_Tagihan","Status_Bayar",
-          "Garansi","Status_Servis","Catatan_Teknisi"
-        ]);
-      }
-      var s = param.data;
-      var sparepartsText = (s.biaya.spareparts || []).map(function(x) { 
-        return x.nama + ' (' + x.qty + 'x @' + x.harga + ')'; 
-      }).join('; ');
-
-      sheetSrv.appendRow([
-        Utilities.formatDate(new Date(), "GMT+7", "M/d/yyyy HH:mm:ss"),
-        s.id,
-        s.tanggal,
-        s.estimasi,
-        s.teknisi,
-        s.pelanggan.nama,
-        s.pelanggan.hp,
-        s.pelanggan.alamat || '-',
-        s.perangkat.kategori,
-        s.perangkat.model,
-        s.perangkat.imei || '-',
-        s.perangkat.warna || '-',
-        s.perangkat.password || '-',
-        s.perangkat.kondisiFisik || '-',
-        s.perangkat.kelengkapan || '-',
-        s.keluhan,
-        s.kondisiMasuk,
-        s.biaya.namaJasa,
-        s.biaya.biayaJasa,
-        sparepartsText,
-        s.biaya.totalSpareparts,
-        s.biaya.grandTotal,
-        s.biaya.dp,
-        s.biaya.sisa,
-        s.biaya.statusBayar,
-        s.garansi,
-        s.status,
-        s.catatanTeknisi || '-'
-      ]);
-      return ContentService.createTextOutput(JSON.stringify({ status: 'sukses', id: s.id }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-
-    // --- 3. UPDATE STATUS SERVIS GADGET ---
-    if (aksi === 'updateStatusService') {
-      var sheetSrv = ss.getSheetByName('Servis');
-      if (sheetSrv) {
-        var rows = sheetSrv.getDataRange().getValues();
-        for (var i = 1; i < rows.length; i++) {
-          if (rows[i][1] == param.id) {
-            sheetSrv.getRange(i + 1, 27).setValue(param.status); // Kolom 27: Status_Servis
-            if (param.catatanTeknisi) sheetSrv.getRange(i + 1, 28).setValue(param.catatanTeknisi);
-            if (param.sisa !== undefined) sheetSrv.getRange(i + 1, 24).setValue(param.sisa);
-            if (param.statusBayar) sheetSrv.getRange(i + 1, 25).setValue(param.statusBayar);
-            break;
-          }
-        }
-      }
-      return ContentService.createTextOutput(JSON.stringify({ status: 'sukses' }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-
-    // --- 4. HAPUS SERVIS GADGET ---
-    if (aksi === 'hapusService') {
-      var sheetSrv = ss.getSheetByName('Servis');
-      if (sheetSrv) {
-        var rows = sheetSrv.getDataRange().getValues();
-        for (var i = 1; i < rows.length; i++) {
-          if (rows[i][1] == param.id) {
-            sheetSrv.deleteRow(i + 1);
-            break;
-          }
-        }
-      }
-      return ContentService.createTextOutput(JSON.stringify({ status: 'sukses' }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-
-  } catch (e) {
-    return ContentService.createTextOutput(JSON.stringify({ status: 'error', pesan: e.message }))
-      .setMimeType(ContentService.MimeType.JSON);
-  } finally {
-    lock.releaseLock();
-  }
-}
-
-function doGet(e) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var aksi = e.parameter.aksi;
-
-  if (aksi === 'getService') {
-    var sheetSrv = ss.getSheetByName('Servis');
-    if (!sheetSrv) return ContentService.createTextOutput(JSON.stringify([])).setMimeType(ContentService.MimeType.JSON);
-    var data = sheetSrv.getDataRange().getValues();
-    return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);
-  }
-
-  // Handle getProduk, getTransaksi, getDataGrafik default...
-}`;
+        const code = "/**\n * ============================================================================\n * SIGNLINE STUDIO - GOOGLE APPS SCRIPT BACKEND (ALL-IN-ONE FULL CODE)\n * ============================================================================\n * Cara Pasang:\n * 1. Buka Google Spreadsheet Anda.\n * 2. Klik menu \"Ekstensi\" > \"Apps Script\".\n * 3. Hapus seluruh isi file Code.gs yang lama, lalu tempelkan SELURUH KODE ini.\n * 4. Klik ikon \"Simpan\" (Ctrl + S).\n * 5. Klik tombol \"Terapkan\" (Deploy) di kanan atas > pilih \"Penerapan baru\" (New deployment).\n * 6. Pilih jenis: \"Aplikasi Web\" (Web app).\n * 7. Konfigurasi penting:\n *    - Jalankan sebagai (Execute as): \"Saya\" (Me / akun Google Anda)\n *    - Siapa yang memiliki akses (Who has access): \"Siapa saja\" (Anyone) -> WAJIB!\n * 8. Klik \"Terapkan\" (Deploy). Jika muncul izin akses, klik \"Beri Akses\" (Review Permissions) > Pilih Akun > Advanced > Go to (unsafe) > Allow.\n * 9. Salin URL Aplikasi Web yang berakhiran \"/exec\", lalu masukkan ke menu [URL Sheet] di aplikasi Signline POS.\n * ============================================================================\n */\n\nfunction doGet(e) {\n  var param = (e && e.parameter) ? e.parameter : {};\n  var aksi = param.aksi || '';\n\n  try {\n    var ss = SpreadsheetApp.getActiveSpreadsheet();\n\n    // 1. AMBIL KATALOG PRODUK / LAYANAN\n    if (aksi === 'getProduk') {\n      var sheetProd = dapatkanSheetProduk(ss);\n      var data = sheetProd.getDataRange().getValues();\n      return responJson(data);\n    }\n\n    // 2. AMBIL RIWAYAT TRANSAKSI POS\n    if (aksi === 'getTransaksi') {\n      var sheetTrx = dapatkanSheetTransaksi(ss);\n      var lastRow = sheetTrx.getLastRow();\n      if (lastRow <= 1) {\n        return responJson([]);\n      }\n      var rows = sheetTrx.getRange(2, 1, lastRow - 1, sheetTrx.getLastColumn()).getValues();\n      // Urutkan transaksi terbaru di atas\n      rows.reverse();\n      return responJson(rows);\n    }\n\n    // 3. AMBIL DATA GRAFIK OMZET & PROFIT HARIAN & BULANAN\n    if (aksi === 'getDataGrafik') {\n      var sheetTrx = dapatkanSheetTransaksi(ss);\n      var lastRow = sheetTrx.getLastRow();\n      var namaBulan = [\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"Mei\", \"Jun\", \"Jul\", \"Agu\", \"Sep\", \"Okt\", \"Nov\", \"Des\"];\n      var harian = {};\n      var bulanan = {};\n\n      if (lastRow > 1) {\n        var data = sheetTrx.getRange(2, 1, lastRow - 1, sheetTrx.getLastColumn()).getValues();\n        for (var i = 0; i < data.length; i++) {\n          var row = data[i];\n          var rawDate = row[0];\n          if (!rawDate) continue;\n\n          var d = new Date(rawDate);\n          if (isNaN(d.getTime())) continue;\n\n          var strHari = d.getDate() + \" \" + namaBulan[d.getMonth()] + \" \" + d.getFullYear();\n          var strBulan = namaBulan[d.getMonth()] + \" \" + d.getFullYear();\n\n          var omzet = Number(row[7]) || 0;\n          var profit = Number(row[9]) || 0;\n\n          // Akumulasi Harian\n          if (!harian[strHari]) harian[strHari] = { omzet: 0, profit: 0 };\n          harian[strHari].omzet += omzet;\n          harian[strHari].profit += profit;\n\n          // Akumulasi Bulanan\n          if (!bulanan[strBulan]) bulanan[strBulan] = { omzet: 0, profit: 0 };\n          bulanan[strBulan].omzet += omzet;\n          bulanan[strBulan].profit += profit;\n        }\n      }\n      return responJson({ harian: harian, bulanan: bulanan });\n    }\n\n    // 4. AMBIL DATA SERVIS GADGET\n    if (aksi === 'getService') {\n      var sheetSrv = dapatkanSheetServis(ss);\n      var lastRow = sheetSrv.getLastRow();\n      if (lastRow <= 1) {\n        return responJson([]);\n      }\n      var rows = sheetSrv.getRange(1, 1, lastRow, sheetSrv.getLastColumn()).getValues();\n      return responJson(rows);\n    }\n\n    // DEFAULT / PING TES\n    return responJson({\n      status: \"online\",\n      pesan: \"Google Apps Script Signline Studio Aktif & Siap Digunakan\",\n      waktu: new Date().toLocaleString(\"id-ID\")\n    });\n\n  } catch (err) {\n    return responJson({ status: \"error\", pesan: err.toString() });\n  }\n}\n\nfunction doPost(e) {\n  var lock = LockService.getScriptLock();\n  lock.tryLock(10000);\n\n  try {\n    var ss = SpreadsheetApp.getActiveSpreadsheet();\n    var contents = (e && e.postData && e.postData.contents) ? e.postData.contents : '{}';\n    var param = JSON.parse(contents);\n    var aksi = param.aksi || '';\n\n    // 1. SIMPAN TRANSAKSI MULTI-ITEM KASIR POS\n    if (aksi === 'simpanOrder') {\n      var sheetTrx = dapatkanSheetTransaksi(ss);\n      var d = param.data || {};\n      var now = new Date();\n      var idOrder = 'SL-' + Math.floor(1000 + Math.random() * 9000);\n      var items = d.items || [];\n\n      items.forEach(function(it) {\n        var qty = Number(it.qty) || 1;\n        var hpp = Number(it.hpp) || 0;\n        var harga = Number(it.harga) || 0;\n        var subtotal = Number(it.subtotal) || (qty * harga);\n        var subtotalHpp = hpp * qty;\n        var profit = subtotal - subtotalHpp;\n\n        sheetTrx.appendRow([\n          Utilities.formatDate(now, \"GMT+7\", \"M/d/yyyy HH:mm:ss\"),\n          idOrder,\n          d.nama || 'Pelanggan Umum',\n          it.layanan || 'Layanan',\n          qty,\n          hpp,\n          harga,\n          subtotal,\n          subtotalHpp,\n          profit,\n          d.catatan || '-'\n        ]);\n      });\n\n      return responJson({ status: 'sukses', id: idOrder });\n    }\n\n    // 2. TAMBAH PRODUK / LAYANAN KE KATALOG\n    if (aksi === 'tambahProduk') {\n      var sheetProd = dapatkanSheetProduk(ss);\n      var p = param.data || {};\n      sheetProd.appendRow([\n        p.nama || 'Produk Baru',\n        Number(p.hpp || 0),\n        Number(p.jual || 0)\n      ]);\n      return responJson({ status: 'sukses' });\n    }\n\n    // 3. HAPUS PRODUK DARI KATALOG\n    if (aksi === 'hapusProduk') {\n      var sheetProd = dapatkanSheetProduk(ss);\n      var namaTarget = param.nama;\n      var rows = sheetProd.getDataRange().getValues();\n      for (var i = 1; i < rows.length; i++) {\n        if (rows[i][0] == namaTarget) {\n          sheetProd.deleteRow(i + 1);\n          break;\n        }\n      }\n      return responJson({ status: 'sukses' });\n    }\n\n    // 4. HAPUS TRANSAKSI DARI RIWAYAT\n    if (aksi === 'hapusTransaksi') {\n      var sheetTrx = dapatkanSheetTransaksi(ss);\n      var idTarget = param.id;\n      var rows = sheetTrx.getDataRange().getValues();\n      // Hapus dari baris paling bawah ke atas agar indeks tidak bergeser\n      for (var i = rows.length - 1; i >= 1; i--) {\n        if (rows[i][1] == idTarget) {\n          sheetTrx.deleteRow(i + 1);\n        }\n      }\n      return responJson({ status: 'sukses' });\n    }\n\n    // 5. SIMPAN NOTA SERVIS GADGET\n    if (aksi === 'simpanService') {\n      var sheetSrv = dapatkanSheetServis(ss);\n      var s = param.data || {};\n      var now = new Date();\n      var biaya = s.biaya || {};\n      var spareparts = biaya.spareparts || [];\n      var sparepartsText = spareparts.map(function(x) {\n        return x.nama + ' (' + x.qty + 'x @' + x.harga + ')';\n      }).join('; ');\n\n      sheetSrv.appendRow([\n        Utilities.formatDate(now, \"GMT+7\", \"M/d/yyyy HH:mm:ss\"),\n        s.id,\n        s.tanggal || Utilities.formatDate(now, \"GMT+7\", \"yyyy-MM-dd HH:mm\"),\n        s.estimasi || '-',\n        s.teknisi || 'Teknisi Signline',\n        (s.pelanggan && s.pelanggan.nama) || 'Pelanggan',\n        (s.pelanggan && s.pelanggan.hp) || '',\n        (s.pelanggan && s.pelanggan.alamat) || '-',\n        (s.perangkat && s.perangkat.kategori) || 'Gadget',\n        (s.perangkat && s.perangkat.model) || '-',\n        (s.perangkat && s.perangkat.imei) || '-',\n        (s.perangkat && s.perangkat.warna) || '-',\n        (s.perangkat && s.perangkat.password) || '-',\n        (s.perangkat && s.perangkat.kondisiFisik) || '-',\n        (s.perangkat && s.perangkat.kelengkapan) || '-',\n        s.keluhan || '-',\n        s.kondisiMasuk || '-',\n        biaya.namaJasa || 'Jasa Servis',\n        Number(biaya.biayaJasa || 0),\n        sparepartsText || '-',\n        Number(biaya.totalSpareparts || 0),\n        Number(biaya.grandTotal || 0),\n        Number(biaya.dp || 0),\n        Number(biaya.sisa || 0),\n        biaya.statusBayar || 'Belum Bayar',\n        s.garansi || '30 Hari',\n        s.status || 'Diterima',\n        s.catatanTeknisi || '-'\n      ]);\n\n      return responJson({ status: 'sukses', id: s.id });\n    }\n\n    // 6. UPDATE STATUS SERVIS GADGET\n    if (aksi === 'updateStatusService') {\n      var sheetSrv = dapatkanSheetServis(ss);\n      var idTarget = param.id;\n      var rows = sheetSrv.getDataRange().getValues();\n      for (var i = 1; i < rows.length; i++) {\n        if (rows[i][1] == idTarget) {\n          var rowNum = i + 1;\n          if (param.status) sheetSrv.getRange(rowNum, 27).setValue(param.status);\n          if (param.catatanTeknisi) sheetSrv.getRange(rowNum, 28).setValue(param.catatanTeknisi);\n          if (param.sisa !== undefined) sheetSrv.getRange(rowNum, 24).setValue(Number(param.sisa));\n          if (param.statusBayar) sheetSrv.getRange(rowNum, 25).setValue(param.statusBayar);\n          break;\n        }\n      }\n      return responJson({ status: 'sukses' });\n    }\n\n    // 7. HAPUS SERVIS GADGET\n    if (aksi === 'hapusService') {\n      var sheetSrv = dapatkanSheetServis(ss);\n      var idTarget = param.id;\n      var rows = sheetSrv.getDataRange().getValues();\n      for (var i = 1; i < rows.length; i++) {\n        if (rows[i][1] == idTarget) {\n          sheetSrv.deleteRow(i + 1);\n          break;\n        }\n      }\n      return responJson({ status: 'sukses' });\n    }\n\n    return responJson({ status: 'error', pesan: 'Aksi tidak dikenali: ' + aksi });\n\n  } catch (err) {\n    return responJson({ status: 'error', pesan: err.toString() });\n  } finally {\n    lock.releaseLock();\n  }\n}\n\n// ============================================================================\n// HELPER SHEET MANAGEMENT (AUTO-CREATE JIKA BELUM ADA)\n// ============================================================================\n\nfunction dapatkanSheetTransaksi(ss) {\n  var s = ss.getSheetByName('Transaksi');\n  if (!s) {\n    // Gunakan sheet pertama jika bernama lain, atau buat sheet baru\n    var sheets = ss.getSheets();\n    if (sheets.length > 0 && sheets[0].getName() !== 'Produk' && sheets[0].getName() !== 'Servis') {\n      s = sheets[0];\n    } else {\n      s = ss.insertSheet('Transaksi');\n    }\n  }\n  if (s.getLastRow() === 0) {\n    s.appendRow([\n      \"Timestamp\", \"ID Order\", \"Nama Pelanggan\", \"Nama Layanan\", \"Qty\",\n      \"HPP\", \"Harga Jual\", \"Subtotal Jual\", \"Subtotal HPP\", \"Profit\", \"Catatan\"\n    ]);\n  }\n  return s;\n}\n\nfunction dapatkanSheetProduk(ss) {\n  var s = ss.getSheetByName('Produk');\n  if (!s) {\n    s = ss.insertSheet('Produk');\n    s.appendRow([\"Nama Produk\", \"HPP\", \"Harga Jual\"]);\n    s.appendRow([\"Cetak Foto 3x4\", 1000, 2500]);\n    s.appendRow([\"Cetak Foto 4x6\", 1000, 3000]);\n    s.appendRow([\"Copy B/W\", 500, 1000]);\n    s.appendRow([\"Laminating Press\", 4000, 10000]);\n  }\n  return s;\n}\n\nfunction dapatkanSheetServis(ss) {\n  var s = ss.getSheetByName('Servis');\n  if (!s) {\n    s = ss.insertSheet('Servis');\n    s.appendRow([\n      \"Timestamp\", \"No_Nota\", \"Tanggal_Masuk\", \"Estimasi_Selesai\", \"Teknisi\",\n      \"Nama_Pelanggan\", \"No_HP\", \"Alamat_Pelanggan\", \"Kategori_Perangkat\", \"Tipe_Model\",\n      \"No_Seri_IMEI\", \"Warna_Unit\", \"Pola_Password\", \"Kondisi_Fisik\", \"Kelengkapan\",\n      \"Keluhan_Kerusakan\", \"Kondisi_Masuk\", \"Nama_Jasa\", \"Biaya_Jasa\", \"Rincian_Sparepart\",\n      \"Total_Sparepart\", \"Grand_Total\", \"Uang_Muka_DP\", \"Sisa_Tagihan\", \"Status_Bayar\",\n      \"Garansi\", \"Status_Servis\", \"Catatan_Teknisi\"\n    ]);\n  }\n  return s;\n}\n\nfunction responJson(obj) {\n  return ContentService.createTextOutput(JSON.stringify(obj))\n    .setMimeType(ContentService.MimeType.JSON);\n}\n";
         document.getElementById('apps-script-snippet').value = code;
         bukaModal('modal-script-code');
     }
@@ -3343,8 +3199,8 @@ function doGet(e) {
             area.innerHTML = `
                 <div class="print-thermal">
                     <div class="center bold" style="font-size: 11pt;">SIGNLINE STUDIO</div>
-                    <div class="center" style="font-size: 8pt;">Creative Solutions & Digital POS</div>
-                    <div class="center" style="font-size: 7.5pt;">WhatsApp: 0823-5348-7472</div>
+                    <div class="center" style="font-size: 8pt;">Your Creative Solutions</div>
+                    <div class="center" style="font-size: 7.5pt;">WhatsApp: 0821-5558-7770</div>
                     <hr>
                     <table style="font-size: 8pt;">
                         <tr><td>Faktur:</td><td class="right bold">${escapeHtml(trx.id)}</td></tr>
@@ -3391,7 +3247,7 @@ function doGet(e) {
                         <div>
                             <div class="print-a4-title">SIGNLINE STUDIO</div>
                             <div style="font-size: 0.85rem; color: #475569;">Creative Solutions, Printing & Technology</div>
-                            <div style="font-size: 0.8rem; color: #64748b;">WhatsApp: 0823-5348-7472 | Email: yourdesignerbuddy@gmail.com</div>
+                            <div style="font-size: 0.8rem; color: #64748b;">WhatsApp: 0821-5558-7770 | Email: yourdesignerbuddy@gmail.com</div>
                         </div>
                         <div style="text-align: right;">
                             <h2 style="margin: 0; font-size: 1.2rem; color: #1e3a8a;">FAKTUR & BERITA ACARA</h2>
@@ -3474,7 +3330,7 @@ function doGet(e) {
                 <div class="print-thermal">
                     <div class="center bold" style="font-size: 10.5pt;">SIGNLINE STUDIO</div>
                     <div class="center bold" style="font-size: 9pt;">TANDA TERIMA SERVIS GADGET</div>
-                    <div class="center" style="font-size: 7.5pt;">WhatsApp: 0823-5348-7472</div>
+                    <div class="center" style="font-size: 7.5pt;">WhatsApp: 0821-5558-7770</div>
                     <hr>
                     <table style="font-size: 8pt;">
                         <tr><td>No. Servis:</td><td class="right bold">${escapeHtml(srv.id)}</td></tr>
@@ -3541,7 +3397,7 @@ function doGet(e) {
                         <div>
                             <div class="print-a4-title">SIGNLINE STUDIO</div>
                             <div style="font-size: 0.85rem; color: #475569;">Divisi Service Gadget, Elektronik & Solusi IT</div>
-                            <div style="font-size: 0.8rem; color: #64748b;">WhatsApp: 0823-5348-7472 | Alamat: Workshop Signline Studio</div>
+                            <div style="font-size: 0.8rem; color: #64748b;">WhatsApp: 0821-5558-7770 | Alamat: Workshop Signline Studio</div>
                         </div>
                         <div style="text-align: right;">
                             <h2 style="margin: 0; font-size: 1.25rem; color: #1e3a8a;">NOTA & SERAH TERIMA SERVIS</h2>
