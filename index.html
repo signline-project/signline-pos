@@ -213,15 +213,17 @@
             justify-content: space-between;
         }
 
+        /* --- THEME TOGGLE BUTTON --- */
         .theme-toggle-btn {
             background: var(--bg-subtle);
             border: 1px solid var(--border-color);
             color: var(--text-secondary);
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
+            min-width: 38px;
             border-radius: var(--radius-md);
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             transition: all 0.15s;
@@ -245,25 +247,30 @@
             height: var(--header-height);
             background-color: var(--bg-surface);
             border-bottom: 1px solid var(--border-color);
-            padding: 0 28px;
+            padding: 0 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-shrink: 0;
             z-index: 10;
+            gap: 12px;
         }
 
         .topbar-title {
-            font-size: 1.125rem;
+            font-size: 1.05rem;
             font-weight: 700;
             color: var(--text-primary);
             letter-spacing: -0.01em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .topbar-actions {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
+            flex-shrink: 0;
         }
 
         .status-pill {
@@ -274,9 +281,15 @@
             font-weight: 500;
             color: var(--text-secondary);
             background: var(--bg-subtle);
-            padding: 4px 10px;
-            border-radius: 999px;
+            padding: 6px 12px;
+            border-radius: var(--radius-md);
             border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .status-pill:hover {
+            border-color: var(--accent);
+            color: var(--accent);
         }
 
         .status-dot {
@@ -284,6 +297,10 @@
             height: 8px;
             border-radius: 50%;
             background: var(--success);
+            flex-shrink: 0;
+        }
+        .status-dot.disconnected {
+            background: var(--danger);
         }
 
         /* --- CONTENT AREA --- */
@@ -388,7 +405,7 @@
             justify-content: center;
             gap: 8px;
             text-decoration: none;
-            min-height: 42px;
+            min-height: 40px;
             transition: all 0.15s;
         }
 
@@ -428,14 +445,15 @@
         .btn-sm {
             padding: 6px 12px;
             font-size: 0.78rem;
-            min-height: 32px;
+            min-height: 34px;
         }
 
         .btn-icon {
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
+            min-width: 38px;
             padding: 0;
-            min-height: 36px;
+            min-height: 38px;
             border-radius: var(--radius-md);
         }
 
@@ -533,7 +551,7 @@
             margin: 0 auto;
         }
 
-        /* --- CHECKOUT BAR --- */
+        /* --- CHECKOUT BOX IN DESKTOP --- */
         .checkout-box {
             background-color: var(--bg-subtle);
             border: 1px solid var(--border-color);
@@ -561,6 +579,11 @@
             color: var(--success);
             font-family: 'JetBrains Mono', monospace;
             font-variant-numeric: tabular-nums;
+        }
+
+        /* --- STICKY MOBILE CHECKOUT DOCK --- */
+        .mobile-sticky-checkout {
+            display: none;
         }
 
         /* --- SERVICE STATUS STEPS --- */
@@ -617,7 +640,7 @@
             border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
             width: 100%;
-            max-width: 600px;
+            max-width: 620px;
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: var(--shadow-lg);
@@ -808,7 +831,8 @@
                 border-top: 1px solid var(--border-color);
                 padding: 0;
                 background-color: var(--bg-surface);
-                box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.06);
+                box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+                z-index: 100;
             }
             .brand-header, .sidebar-footer { display: none; }
             
@@ -843,12 +867,16 @@
             }
 
             .app-topbar {
-                padding: 0 16px;
+                padding: 0 14px;
                 height: 56px;
             }
 
+            .hide-mobile {
+                display: none !important;
+            }
+
             .content-scroll {
-                padding: 16px 14px 84px;
+                padding: 16px 14px 145px; /* Ruang scroll ekstra agar tidak tertutup sticky bar & bottom nav */
             }
 
             .ui-card {
@@ -867,9 +895,28 @@
                 align-items: stretch;
                 text-align: center;
                 padding: 16px;
+                margin-bottom: 20px;
             }
             .checkout-box .btn {
                 width: 100%;
+            }
+
+            /* DOCK TOMBOL SIMPAN TRANSAKSI STICKY DI MOBILE */
+            .mobile-sticky-checkout {
+                display: flex;
+                position: fixed;
+                bottom: 62px; /* Tepat di atas bottom navigation */
+                left: 0;
+                right: 0;
+                height: 64px;
+                background-color: var(--bg-surface);
+                border-top: 1px solid var(--border-color);
+                box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.09);
+                padding: 0 16px;
+                align-items: center;
+                justify-content: space-between;
+                z-index: 95;
+                gap: 12px;
             }
         }
     </style>
@@ -910,8 +957,8 @@
     </nav>
     <div class="sidebar-footer">
         <span style="font-size: 0.72rem; color: var(--text-muted);">v2.2 Antislop</span>
-        <button class="theme-toggle-btn" onclick="toggleTheme()" title="Ganti Tema (Terang / Gelap)" aria-label="Ganti Tema">
-            <i class="fa-solid fa-moon" id="theme-icon"></i>
+        <button class="theme-toggle-btn" onclick="toggleTheme()" title="Ganti Mode Terang / Gelap" aria-label="Ganti Tema">
+            <i class="fa-solid fa-moon" id="theme-icon-sidebar"></i>
         </button>
     </div>
 </aside>
@@ -922,12 +969,25 @@
     <header class="app-topbar no-print">
         <div class="topbar-title" id="page-title">Kasir Penjualan & Layanan</div>
         <div class="topbar-actions">
-            <div class="status-pill" id="conn-status">
-                <span class="status-dot"></span>
-                <span>Tersambung Google Sheets</span>
-            </div>
-            <!-- Backup / Restore Button -->
-            <button class="btn btn-secondary btn-sm" onclick="bukaModalBackup()" title="Cadangkan Data">
+            <!-- Connection Status Pill -->
+            <button class="status-pill" id="conn-status" onclick="bukaModalSettings()" title="Klik untuk cek atau ubah URL Google Sheets">
+                <span class="status-dot" id="conn-dot"></span>
+                <span id="conn-text" class="hide-mobile">Google Sheets</span>
+            </button>
+
+            <!-- Tombol Pengaturan URL Google Sheets -->
+            <button class="btn btn-secondary btn-sm" onclick="bukaModalSettings()" title="Pengaturan URL Google Sheets" aria-label="Pengaturan URL Google Sheets">
+                <i class="fa-solid fa-gear"></i>
+                <span class="hide-mobile">URL Sheet</span>
+            </button>
+
+            <!-- Tombol Dark / Light Mode (SELALU MUNCUL DI DESKTOP MAUPUN MOBILE VIEW) -->
+            <button class="theme-toggle-btn" onclick="toggleTheme()" title="Ganti Tema Terang / Gelap" aria-label="Ganti Tema Terang atau Gelap">
+                <i class="fa-solid fa-moon" id="theme-icon"></i>
+            </button>
+
+            <!-- Backup Button -->
+            <button class="btn btn-secondary btn-sm" onclick="bukaModalBackup()" title="Cadangkan Data Servis" aria-label="Cadangkan Data">
                 <i class="fa-solid fa-database"></i>
                 <span class="hide-mobile">Backup</span>
             </button>
@@ -1035,7 +1095,7 @@
                     <textarea id="note" class="form-control" placeholder="Contoh: Ukuran 3x4 finishing doff 4 lembar, laminating rapi..."></textarea>
                 </div>
 
-                <!-- Checkout Bar -->
+                <!-- Checkout Bar Biasa (Desktop & Tablet) -->
                 <div class="checkout-box">
                     <div>
                         <div class="total-display-title">Total Pembayaran (1 Invoice)</div>
@@ -1075,6 +1135,9 @@
                             <div class="card-subtitle">Pantau progres perbaikan, update status pengerjaan, dan cetak dokumen serah terima</div>
                         </div>
                         <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-secondary btn-sm" onclick="muatDataServisDariServer()" title="Sinkronkan dengan Google Sheets">
+                                <i class="fa-solid fa-rotate"></i> Sync Sheet
+                            </button>
                             <button class="btn btn-primary btn-sm" onclick="gantiSubService('form')">
                                 <i class="fa-solid fa-plus"></i> Servis Baru
                             </button>
@@ -1551,11 +1614,101 @@
         </section>
 
     </main>
+
+    <!-- STICKY MOBILE CHECKOUT DOCK (SELALU MUNCUL DI MOBILE KETIKA BERADA DI TAB KASIR POS) -->
+    <div class="mobile-sticky-checkout no-print" id="mobile-checkout-dock">
+        <div>
+            <div style="font-size:0.7rem; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:0.03em;">Total Tagihan</div>
+            <div class="num-cell" id="mobile-total-val" style="font-size:1.15rem; font-weight:700; color:var(--success);">Rp 0</div>
+        </div>
+        <button class="btn btn-success" id="btn-save-mobile" onclick="bayarMulti()" style="padding: 10px 20px;">
+            <i class="fa-solid fa-check-circle"></i>
+            <span>Simpan Transaksi</span>
+        </button>
+    </div>
 </div>
 
 <!-- ==============================================
      MODAL DIALOGS
      ============================================== -->
+
+<!-- Modal Pengaturan URL Google Sheets Apps Script (FITUR BARU) -->
+<div id="modal-settings" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-settings-title">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div class="modal-title" id="modal-settings-title"><i class="fa-solid fa-gear" style="color:var(--accent);"></i> Pengaturan URL Google Sheets</div>
+            <button class="btn btn-secondary btn-icon" onclick="tutupModal('modal-settings')" aria-label="Tutup">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px;">
+                Ubah atau perbarui tautan Web App Google Apps Script Anda kapan saja tanpa perlu menyunting kode berkas HTML.
+            </p>
+            
+            <div class="form-group" style="margin-bottom: 14px;">
+                <label class="form-label" for="setting-api-url">URL Google Apps Script Web App (/exec):</label>
+                <input type="url" id="setting-api-url" class="form-control" placeholder="https://script.google.com/macros/s/.../exec">
+            </div>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+                <button class="btn btn-secondary btn-sm" onclick="ujiKoneksiApi()" id="btn-test-api">
+                    <i class="fa-solid fa-plug"></i> Uji Koneksi
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="resetApiUrlDefault()">
+                    <i class="fa-solid fa-rotate-left"></i> Reset ke Default
+                </button>
+            </div>
+
+            <div id="api-test-result" style="display:none; padding:10px 14px; border-radius:var(--radius-md); font-size:0.8125rem; margin-bottom:16px;"></div>
+
+            <!-- Panduan Kolom Google Sheet untuk Service -->
+            <div style="border-top:1px solid var(--border-color); padding-top:14px;">
+                <h4 style="font-size:0.9rem; font-weight:700; color:var(--text-primary); margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+                    <i class="fa-solid fa-table-cells" style="color:var(--accent);"></i> Panduan Kolom Sheet "Servis"
+                </h4>
+                <p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:10px;">
+                    Untuk menyimpan data servis di Google Spreadsheet, buat tab/sheet baru bernama <b>Servis</b> dengan 28 kolom header berikut di baris pertama (Row 1):
+                </p>
+                <div style="background:var(--bg-subtle); padding:10px; border-radius:var(--radius-md); font-family:'JetBrains Mono',monospace; font-size:0.75rem; overflow-x:auto; white-space:nowrap; border:1px solid var(--border-color); margin-bottom:12px;">
+Timestamp	No_Nota	Tanggal_Masuk	Estimasi_Selesai	Teknisi	Nama_Pelanggan	No_HP	Alamat_Pelanggan	Kategori_Perangkat	Tipe_Model	No_Seri_IMEI	Warna_Unit	Pola_Password	Kondisi_Fisik	Kelengkapan	Keluhan_Kerusakan	Kondisi_Masuk	Nama_Jasa	Biaya_Jasa	Rincian_Sparepart	Total_Sparepart	Grand_Total	Uang_Muka_DP	Sisa_Tagihan	Status_Bayar	Garansi	Status_Servis	Catatan_Teknisi
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="salinHeaderSheet()">
+                    <i class="fa-solid fa-copy"></i> Salin Header Kolom
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="tampilkanScriptApps()" style="margin-left:6px;">
+                    <i class="fa-solid fa-code"></i> Lihat Kode Apps Script
+                </button>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="tutupModal('modal-settings')">Batal</button>
+            <button class="btn btn-primary" onclick="simpanPengaturanApi()"><i class="fa-solid fa-save"></i> Simpan URL</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Kode Apps Script Lengkap -->
+<div id="modal-script-code" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-script-title">
+    <div class="modal-box" style="max-width: 720px;">
+        <div class="modal-header">
+            <div class="modal-title" id="modal-script-title"><i class="fa-solid fa-code"></i> Kode Google Apps Script untuk Menu Servis</div>
+            <button class="btn btn-secondary btn-icon" onclick="tutupModal('modal-script-code')" aria-label="Tutup">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:12px;">
+                Salin dan tempelkan kode Apps Script di bawah ini ke editor Google Apps Script Anda (<b>Ekstensi &gt; Apps Script</b> di Google Sheets) agar fitur simpan, ambil, dan pembaruan status servis gadget otomatis tersinkronisasi:
+            </p>
+            <textarea id="apps-script-snippet" class="form-control num-cell" readonly style="height:260px; font-size:0.75rem; background:var(--bg-subtle);"></textarea>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="tutupModal('modal-script-code')">Tutup</button>
+            <button class="btn btn-primary" onclick="salinKodeAppsScript()"><i class="fa-solid fa-copy"></i> Salin Seluruh Kode</button>
+        </div>
+    </div>
+</div>
 
 <!-- Modal Detail & Cetak Invoice Transaksi POS -->
 <div id="modal-invoice" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-inv-title">
@@ -1607,7 +1760,7 @@
         </div>
         <div class="modal-body">
             <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 16px;">
-                Data nota servis gadget disimpan dengan aman di browser lokal Anda. Anda dapat mengunduh berkas cadangan (JSON) atau memulihkannya ke komputer lain kapan saja.
+                Data nota servis gadget tersimpan di peramban lokal Anda dan dapat disinkronkan ke Google Sheets. Anda dapat mengunduh berkas cadangan (JSON) atau memulihkannya kapan saja.
             </p>
             <div style="display: flex; gap: 12px; flex-direction: column;">
                 <button class="btn btn-primary" onclick="eksporDataServis()">
@@ -1638,7 +1791,13 @@
      LOGIKA JAVASCRIPT APLIKASI
      ============================================== -->
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxLlUJ9kF5I5oG_BKwlgIj8dMpWXCpNPL3IIVhLjQ-qsMqhr_tX7apd_-Mjx6f8yH4tNA/exec";
+    // URL DEFAULT GOOGLE APPS SCRIPT
+    const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbxLlUJ9kF5I5oG_BKwlgIj8dMpWXCpNPL3IIVhLjQ-qsMqhr_tX7apd_-Mjx6f8yH4tNA/exec";
+
+    // FUNGSI PENGAMBILAN URL DINAMIS
+    function getApiUrl() {
+        return localStorage.getItem('signline_api_url') || DEFAULT_API_URL;
+    }
 
     // STATE VARIABLES
     let dProduk = [];
@@ -1649,15 +1808,18 @@
     let sparepartCount = 0;
     let chartHarianInstance = null;
     let chartBulananInstance = null;
+    let tabAktif = 'pos';
 
     // --- INISIALISASI SAAT HALAMAN DIMUAT ---
     window.onload = () => {
         initTheme();
+        initApiConnectionCheck();
         muatDataServisLokal();
         muatProduk();
         muatRiwayat();
         initShortcutKeyboard();
         initSrvNoBaru();
+        perbaruiTampilanStickyMobile();
     };
 
     // Keyboard accessibility: Close modals on Escape key
@@ -1676,10 +1838,10 @@
         const saved = localStorage.getItem('signline_pos_theme');
         if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.setAttribute('data-theme', 'dark');
-            updateThemeIcon(true);
+            updateThemeIcons(true);
         } else {
             document.documentElement.removeAttribute('data-theme');
-            updateThemeIcon(false);
+            updateThemeIcons(false);
         }
     }
 
@@ -1688,20 +1850,37 @@
         if (isDark) {
             document.documentElement.removeAttribute('data-theme');
             localStorage.setItem('signline_pos_theme', 'light');
-            updateThemeIcon(false);
+            updateThemeIcons(false);
         } else {
             document.documentElement.setAttribute('data-theme', 'dark');
             localStorage.setItem('signline_pos_theme', 'dark');
-            updateThemeIcon(true);
+            updateThemeIcons(true);
         }
         if (chartHarianInstance || chartBulananInstance) muatGrafik();
     }
 
-    function updateThemeIcon(isDark) {
-        const icon = document.getElementById('theme-icon');
-        if (icon) {
-            icon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-        }
+    function updateThemeIcons(isDark) {
+        const iconTop = document.getElementById('theme-icon');
+        const iconSidebar = document.getElementById('theme-icon-sidebar');
+        const iconClass = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+        if (iconTop) iconTop.className = iconClass;
+        if (iconSidebar) iconSidebar.className = iconClass;
+    }
+
+    // CEK STATUS KONEKSI GOOGLE SHEETS
+    function initApiConnectionCheck() {
+        const dot = document.getElementById('conn-dot');
+        const text = document.getElementById('conn-text');
+        fetch(`${getApiUrl()}?aksi=getProduk`)
+        .then(res => res.json())
+        .then(() => {
+            if (dot) dot.className = 'status-dot';
+            if (text) text.innerText = 'Sheets Terhubung';
+        })
+        .catch(() => {
+            if (dot) dot.className = 'status-dot disconnected';
+            if (text) text.innerText = 'Cek Koneksi';
+        });
     }
 
     // TOAST NOTIFIKASI
@@ -1738,6 +1917,7 @@
 
     // NAVIGASI TAB UTAMA
     function pindahTab(tab) {
+        tabAktif = tab;
         const sections = ['pos', 'srv', 'inv', 'his', 'rep'];
         sections.forEach(s => {
             const el = document.getElementById(`sec-${s}`);
@@ -1756,10 +1936,271 @@
         const titleEl = document.getElementById('page-title');
         if (titleEl) titleEl.innerText = titles[tab] || 'Signline Studio POS';
 
+        perbaruiTampilanStickyMobile();
+
         if (tab === 'pos' || tab === 'inv') muatProduk();
         if (tab === 'his') muatRiwayat();
         if (tab === 'rep') muatGrafik();
-        if (tab === 'srv') filterDaftarServis();
+        if (tab === 'srv') {
+            muatDataServisLokal();
+            filterDaftarServis();
+        }
+    }
+
+    // MENGATUR VISIBILITAS STICKY CHECKOUT BAR DI MOBILE VIEW
+    function perbaruiTampilanStickyMobile() {
+        const dock = document.getElementById('mobile-checkout-dock');
+        if (!dock) return;
+        if (window.innerWidth <= 768 && tabAktif === 'pos') {
+            dock.style.display = 'flex';
+        } else {
+            dock.style.display = 'none';
+        }
+    }
+    window.addEventListener('resize', perbaruiTampilanStickyMobile);
+
+    // ==============================================
+    // MODUL PENGATURAN URL GOOGLE SHEETS APPS SCRIPT
+    // ==============================================
+    function bukaModalSettings() {
+        const input = document.getElementById('setting-api-url');
+        if (input) input.value = getApiUrl();
+        const resBox = document.getElementById('api-test-result');
+        if (resBox) resBox.style.display = 'none';
+        bukaModal('modal-settings');
+    }
+
+    function simpanPengaturanApi() {
+        const input = document.getElementById('setting-api-url');
+        const url = input ? input.value.trim() : '';
+        if (!url) {
+            tampilToast('URL tidak boleh kosong!', 'error');
+            return;
+        }
+        if (!url.startsWith('https://script.google.com/')) {
+            if (!confirm('URL tidak berawalan https://script.google.com/. Tetap ingin menyimpan?')) return;
+        }
+
+        localStorage.setItem('signline_api_url', url);
+        tampilToast('URL Google Apps Script berhasil diperbarui!', 'success');
+        tutupModal('modal-settings');
+        initApiConnectionCheck();
+        muatProduk();
+        muatRiwayat();
+    }
+
+    function resetApiUrlDefault() {
+        if (confirm('Kembalikan URL Google Apps Script ke setelan bawaan sistem?')) {
+            localStorage.removeItem('signline_api_url');
+            const input = document.getElementById('setting-api-url');
+            if (input) input.value = DEFAULT_API_URL;
+            tampilToast('URL telah direset ke default', 'info');
+            initApiConnectionCheck();
+        }
+    }
+
+    function ujiKoneksiApi() {
+        const input = document.getElementById('setting-api-url');
+        const url = input ? input.value.trim() : getApiUrl();
+        const resBox = document.getElementById('api-test-result');
+        const btn = document.getElementById('btn-test-api');
+        
+        if (!url) {
+            tampilToast('Harap masukkan URL untuk diuji!', 'error');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menguji...';
+        resBox.style.display = 'none';
+
+        fetch(`${url}?aksi=getProduk`)
+        .then(res => res.json())
+        .then(data => {
+            resBox.style.display = 'block';
+            resBox.style.background = 'var(--success-light)';
+            resBox.style.color = 'var(--success)';
+            resBox.style.border = '1px solid var(--success)';
+            resBox.innerHTML = `<strong><i class="fa-solid fa-check"></i> Koneksi Berhasil!</strong> Google Apps Script merespons dengan baik (${Array.isArray(data) ? data.length + ' data item' : 'sukses'}).`;
+            initApiConnectionCheck();
+        })
+        .catch(err => {
+            resBox.style.display = 'block';
+            resBox.style.background = 'var(--danger-light)';
+            resBox.style.color = 'var(--danger)';
+            resBox.style.border = '1px solid var(--danger)';
+            resBox.innerHTML = `<strong><i class="fa-solid fa-circle-xmark"></i> Koneksi Gagal!</strong> Pastikan Web App disetel ke "Anyone" (Siapa saja) pada pengaturan Deploy Google Apps Script.<br><small>${escapeHtml(err.message)}</small>`;
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-plug"></i> Uji Koneksi';
+        });
+    }
+
+    function salinHeaderSheet() {
+        const headers = "Timestamp\tNo_Nota\tTanggal_Masuk\tEstimasi_Selesai\tTeknisi\tNama_Pelanggan\tNo_HP\tAlamat_Pelanggan\tKategori_Perangkat\tTipe_Model\tNo_Seri_IMEI\tWarna_Unit\tPola_Password\tKondisi_Fisik\tKelengkapan\tKeluhan_Kerusakan\tKondisi_Masuk\tNama_Jasa\tBiaya_Jasa\tRincian_Sparepart\tTotal_Sparepart\tGrand_Total\tUang_Muka_DP\tSisa_Tagihan\tStatus_Bayar\tGaransi\tStatus_Servis\tCatatan_Teknisi";
+        navigator.clipboard.writeText(headers).then(() => {
+            tampilToast('28 Header Kolom disalin ke clipboard! Tempelkan di baris 1 sheet "Servis"', 'success');
+        }).catch(() => {
+            tampilToast('Gagal menyalin otomatis. Silakan salin manual dari kotak teks.', 'error');
+        });
+    }
+
+    function tampilkanScriptApps() {
+        const code = `// ========================================================
+// TAMBAHAN FUNGSI GOOGLE APPS SCRIPT UNTUK MENU SERVIS
+// ========================================================
+function doPost(e) {
+  var lock = LockService.getScriptLock();
+  lock.tryLock(10000);
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var param = JSON.parse(e.postData.contents);
+    var aksi = param.aksi;
+    
+    // --- 1. SIMPAN ORDER KASIR POS BIASA ---
+    if (aksi === 'simpanOrder') {
+      var sheet = ss.getSheetByName('Transaksi') || ss.getSheets()[0];
+      var d = param.data;
+      var now = new Date();
+      var idOrder = 'SL-' + Math.floor(1000 + Math.random() * 9000);
+      d.items.forEach(function(it) {
+        sheet.appendRow([
+          Utilities.formatDate(now, "GMT+7", "M/d/yyyy HH:mm:ss"),
+          idOrder,
+          d.nama,
+          it.layanan,
+          it.qty,
+          it.hpp,
+          it.harga,
+          it.subtotal,
+          it.hpp * it.qty,
+          it.subtotal - (it.hpp * it.qty),
+          d.catatan || '-'
+        ]);
+      });
+      return ContentService.createTextOutput(JSON.stringify({ status: 'sukses', id: idOrder }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    // --- 2. SIMPAN NOTA SERVIS ELEKTRONIK (FITUR BARU) ---
+    if (aksi === 'simpanService') {
+      var sheetSrv = ss.getSheetByName('Servis');
+      if (!sheetSrv) {
+        sheetSrv = ss.insertSheet('Servis');
+        sheetSrv.appendRow([
+          "Timestamp","No_Nota","Tanggal_Masuk","Estimasi_Selesai","Teknisi",
+          "Nama_Pelanggan","No_HP","Alamat_Pelanggan","Kategori_Perangkat","Tipe_Model",
+          "No_Seri_IMEI","Warna_Unit","Pola_Password","Kondisi_Fisik","Kelengkapan",
+          "Keluhan_Kerusakan","Kondisi_Masuk","Nama_Jasa","Biaya_Jasa","Rincian_Sparepart",
+          "Total_Sparepart","Grand_Total","Uang_Muka_DP","Sisa_Tagihan","Status_Bayar",
+          "Garansi","Status_Servis","Catatan_Teknisi"
+        ]);
+      }
+      var s = param.data;
+      var sparepartsText = (s.biaya.spareparts || []).map(function(x) { 
+        return x.nama + ' (' + x.qty + 'x @' + x.harga + ')'; 
+      }).join('; ');
+
+      sheetSrv.appendRow([
+        Utilities.formatDate(new Date(), "GMT+7", "M/d/yyyy HH:mm:ss"),
+        s.id,
+        s.tanggal,
+        s.estimasi,
+        s.teknisi,
+        s.pelanggan.nama,
+        s.pelanggan.hp,
+        s.pelanggan.alamat || '-',
+        s.perangkat.kategori,
+        s.perangkat.model,
+        s.perangkat.imei || '-',
+        s.perangkat.warna || '-',
+        s.perangkat.password || '-',
+        s.perangkat.kondisiFisik || '-',
+        s.perangkat.kelengkapan || '-',
+        s.keluhan,
+        s.kondisiMasuk,
+        s.biaya.namaJasa,
+        s.biaya.biayaJasa,
+        sparepartsText,
+        s.biaya.totalSpareparts,
+        s.biaya.grandTotal,
+        s.biaya.dp,
+        s.biaya.sisa,
+        s.biaya.statusBayar,
+        s.garansi,
+        s.status,
+        s.catatanTeknisi || '-'
+      ]);
+      return ContentService.createTextOutput(JSON.stringify({ status: 'sukses', id: s.id }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // --- 3. UPDATE STATUS SERVIS GADGET ---
+    if (aksi === 'updateStatusService') {
+      var sheetSrv = ss.getSheetByName('Servis');
+      if (sheetSrv) {
+        var rows = sheetSrv.getDataRange().getValues();
+        for (var i = 1; i < rows.length; i++) {
+          if (rows[i][1] == param.id) {
+            sheetSrv.getRange(i + 1, 27).setValue(param.status); // Kolom 27: Status_Servis
+            if (param.catatanTeknisi) sheetSrv.getRange(i + 1, 28).setValue(param.catatanTeknisi);
+            if (param.sisa !== undefined) sheetSrv.getRange(i + 1, 24).setValue(param.sisa);
+            if (param.statusBayar) sheetSrv.getRange(i + 1, 25).setValue(param.statusBayar);
+            break;
+          }
+        }
+      }
+      return ContentService.createTextOutput(JSON.stringify({ status: 'sukses' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // --- 4. HAPUS SERVIS GADGET ---
+    if (aksi === 'hapusService') {
+      var sheetSrv = ss.getSheetByName('Servis');
+      if (sheetSrv) {
+        var rows = sheetSrv.getDataRange().getValues();
+        for (var i = 1; i < rows.length; i++) {
+          if (rows[i][1] == param.id) {
+            sheetSrv.deleteRow(i + 1);
+            break;
+          }
+        }
+      }
+      return ContentService.createTextOutput(JSON.stringify({ status: 'sukses' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+  } catch (e) {
+    return ContentService.createTextOutput(JSON.stringify({ status: 'error', pesan: e.message }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function doGet(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var aksi = e.parameter.aksi;
+
+  if (aksi === 'getService') {
+    var sheetSrv = ss.getSheetByName('Servis');
+    if (!sheetSrv) return ContentService.createTextOutput(JSON.stringify([])).setMimeType(ContentService.MimeType.JSON);
+    var data = sheetSrv.getDataRange().getValues();
+    return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // Handle getProduk, getTransaksi, getDataGrafik default...
+}`;
+        document.getElementById('apps-script-snippet').value = code;
+        bukaModal('modal-script-code');
+    }
+
+    function salinKodeAppsScript() {
+        const text = document.getElementById('apps-script-snippet').value;
+        navigator.clipboard.writeText(text).then(() => {
+            tampilToast('Seluruh kode Apps Script berhasil disalin!', 'success');
+        });
     }
 
     // ==============================================
@@ -1818,6 +2259,7 @@
         const emptyState = document.getElementById('empty-cart');
         const btnClear = document.getElementById('btn-clear-cart');
         const totalEl = document.getElementById('total-cart');
+        const mobileTotalEl = document.getElementById('mobile-total-val');
         const countEl = document.getElementById('cart-item-count');
         
         tbody.innerHTML = '';
@@ -1828,6 +2270,7 @@
             emptyState.style.display = 'block';
             btnClear.style.display = 'none';
             totalEl.innerText = 'Rp 0';
+            if (mobileTotalEl) mobileTotalEl.innerText = 'Rp 0';
             countEl.innerText = '0 item dipilih';
             return;
         }
@@ -1860,7 +2303,9 @@
             tbody.appendChild(tr);
         });
 
-        totalEl.innerText = 'Rp ' + total.toLocaleString('id-ID');
+        const totalFormatted = 'Rp ' + total.toLocaleString('id-ID');
+        totalEl.innerText = totalFormatted;
+        if (mobileTotalEl) mobileTotalEl.innerText = totalFormatted;
         countEl.innerText = `${keranjang.length} jenis item (${totalQty} total unit)`;
     }
 
@@ -1908,8 +2353,15 @@
         }
 
         const btnSave = document.getElementById('btn-save');
-        btnSave.disabled = true;
-        btnSave.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
+        const btnSaveMobile = document.getElementById('btn-save-mobile');
+        if (btnSave) {
+            btnSave.disabled = true;
+            btnSave.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
+        }
+        if (btnSaveMobile) {
+            btnSaveMobile.disabled = true;
+            btnSaveMobile.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
+        }
 
         const payload = {
             aksi: 'simpanOrder',
@@ -1920,11 +2372,10 @@
             }
         };
 
-        // Salin snapshot item untuk pratinjau invoice instan
         const itemsSnapshot = [...keranjang];
         const totalBayar = keranjang.reduce((acc, x) => acc + x.subtotal, 0);
 
-        fetch(API_URL, {
+        fetch(getApiUrl(), {
             method: 'POST',
             body: JSON.stringify(payload)
         })
@@ -1934,7 +2385,7 @@
             
             // Buka Modal Pratinjau Invoice Instan Pasca-Checkout
             tampilkanModalInvoiceInstan({
-                id: 'INV-' + Date.now().toString().slice(-4),
+                id: (result && result.id) ? result.id : ('INV-' + Date.now().toString().slice(-4)),
                 pelanggan: c,
                 phone: phone,
                 tanggal: new Date().toLocaleString('id-ID'),
@@ -1953,11 +2404,17 @@
         })
         .catch(err => {
             console.error("Gagal simpan order:", err);
-            tampilToast('Gagal menyimpan transaksi ke server. Coba periksa koneksi internet.', 'error');
+            tampilToast('Gagal menyimpan ke server. Periksa URL Sheets di menu Pengaturan.', 'error');
         })
         .finally(() => {
-            btnSave.disabled = false;
-            btnSave.innerHTML = '<i class="fa-solid fa-check-circle"></i> <span>Simpan Transaksi</span>';
+            if (btnSave) {
+                btnSave.disabled = false;
+                btnSave.innerHTML = '<i class="fa-solid fa-check-circle"></i> <span>Simpan Transaksi</span>';
+            }
+            if (btnSaveMobile) {
+                btnSaveMobile.disabled = false;
+                btnSaveMobile.innerHTML = '<i class="fa-solid fa-check-circle"></i> <span>Simpan Transaksi</span>';
+            }
         });
     }
 
@@ -2013,13 +2470,12 @@
     // MODUL 2: KATALOG LAYANAN & PRODUK
     // ==============================================
     function muatProduk() {
-        fetch(`${API_URL}?aksi=getProduk`)
+        fetch(`${getApiUrl()}?aksi=getProduk`)
         .then(res => res.json())
         .then(data => {
             if (!data) return;
-            dProduk = data.slice(1); // skip header row
+            dProduk = data.slice(1);
 
-            // Dropdown di kasir POS
             const s = document.getElementById('prod');
             if (s) {
                 s.innerHTML = '<option value="">-- Pilih dari Katalog --</option>';
@@ -2030,7 +2486,6 @@
                 });
             }
 
-            // Tabel di tab Katalog
             const t = document.querySelector('#t-prod-list tbody');
             const emptyProd = document.getElementById('empty-prod');
             if (t) {
@@ -2065,7 +2520,6 @@
         })
         .catch(err => {
             console.error("Gagal muat produk:", err);
-            tampilToast('Gagal memuat katalog produk', 'error');
         });
     }
 
@@ -2079,7 +2533,7 @@
             return;
         }
 
-        fetch(API_URL, {
+        fetch(getApiUrl(), {
             method: 'POST',
             body: JSON.stringify({
                 aksi: 'tambahProduk',
@@ -2101,7 +2555,7 @@
 
     function hapusProd(nama) {
         if (confirm(`Hapus layanan "${nama}" dari katalog?`)) {
-            fetch(API_URL, {
+            fetch(getApiUrl(), {
                 method: 'POST',
                 body: JSON.stringify({ aksi: 'hapusProduk', nama: nama })
             })
@@ -2120,19 +2574,16 @@
     // MODUL 3: RIWAYAT TRANSAKSI (GROUP BY ID = 1 INVOICE)
     // ==============================================
     function muatRiwayat() {
-        fetch(`${API_URL}?aksi=getTransaksi`)
+        fetch(`${getApiUrl()}?aksi=getTransaksi`)
         .then(res => res.json())
         .then(data => {
             if (!data) return;
             rawRiwayat = data;
-            
-            // Kelompokkan data per transaksi berdasarkan ID Order (r[1])
             groupedRiwayat = groupTransactions(rawRiwayat);
             renderTabelRiwayat(groupedRiwayat);
         })
         .catch(err => {
             console.error("Gagal muat riwayat:", err);
-            tampilToast('Gagal memuat riwayat transaksi', 'error');
         });
     }
 
@@ -2177,13 +2628,13 @@
             }
         });
 
-        // Ubah Map menjadi Array terurut (transaksi terbaru di atas)
         return Array.from(map.values());
     }
 
     function renderTabelRiwayat(list) {
         const tbody = document.querySelector('#t-his tbody');
         const emptyHis = document.getElementById('empty-his');
+        if (!tbody) return;
         tbody.innerHTML = '';
 
         if (list.length === 0) {
@@ -2257,7 +2708,7 @@
 
     function konfirmasiHapusTransaksi(id) {
         if (confirm(`Hapus seluruh transaksi ${id}? Seluruh item pada faktur ini akan dihapus.`)) {
-            fetch(API_URL, {
+            fetch(getApiUrl(), {
                 method: 'POST',
                 body: JSON.stringify({ aksi: 'hapusTransaksi', id: id })
             })
@@ -2273,7 +2724,7 @@
     }
 
     // ==============================================
-    // MODUL 4: NOTA & SERVICE GADGET (FITUR BARU)
+    // MODUL 4: NOTA & SERVICE GADGET (DENGAN INTEGRASI GOOGLE SHEETS)
     // ==============================================
     function muatDataServisLokal() {
         try {
@@ -2293,6 +2744,79 @@
         } catch (e) {
             console.error("Gagal menyimpan data servis:", e);
         }
+    }
+
+    // SINKRONISASI SERVIS DENGAN GOOGLE SHEETS
+    function muatDataServisDariServer() {
+        tampilToast('Menghubungkan ke Google Sheets...', 'info');
+        fetch(`${getApiUrl()}?aksi=getService`)
+        .then(res => res.json())
+        .then(rows => {
+            if (Array.isArray(rows) && rows.length > 1) {
+                // Parsing baris dari Google Sheets tab Servis
+                const fromServer = [];
+                for (let i = 1; i < rows.length; i++) {
+                    const r = rows[i];
+                    if (!r[1]) continue;
+                    fromServer.push({
+                        id: String(r[1]),
+                        tanggal: r[2] || r[0],
+                        estimasi: r[3] || '-',
+                        teknisi: r[4] || 'Teknisi Signline',
+                        pelanggan: {
+                            nama: r[5] || 'Pelanggan',
+                            hp: String(r[6] || ''),
+                            alamat: r[7] || '-'
+                        },
+                        perangkat: {
+                            kategori: r[8] || 'Gadget',
+                            model: r[9] || '-',
+                            imei: r[10] || '-',
+                            warna: r[11] || '-',
+                            password: r[12] || '-',
+                            kondisiFisik: r[13] || '-',
+                            kelengkapan: r[14] || '-'
+                        },
+                        keluhan: r[15] || '-',
+                        kondisiMasuk: r[16] || '-',
+                        biaya: {
+                            namaJasa: r[17] || 'Jasa Servis',
+                            biayaJasa: Number(r[18]) || 0,
+                            spareparts: [],
+                            totalSpareparts: Number(r[20]) || 0,
+                            grandTotal: Number(r[21]) || 0,
+                            dp: Number(r[22]) || 0,
+                            sisa: Number(r[23]) || 0,
+                            statusBayar: r[24] || 'Belum Bayar'
+                        },
+                        garansi: r[25] || '30 Hari',
+                        status: r[26] || 'Diterima',
+                        catatanTeknisi: r[27] || '-',
+                        riwayatStatus: []
+                    });
+                }
+                
+                // Gabungkan dengan data lokal (utamakan yang paling baru)
+                const mapId = new Map();
+                dataServis.forEach(item => mapId.set(item.id, item));
+                fromServer.forEach(item => {
+                    if (!mapId.has(item.id)) {
+                        mapId.set(item.id, item);
+                    }
+                });
+                dataServis = Array.from(mapId.values());
+                simpanDataServisLokal();
+                tampilToast('Data servis berhasil disinkronkan dengan Google Sheets!', 'success');
+            } else {
+                tampilToast('Data Google Sheets terbaca (lokal tersinkron)', 'info');
+            }
+            filterDaftarServis();
+        })
+        .catch(err => {
+            console.error("Gagal sinkron servis:", err);
+            tampilToast('Gagal terhubung ke sheet Servis. Menggunakan data lokal.', 'warning');
+            filterDaftarServis();
+        });
     }
 
     function updateBadgeServisAktif() {
@@ -2337,14 +2861,12 @@
         const rand = Math.floor(1000 + Math.random() * 9000);
         if (noEl) noEl.value = `SRV-${y}${m}${d}-${rand}`;
 
-        // Set default waktu
         const dateInput = document.getElementById('srv-date');
         if (dateInput && !dateInput.value) {
             const localIso = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
             dateInput.value = localIso;
         }
 
-        // Reset sparepart dinamis
         const partsBody = document.getElementById('srv-parts-body');
         if (partsBody) partsBody.innerHTML = '';
         sparepartCount = 0;
@@ -2408,7 +2930,6 @@
         document.getElementById('srv-grand-total').innerText = 'Rp ' + grandTotal.toLocaleString('id-ID');
         document.getElementById('srv-balance').innerText = 'Rp ' + balance.toLocaleString('id-ID');
 
-        // Otomatisasi status bayar
         const payStatus = document.getElementById('srv-pay-status');
         if (dp >= grandTotal && grandTotal > 0) {
             payStatus.value = 'Lunas';
@@ -2438,7 +2959,6 @@
         const devPass = document.getElementById('srv-dev-pass').value.trim();
         const devCond = document.getElementById('srv-dev-cond').value.trim();
 
-        // Kelengkapan
         const kelengkapan = [];
         if (document.getElementById('k-unit').checked) kelengkapan.push('Unit Saja');
         if (document.getElementById('k-charger').checked) kelengkapan.push('Charger/Adaptor');
@@ -2457,7 +2977,6 @@
         const { laborCost, partsTotal, grandTotal, dp, balance } = hitungTotalServis();
         const payStatus = document.getElementById('srv-pay-status').value;
 
-        // Ambil daftar sparepart
         const partsList = [];
         document.querySelectorAll('#srv-parts-body tr').forEach(tr => {
             const pName = tr.querySelector('.part-name').value.trim();
@@ -2507,14 +3026,26 @@
             ]
         };
 
-        // Simpan ke array
+        // 1. Simpan Lokal
         dataServis.unshift(newService);
         simpanDataServisLokal();
+
+        // 2. Kirim ke Google Sheets di background
+        fetch(getApiUrl(), {
+            method: 'POST',
+            body: JSON.stringify({ aksi: 'simpanService', data: newService })
+        })
+        .then(res => res.json())
+        .then(() => {
+            tampilToast(`Nota Servis ${no} tersinkron ke Google Sheets!`, 'success');
+        })
+        .catch(err => {
+            console.warn("Gagal sinkron servis ke Google Sheet (tersimpan lokal):", err);
+        });
 
         tampilToast(`Nota Servis ${no} berhasil dibuat!`, 'success');
         gantiSubService('list');
 
-        // Buka dialog pilihan cetak segera
         if (confirm(`Nota Servis ${no} tersimpan. Ingin cetak tanda terima sekarang?`)) {
             cetakDokumenServis(newService, 'thermal');
         }
@@ -2698,6 +3229,20 @@
             });
 
             simpanDataServisLokal();
+
+            // Update ke Google Sheets
+            fetch(getApiUrl(), {
+                method: 'POST',
+                body: JSON.stringify({
+                    aksi: 'updateStatusService',
+                    id: srv.id,
+                    status: st,
+                    catatanTeknisi: note,
+                    sisa: srv.biaya.sisa,
+                    statusBayar: srv.biaya.statusBayar
+                })
+            }).catch(e => console.warn("Update status di Sheets gagal:", e));
+
             tampilToast(`Status servis ${srv.id} diperbarui`, 'success');
             tutupModal('modal-service-action');
             filterDaftarServis();
@@ -2716,6 +3261,13 @@
         if (confirm(`Hapus data servis ${id}? Tindakan ini tidak dapat dibatalkan.`)) {
             dataServis = dataServis.filter(x => x.id !== id);
             simpanDataServisLokal();
+
+            // Hapus juga di Google Sheets
+            fetch(getApiUrl(), {
+                method: 'POST',
+                body: JSON.stringify({ aksi: 'hapusService', id: id })
+            }).catch(e => console.warn("Hapus servis di Sheets gagal:", e));
+
             tampilToast(`Nota servis ${id} telah dihapus`, 'info');
             filterDaftarServis();
         }
@@ -3090,7 +3642,7 @@
     // MODUL 5: LAPORAN & GRAFIK KEUANGAN
     // ==============================================
     function muatGrafik() {
-        fetch(`${API_URL}?aksi=getDataGrafik`)
+        fetch(`${getApiUrl()}?aksi=getDataGrafik`)
         .then(res => res.json())
         .then(resData => {
             if (!resData || !resData.harian || !resData.bulanan) return;
