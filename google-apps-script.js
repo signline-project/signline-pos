@@ -175,7 +175,25 @@ function doPost(e) {
       return responJson({ status: 'sukses' });
     }
 
-    // 4. HAPUS TRANSAKSI DARI RIWAYAT
+    // 4. EDIT PRODUK / LAYANAN DI KATALOG
+    if (aksi === 'editProduk') {
+      var sheetProd = dapatkanSheetProduk(ss);
+      var targetNamaLama = param.namaLama;
+      var p = param.data || {};
+      var rows = sheetProd.getDataRange().getValues();
+      for (var i = 1; i < rows.length; i++) {
+        if (rows[i][0] == targetNamaLama) {
+          var rowNum = i + 1;
+          sheetProd.getRange(rowNum, 1).setValue(p.nama || targetNamaLama);
+          sheetProd.getRange(rowNum, 2).setValue(Number(p.hpp || 0));
+          sheetProd.getRange(rowNum, 3).setValue(Number(p.jual || 0));
+          return responJson({ status: 'sukses' });
+        }
+      }
+      return responJson({ status: 'error', pesan: 'Produk tidak ditemukan' });
+    }
+
+    // 5. HAPUS TRANSAKSI DARI RIWAYAT
     if (aksi === 'hapusTransaksi') {
       var sheetTrx = dapatkanSheetTransaksi(ss);
       var idTarget = param.id;
