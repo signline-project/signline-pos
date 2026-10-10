@@ -93,6 +93,17 @@ function doGet(e) {
       return responJson(rows);
     }
 
+    // 5. AMBIL DATA PROYEK DIGITAL (WEBSITE, DESAIN, APPS)
+    if (aksi === 'getDigitalProjects') {
+      var sheetDgt = dapatkanSheetProyekDigital(ss);
+      var lastRow = sheetDgt.getLastRow();
+      if (lastRow <= 1) {
+        return responJson([]);
+      }
+      var rows = sheetDgt.getRange(1, 1, lastRow, sheetDgt.getLastColumn()).getValues();
+      return responJson(rows);
+    }
+
     // DEFAULT / PING TES
     return responJson({
       status: "online",
@@ -284,6 +295,72 @@ function doPost(e) {
       return responJson({ status: 'sukses' });
     }
 
+    // 8. SIMPAN PROYEK DIGITAL (WEBSITE, DESAIN, APPS)
+    if (aksi === 'simpanDigitalProject') {
+      var sheetDgt = dapatkanSheetProyekDigital(ss);
+      var p = param.data || {};
+      var now = new Date();
+      var rincianText = (p.rincianBiaya || []).map(function(x) {
+        return x.nama + ' (Rp ' + Number(x.biaya || 0).toLocaleString('id-ID') + ')';
+      }).join('; ');
+
+      sheetDgt.appendRow([
+        Utilities.formatDate(now, "GMT+7", "M/d/yyyy HH:mm:ss"),
+        p.id,
+        p.tanggal || Utilities.formatDate(now, "GMT+7", "yyyy-MM-dd HH:mm"),
+        p.deadline || '-',
+        p.subLayanan || 'Website',
+        (p.klien && p.klien.nama) || 'Klien',
+        (p.klien && p.klien.kontak) || '',
+        (p.klien && p.klien.email) || '-',
+        p.judul || '-',
+        p.scope || '-',
+        p.teknis || '-',
+        rincianText || '-',
+        Number(p.totalBiaya || 0),
+        Number(p.dp || 0),
+        Number(p.sisa || 0),
+        p.statusBayar || 'Belum Bayar',
+        p.statusProyek || 'Brief / Antrean',
+        p.pic || 'Tim Signline',
+        p.catatanProgres || '-'
+      ]);
+
+      return responJson({ status: 'sukses', id: p.id });
+    }
+
+    // 9. UPDATE STATUS PROYEK DIGITAL
+    if (aksi === 'updateStatusDigitalProject') {
+      var sheetDgt = dapatkanSheetProyekDigital(ss);
+      var idTarget = param.id;
+      var rows = sheetDgt.getDataRange().getValues();
+      for (var i = 1; i < rows.length; i++) {
+        if (rows[i][1] == idTarget) {
+          var rowNum = i + 1;
+          if (param.statusProyek) sheetDgt.getRange(rowNum, 17).setValue(param.statusProyek);
+          if (param.catatanProgres) sheetDgt.getRange(rowNum, 19).setValue(param.catatanProgres);
+          if (param.sisa !== undefined) sheetDgt.getRange(rowNum, 15).setValue(Number(param.sisa));
+          if (param.statusBayar) sheetDgt.getRange(rowNum, 16).setValue(param.statusBayar);
+          break;
+        }
+      }
+      return responJson({ status: 'sukses' });
+    }
+
+    // 10. HAPUS PROYEK DIGITAL
+    if (aksi === 'hapusDigitalProject') {
+      var sheetDgt = dapatkanSheetProyekDigital(ss);
+      var idTarget = param.id;
+      var rows = sheetDgt.getDataRange().getValues();
+      for (var i = 1; i < rows.length; i++) {
+        if (rows[i][1] == idTarget) {
+          sheetDgt.deleteRow(i + 1);
+          break;
+        }
+      }
+      return responJson({ status: 'sukses' });
+    }
+
     return responJson({ status: 'error', pesan: 'Aksi tidak dikenali: ' + aksi });
 
   } catch (err) {
@@ -341,6 +418,20 @@ function dapatkanSheetServis(ss) {
       "Keluhan_Kerusakan", "Kondisi_Masuk", "Nama_Jasa", "Biaya_Jasa", "Rincian_Sparepart",
       "Total_Sparepart", "Grand_Total", "Uang_Muka_DP", "Sisa_Tagihan", "Status_Bayar",
       "Garansi", "Status_Servis", "Catatan_Teknisi"
+    ]);
+  }
+  return s;
+}
+
+function dapatkanSheetProyekDigital(ss) {
+  var s = ss.getSheetByName('ProyekDigital');
+  if (!s) {
+    s = ss.insertSheet('ProyekDigital');
+    s.appendRow([
+      "Timestamp", "No_Proyek", "Tanggal_Mulai", "Estimasi_Deadline", "Sub_Layanan",
+      "Nama_Klien", "No_Kontak", "Email_Alamat", "Judul_Proyek", "Scope_Deliverables",
+      "Catatan_Teknis", "Rincian_Biaya", "Total_Biaya", "Uang_Muka_DP", "Sisa_Tagihan",
+      "Status_Bayar", "Status_Proyek", "Project_Lead", "Catatan_Progres"
     ]);
   }
   return s;

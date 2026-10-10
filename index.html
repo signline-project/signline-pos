@@ -1265,6 +1265,11 @@
             <span>Service</span>
             <span class="nav-badge" id="badge-active-service" style="display:none;">0</span>
         </button>
+        <button class="nav-link" id="nav-dgt" onclick="pindahTab('dgt')" title="Proyek Digital & Kreatif (Website, Desain & Apps)">
+            <i class="fa-solid fa-laptop-code"></i>
+            <span>Proyek Digital</span>
+            <span class="nav-badge" id="badge-active-digital" style="display:none;">0</span>
+        </button>
         <button class="nav-link" id="nav-inv" onclick="pindahTab('inv')" title="Katalog Layanan & Produk">
             <i class="fa-solid fa-boxes-stacked"></i>
             <span>Katalog</span>
@@ -1775,6 +1780,281 @@
         </section>
 
         <!-- ==============================================
+             TAB BARU: PROYEK DIGITAL & KREATIF (sec-dgt)
+             Sub-Layanan: Website, Graphic Design, Apps Development
+             ============================================== -->
+        <section id="sec-dgt" style="display:none;">
+            <!-- Digital Projects Header Tabs -->
+            <div class="service-tabs">
+                <button class="service-tab-btn active" id="btn-sub-dgt-list" onclick="gantiSubDigital('list')">
+                    <i class="fa-solid fa-list-check"></i> Daftar Proyek Aktif
+                </button>
+                <button class="service-tab-btn" id="btn-sub-dgt-form" onclick="gantiSubDigital('form')">
+                    <i class="fa-solid fa-plus-circle"></i> Buat SPK Proyek Baru
+                </button>
+            </div>
+
+            <!-- SUB-VIEW 1: DAFTAR PROYEK DIGITAL -->
+            <div id="view-dgt-list">
+                <div class="ui-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title"><i class="fa-solid fa-laptop-code"></i> Pipeline & Proyek Digital Kreatif</div>
+                            <div class="card-subtitle">Kelola order Website, Graphic Design, dan Apps Development dengan rincian biaya fleksibel</div>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-secondary btn-sm" onclick="muatDataDigitalDariServer()" title="Sinkronkan dengan Google Sheets">
+                                <i class="fa-solid fa-rotate"></i> Sync Sheet
+                            </button>
+                            <button class="btn btn-primary btn-sm" onclick="gantiSubDigital('form')">
+                                <i class="fa-solid fa-plus"></i> Proyek Baru
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filter Sub-Layanan Kategori Pills -->
+                    <div style="display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap;">
+                        <button type="button" class="btn btn-sm btn-primary" id="pill-dgt-all" onclick="filterSubLayananDigital('')">Semua Kategori</button>
+                        <button type="button" class="btn btn-sm btn-secondary" id="pill-dgt-web" onclick="filterSubLayananDigital('Website')"><i class="fa-solid fa-globe"></i> Website</button>
+                        <button type="button" class="btn btn-sm btn-secondary" id="pill-dgt-dsg" onclick="filterSubLayananDigital('Graphic Design')"><i class="fa-solid fa-palette"></i> Graphic Design</button>
+                        <button type="button" class="btn btn-sm btn-secondary" id="pill-dgt-app" onclick="filterSubLayananDigital('Apps Development')"><i class="fa-solid fa-mobile-screen-button"></i> Apps Development</button>
+                    </div>
+
+                    <!-- Filter & Search Bar -->
+                    <div class="form-row" style="margin-bottom: 16px;">
+                        <div class="form-group" style="flex: 2;">
+                            <input type="text" id="dgt-search" class="form-control" placeholder="Cari No. SPK, Klien, Kontak WhatsApp, Judul Proyek..." oninput="filterDaftarProyekDigital()">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <select id="dgt-filter-status" class="form-control" onchange="filterDaftarProyekDigital()">
+                                <option value="">-- Semua Status --</option>
+                                <option value="Brief / Antrean">🟡 Brief / Antrean</option>
+                                <option value="Dalam Pengerjaan">🔵 Sedang Dikerjakan (In Progress)</option>
+                                <option value="Review & Revisi">🟠 Review & Revisi Klien</option>
+                                <option value="Selesai (Delivered)">🟢 Selesai / Serah Terima</option>
+                                <option value="Garansi / Maintenance">🟣 Garansi / Maintenance</option>
+                                <option value="Dibatalkan">🔴 Dibatalkan</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Tabel Daftar Proyek -->
+                    <div class="table-responsive">
+                        <table class="data-table" id="t-digital-list">
+                            <thead>
+                                <tr>
+                                    <th>No. SPK</th>
+                                    <th>Tgl / Deadline</th>
+                                    <th>Klien</th>
+                                    <th>Sub-Layanan & Judul</th>
+                                    <th style="text-align: right;">Total / DP</th>
+                                    <th style="text-align: right;">Sisa</th>
+                                    <th>Status Proyek</th>
+                                    <th style="text-align: center;" width="180">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Diisi via renderDaftarDigital() -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Empty State Proyek Digital -->
+                    <div id="empty-digital" class="empty-state">
+                        <i class="fa-solid fa-folder-open"></i>
+                        <div class="empty-state-title">Belum Ada Proyek Digital</div>
+                        <div class="empty-state-desc">Klik tombol "Buat SPK Proyek Baru" untuk mencatat order Website, Graphic Design, atau Apps Development.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUB-VIEW 2: FORM SPK PROYEK BARU -->
+            <div id="view-dgt-form" style="display:none;">
+                <div class="ui-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title"><i class="fa-solid fa-file-contract"></i> Formulir SPK & Order Proyek Digital</div>
+                            <div class="card-subtitle">Input spesifikasi, ruang lingkup pengerjaan, rincian biaya manual, dan termin pembayaran</div>
+                        </div>
+                        <button class="btn btn-secondary btn-sm" onclick="gantiSubDigital('list')">
+                            <i class="fa-solid fa-arrow-left"></i> Kembali ke Daftar
+                        </button>
+                    </div>
+
+                    <form id="form-digital" onsubmit="event.preventDefault(); simpanProyekDigital();">
+                        <!-- Identitas SPK & Timeline -->
+                        <div class="form-row">
+                            <div class="form-group" style="flex: 2;">
+                                <label class="form-label" for="dgt-no">No. SPK / Proyek *</label>
+                                <input type="text" id="dgt-no" class="form-control num-cell" readonly style="font-weight: 700; background: var(--bg-subtle);">
+                            </div>
+                            <div class="form-group" style="flex: 2;">
+                                <label class="form-label" for="dgt-category">Kategori Sub-Layanan *</label>
+                                <select id="dgt-category" class="form-control" onchange="sesuaikanFormDigital()">
+                                    <option value="Website">🌐 Website Development</option>
+                                    <option value="Graphic Design">🎨 Graphic Design</option>
+                                    <option value="Apps Development">📱 Apps Development</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="flex: 2;">
+                                <label class="form-label" for="dgt-date">Tanggal Mulai / Masuk</label>
+                                <input type="datetime-local" id="dgt-date" class="form-control">
+                            </div>
+                            <div class="form-group" style="flex: 2;">
+                                <label class="form-label" for="dgt-deadline">Estimasi Selesai / Deadline</label>
+                                <input type="date" id="dgt-deadline" class="form-control">
+                            </div>
+                            <div class="form-group" style="flex: 2;">
+                                <label class="form-label" for="dgt-lead">Project Lead / PIC</label>
+                                <input type="text" id="dgt-lead" class="form-control" value="Tim Kreatif Signline">
+                            </div>
+                        </div>
+
+                        <!-- Data Klien / Pemesan -->
+                        <div style="border-top: 1px solid var(--border-color); padding-top: 16px; margin-top: 8px;">
+                            <h4 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 12px; color: var(--accent);">
+                                <i class="fa-solid fa-user-tie"></i> Data Klien / Pemesan
+                            </h4>
+                            <div class="form-row">
+                                <div class="form-group" style="flex: 2;">
+                                    <label class="form-label" for="dgt-cust-name">Nama Klien / Perusahaan / Brand *</label>
+                                    <input type="text" id="dgt-cust-name" class="form-control" placeholder="Contoh: PT Kreasi Nusantara / Toko Sejahtera" required>
+                                </div>
+                                <div class="form-group" style="flex: 2;">
+                                    <label class="form-label" for="dgt-cust-phone">No. WhatsApp / HP * (Aktif)</label>
+                                    <input type="text" id="dgt-cust-phone" class="form-control" placeholder="Contoh: 08123456789" required>
+                                </div>
+                                <div class="form-group" style="flex: 3;">
+                                    <label class="form-label" for="dgt-cust-email">Email / Alamat / Website Klien (Opsional)</label>
+                                    <input type="text" id="dgt-cust-email" class="form-control" placeholder="klien@gmail.com atau alamat domisili">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Spesifikasi & Ruang Lingkup Proyek (Ketik Bebas Tanpa Katalog) -->
+                        <div style="border-top: 1px solid var(--border-color); padding-top: 16px; margin-top: 8px;">
+                            <h4 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 12px; color: var(--accent);">
+                                <i class="fa-solid fa-layer-group"></i> Ruang Lingkup & Spesifikasi Pekerjaan
+                            </h4>
+                            <div class="form-row">
+                                <div class="form-group" style="flex: 3;">
+                                    <label class="form-label" for="dgt-title">Judul Proyek / Paket Pekerjaan *</label>
+                                    <input type="text" id="dgt-title" class="form-control" placeholder="Contoh: Website Landing Page & Formulir Booking" required>
+                                </div>
+                                <div class="form-group" style="flex: 2;">
+                                    <label class="form-label" for="dgt-terms">Ketentuan Revisi & Garansi</label>
+                                    <input type="text" id="dgt-terms" class="form-control" value="Revisi Minor 3x, Garansi Bug 30 Hari">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group" style="flex: 3;">
+                                    <label class="form-label" for="dgt-scope">Ruang Lingkup Pekerjaan & Deliverables (Ketik Bebas) *</label>
+                                    <textarea id="dgt-scope" class="form-control" style="min-height: 85px;" placeholder="Contoh: Desain 5 halaman responsif, integrasi payment gateway, form kontak WhatsApp, setup hosting..." required></textarea>
+                                </div>
+                                <div class="form-group" style="flex: 2;">
+                                    <label class="form-label" for="dgt-specs">Platform / Format File / Catatan Teknis</label>
+                                    <textarea id="dgt-specs" class="form-control" style="min-height: 85px;" placeholder="Contoh: WordPress + Elementor, domain .com 1 tahun, atau Adobe Illustrator + PNG transparan"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group" style="flex: 1;">
+                                    <label class="form-label" for="dgt-asset-link">Link Brief / Google Drive / Dokumen Acuan (Opsional)</label>
+                                    <input type="url" id="dgt-asset-link" class="form-control" placeholder="https://drive.google.com/drive/folders/...">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rincian Biaya Multi-Item Dinamis (Ketik Bebas Tanpa Katalog) -->
+                        <div style="border-top: 1px solid var(--border-color); padding-top: 16px; margin-top: 8px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                                <div>
+                                    <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--accent); margin:0;">
+                                        <i class="fa-solid fa-coins"></i> Rincian Biaya & Komponen Pekerjaan (Input Bebas)
+                                    </h4>
+                                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Ketik sendiri nama komponen pekerjaan & biaya tanpa menggunakan katalog</div>
+                                </div>
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="tambahBarisBiayaDigital()">
+                                    <i class="fa-solid fa-plus"></i> Tambah Baris Biaya
+                                </button>
+                            </div>
+
+                            <!-- Tabel Rincian Biaya Dinamis -->
+                            <div class="table-responsive">
+                                <table class="data-table" id="t-dgt-costs">
+                                    <thead>
+                                        <tr>
+                                            <th>Deskripsi Pekerjaan / Modul / Komponen</th>
+                                            <th width="200" style="text-align:right;">Biaya (Rp)</th>
+                                            <th width="50" style="text-align:center;">X</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dgt-costs-body">
+                                        <!-- Baris biaya ditambahkan dinamis -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Ringkasan Biaya & Pembayaran Termin DP -->
+                            <div class="checkout-box" style="margin-top: 16px;">
+                                <div style="flex: 1; min-width: 250px;">
+                                    <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:0.875rem;">
+                                        <span>Total Rincian Biaya:</span>
+                                        <strong id="dgt-sum-total" class="num-cell">Rp 0</strong>
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between; border-top:1px solid var(--border-color); padding-top:6px; font-size:1.05rem;">
+                                        <strong>Total Nilai Kontrak:</strong>
+                                        <strong id="dgt-grand-total" class="num-cell" style="color:var(--accent);">Rp 0</strong>
+                                    </div>
+                                </div>
+
+                                <div style="display:flex; gap:16px; flex-wrap:wrap; align-items:flex-end;">
+                                    <div class="form-group">
+                                        <label class="form-label" for="dgt-dp">Uang Muka / DP (Rp)</label>
+                                        <input type="number" id="dgt-dp" class="form-control num-cell" value="0" min="0" oninput="hitungTotalDigital()" style="width: 140px;">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Sisa Tagihan Pelunasan</label>
+                                        <div id="dgt-balance" class="num-cell" style="font-weight:700; font-size:1.15rem; color:var(--danger); padding:8px 0;">Rp 0</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="dgt-pay-status">Status Pembayaran</label>
+                                        <select id="dgt-pay-status" class="form-control" style="width:140px;">
+                                            <option value="Belum Bayar">Belum Bayar</option>
+                                            <option value="DP (Uang Muka)">DP (Uang Muka)</option>
+                                            <option value="Termin Bertahap">Termin Bertahap</option>
+                                            <option value="Lunas">Lunas</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="dgt-project-status">Status Pengerjaan Awal</label>
+                                        <select id="dgt-project-status" class="form-control" style="width:170px;">
+                                            <option value="Brief / Antrean">Brief / Antrean</option>
+                                            <option value="Dalam Pengerjaan">Sedang Dikerjakan</option>
+                                            <option value="Review & Revisi">Review & Revisi</option>
+                                            <option value="Selesai (Delivered)">Selesai</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
+                            <button type="button" class="btn btn-secondary" onclick="gantiSubDigital('list')">
+                                Batal
+                            </button>
+                            <button type="submit" class="btn btn-primary" id="btn-save-digital">
+                                <i class="fa-solid fa-save"></i> Simpan SPK Proyek
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==============================================
              TAB 3: KATALOG LAYANAN & PRODUK (sec-inv)
              ============================================== -->
         <section id="sec-inv" style="display:none;">
@@ -1999,17 +2279,19 @@
                     <i class="fa-solid fa-table-cells" style="color:var(--accent);"></i> Panduan Kolom Sheet "Servis"
                 </h4>
                 <p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:10px;">
-                    Untuk menyimpan data servis di Google Spreadsheet, buat tab/sheet baru bernama <b>Servis</b> dengan 28 kolom header berikut di baris pertama (Row 1):
+                    Google Apps Script Signline sudah otomatis membuat sheet <b>Servis</b> dan <b>ProyekDigital</b> jika belum ada. Anda juga dapat menyalin susunan header kolom secara manual:
                 </p>
-                <div style="background:var(--bg-subtle); padding:10px; border-radius:var(--radius-md); font-family:'JetBrains Mono',monospace; font-size:0.75rem; overflow-x:auto; white-space:nowrap; border:1px solid var(--border-color); margin-bottom:12px;">
-Timestamp	No_Nota	Tanggal_Masuk	Estimasi_Selesai	Teknisi	Nama_Pelanggan	No_HP	Alamat_Pelanggan	Kategori_Perangkat	Tipe_Model	No_Seri_IMEI	Warna_Unit	Pola_Password	Kondisi_Fisik	Kelengkapan	Keluhan_Kerusakan	Kondisi_Masuk	Nama_Jasa	Biaya_Jasa	Rincian_Sparepart	Total_Sparepart	Grand_Total	Uang_Muka_DP	Sisa_Tagihan	Status_Bayar	Garansi	Status_Servis	Catatan_Teknisi
+                <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;">
+                    <button class="btn btn-secondary btn-sm" onclick="salinHeaderSheet()">
+                        <i class="fa-solid fa-copy"></i> Salin Header Servis (28 Kolom)
+                    </button>
+                    <button class="btn btn-secondary btn-sm" onclick="salinHeaderSheetDigital()">
+                        <i class="fa-solid fa-copy"></i> Salin Header Proyek Digital (19 Kolom)
+                    </button>
+                    <button class="btn btn-secondary btn-sm" onclick="tampilkanScriptApps()">
+                        <i class="fa-solid fa-code"></i> Lihat Kode Apps Script
+                    </button>
                 </div>
-                <button class="btn btn-secondary btn-sm" onclick="salinHeaderSheet()">
-                    <i class="fa-solid fa-copy"></i> Salin Header Kolom
-                </button>
-                <button class="btn btn-secondary btn-sm" onclick="tampilkanScriptApps()" style="margin-left:6px;">
-                    <i class="fa-solid fa-code"></i> Lihat Kode Apps Script
-                </button>
             </div>
         </div>
         <div class="modal-footer">
@@ -2115,6 +2397,37 @@ Timestamp	No_Nota	Tanggal_Masuk	Estimasi_Selesai	Teknisi	Nama_Pelanggan	No_HP	Al
     </div>
 </div>
 
+<!-- Modal Detail, Status & Pelunasan Proyek Digital -->
+<div id="modal-detail-digital" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-dgt-title">
+    <div class="modal-box" style="max-width: 680px;">
+        <div class="modal-header">
+            <div class="modal-title" id="modal-dgt-title"><i class="fa-solid fa-laptop-code"></i> Detail & Perkembangan Proyek Digital</div>
+            <button class="btn btn-secondary btn-icon" onclick="tutupModal('modal-detail-digital')" aria-label="Tutup">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body" id="modal-dgt-body">
+            <!-- Konten diisi dinamis oleh bukaModalDetailDigital() -->
+        </div>
+        <div class="modal-footer" style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" class="btn btn-secondary" id="btn-modal-dgt-print-thermal" title="Cetak Nota DP 58mm">
+                    <i class="fa-solid fa-receipt"></i> Nota 58mm
+                </button>
+                <button type="button" class="btn btn-info" id="btn-modal-dgt-print-a4" title="Cetak SPK & Invoice A4 Resmi">
+                    <i class="fa-solid fa-file-contract"></i> SPK & Invoice A4
+                </button>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button type="button" class="btn btn-secondary" onclick="tutupModal('modal-detail-digital')">Tutup</button>
+                <button type="button" class="btn btn-primary" id="btn-modal-save-dgt-status">
+                    <i class="fa-solid fa-check"></i> Simpan Pembaruan
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal Backup & Restore Data Servis -->
 <div id="modal-backup" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-backup-title">
     <div class="modal-box">
@@ -2171,6 +2484,9 @@ Timestamp	No_Nota	Tanggal_Masuk	Estimasi_Selesai	Teknisi	Nama_Pelanggan	No_HP	Al
     let rawRiwayat = [];
     let groupedRiwayat = [];
     let dataServis = [];
+    let dataDigital = [];
+    let digitalCostCount = 0;
+    let subLayananAktif = '';
     let sparepartCount = 0;
     let chartHarianInstance = null;
     let chartBulananInstance = null;
@@ -2259,9 +2575,11 @@ Timestamp	No_Nota	Tanggal_Masuk	Estimasi_Selesai	Teknisi	Nama_Pelanggan	No_HP	Al
         appDataLoaded = true;
         initApiConnectionCheck();
         muatDataServisLokal();
+        muatDataDigitalLokal();
         muatProduk();
         muatRiwayat();
         initSrvNoBaru();
+        initDgtNoBaru();
         perbaruiTampilanStickyMobile();
     }
 
@@ -2500,7 +2818,7 @@ Timestamp	No_Nota	Tanggal_Masuk	Estimasi_Selesai	Teknisi	Nama_Pelanggan	No_HP	Al
     // NAVIGASI TAB UTAMA
     function pindahTab(tab) {
         tabAktif = tab;
-        const sections = ['pos', 'srv', 'inv', 'his', 'rep'];
+        const sections = ['pos', 'srv', 'dgt', 'inv', 'his', 'rep'];
         sections.forEach(s => {
             const el = document.getElementById(`sec-${s}`);
             if (el) el.style.display = (s === tab ? 'block' : 'none');
@@ -2511,6 +2829,7 @@ Timestamp	No_Nota	Tanggal_Masuk	Estimasi_Selesai	Teknisi	Nama_Pelanggan	No_HP	Al
         const titles = {
             'pos': 'Kasir Penjualan & Layanan',
             'srv': 'Nota & Service Gadget Elektronik',
+            'dgt': 'Manajemen Proyek Digital & Desain Kreatif',
             'inv': 'Katalog Produk & Layanan',
             'his': 'Riwayat Transaksi Terpadu',
             'rep': 'Analisis Laporan & Omzet'
@@ -2526,6 +2845,10 @@ Timestamp	No_Nota	Tanggal_Masuk	Estimasi_Selesai	Teknisi	Nama_Pelanggan	No_HP	Al
         if (tab === 'srv') {
             muatDataServisLokal();
             filterDaftarServis();
+        }
+        if (tab === 'dgt') {
+            muatDataDigitalLokal();
+            filterDaftarProyekDigital();
         }
     }
 
@@ -2624,12 +2947,21 @@ Timestamp	No_Nota	Tanggal_Masuk	Estimasi_Selesai	Teknisi	Nama_Pelanggan	No_HP	Al
         navigator.clipboard.writeText(headers).then(() => {
             tampilToast('28 Header Kolom disalin ke clipboard! Tempelkan di baris 1 sheet "Servis"', 'success');
         }).catch(() => {
-            tampilToast('Gagal menyalin otomatis. Silakan salin manual dari kotak teks.', 'error');
+            tampilToast('Gagal menyalin otomatis. Silakan salin manual.', 'error');
+        });
+    }
+
+    function salinHeaderSheetDigital() {
+        const headers = "Timestamp\tNo_Proyek\tTanggal_Mulai\tEstimasi_Deadline\tSub_Layanan\tNama_Klien\tNo_Kontak\tEmail_Alamat\tJudul_Proyek\tScope_Deliverables\tCatatan_Teknis\tRincian_Biaya\tTotal_Biaya\tUang_Muka_DP\tSisa_Tagihan\tStatus_Bayar\tStatus_Proyek\tProject_Lead\tCatatan_Progres";
+        navigator.clipboard.writeText(headers).then(() => {
+            tampilToast('19 Header Kolom disalin ke clipboard! Tempelkan di baris 1 sheet "ProyekDigital"', 'success');
+        }).catch(() => {
+            tampilToast('Gagal menyalin otomatis. Silakan salin manual.', 'error');
         });
     }
 
     function tampilkanScriptApps() {
-        const code = "/**\n * ============================================================================\n * SIGNLINE STUDIO - GOOGLE APPS SCRIPT BACKEND (ALL-IN-ONE FULL CODE)\n * ============================================================================\n * Cara Pasang:\n * 1. Buka Google Spreadsheet Anda.\n * 2. Klik menu \"Ekstensi\" > \"Apps Script\".\n * 3. Hapus seluruh isi file Code.gs yang lama, lalu tempelkan SELURUH KODE ini.\n * 4. Klik ikon \"Simpan\" (Ctrl + S).\n * 5. Klik tombol \"Terapkan\" (Deploy) di kanan atas > pilih \"Penerapan baru\" (New deployment).\n * 6. Pilih jenis: \"Aplikasi Web\" (Web app).\n * 7. Konfigurasi penting:\n *    - Jalankan sebagai (Execute as): \"Saya\" (Me / akun Google Anda)\n *    - Siapa yang memiliki akses (Who has access): \"Siapa saja\" (Anyone) -> WAJIB!\n * 8. Klik \"Terapkan\" (Deploy). Jika muncul izin akses, klik \"Beri Akses\" (Review Permissions) > Pilih Akun > Advanced > Go to (unsafe) > Allow.\n * 9. Salin URL Aplikasi Web yang berakhiran \"/exec\", lalu masukkan ke menu [URL Sheet] di aplikasi Signline POS.\n * ============================================================================\n */\n\nfunction doGet(e) {\n  var param = (e && e.parameter) ? e.parameter : {};\n  var aksi = param.aksi || '';\n\n  try {\n    var ss = SpreadsheetApp.getActiveSpreadsheet();\n\n    // 1. AMBIL KATALOG PRODUK / LAYANAN\n    if (aksi === 'getProduk') {\n      var sheetProd = dapatkanSheetProduk(ss);\n      var data = sheetProd.getDataRange().getValues();\n      return responJson(data);\n    }\n\n    // 2. AMBIL RIWAYAT TRANSAKSI POS\n    if (aksi === 'getTransaksi') {\n      var sheetTrx = dapatkanSheetTransaksi(ss);\n      var lastRow = sheetTrx.getLastRow();\n      if (lastRow <= 1) {\n        return responJson([]);\n      }\n      var rows = sheetTrx.getRange(2, 1, lastRow - 1, sheetTrx.getLastColumn()).getValues();\n      // Urutkan transaksi terbaru di atas\n      rows.reverse();\n      return responJson(rows);\n    }\n\n    // 3. AMBIL DATA GRAFIK OMZET & PROFIT HARIAN & BULANAN\n    if (aksi === 'getDataGrafik') {\n      var sheetTrx = dapatkanSheetTransaksi(ss);\n      var lastRow = sheetTrx.getLastRow();\n      var namaBulan = [\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"Mei\", \"Jun\", \"Jul\", \"Agu\", \"Sep\", \"Okt\", \"Nov\", \"Des\"];\n      var harian = {};\n      var bulanan = {};\n\n      if (lastRow > 1) {\n        var data = sheetTrx.getRange(2, 1, lastRow - 1, sheetTrx.getLastColumn()).getValues();\n        for (var i = 0; i < data.length; i++) {\n          var row = data[i];\n          var rawDate = row[0];\n          if (!rawDate) continue;\n\n          var d = new Date(rawDate);\n          if (isNaN(d.getTime())) continue;\n\n          var strHari = d.getDate() + \" \" + namaBulan[d.getMonth()] + \" \" + d.getFullYear();\n          var strBulan = namaBulan[d.getMonth()] + \" \" + d.getFullYear();\n\n          var omzet = Number(row[7]) || 0;\n          var profit = Number(row[9]) || 0;\n\n          // Akumulasi Harian\n          if (!harian[strHari]) harian[strHari] = { omzet: 0, profit: 0 };\n          harian[strHari].omzet += omzet;\n          harian[strHari].profit += profit;\n\n          // Akumulasi Bulanan\n          if (!bulanan[strBulan]) bulanan[strBulan] = { omzet: 0, profit: 0 };\n          bulanan[strBulan].omzet += omzet;\n          bulanan[strBulan].profit += profit;\n        }\n      }\n      return responJson({ harian: harian, bulanan: bulanan });\n    }\n\n    // 4. AMBIL DATA SERVIS GADGET\n    if (aksi === 'getService') {\n      var sheetSrv = dapatkanSheetServis(ss);\n      var lastRow = sheetSrv.getLastRow();\n      if (lastRow <= 1) {\n        return responJson([]);\n      }\n      var rows = sheetSrv.getRange(1, 1, lastRow, sheetSrv.getLastColumn()).getValues();\n      return responJson(rows);\n    }\n\n    // DEFAULT / PING TES\n    return responJson({\n      status: \"online\",\n      pesan: \"Google Apps Script Signline Studio Aktif & Siap Digunakan\",\n      waktu: new Date().toLocaleString(\"id-ID\")\n    });\n\n  } catch (err) {\n    return responJson({ status: \"error\", pesan: err.toString() });\n  }\n}\n\nfunction doPost(e) {\n  var lock = LockService.getScriptLock();\n  lock.tryLock(10000);\n\n  try {\n    var ss = SpreadsheetApp.getActiveSpreadsheet();\n    var contents = (e && e.postData && e.postData.contents) ? e.postData.contents : '{}';\n    var param = JSON.parse(contents);\n    var aksi = param.aksi || '';\n\n    // 1. SIMPAN TRANSAKSI MULTI-ITEM KASIR POS\n    if (aksi === 'simpanOrder') {\n      var sheetTrx = dapatkanSheetTransaksi(ss);\n      var d = param.data || {};\n      var now = new Date();\n      var idOrder = 'SL-' + Math.floor(1000 + Math.random() * 9000);\n      var items = d.items || [];\n\n      items.forEach(function(it) {\n        var qty = Number(it.qty) || 1;\n        var hpp = Number(it.hpp) || 0;\n        var harga = Number(it.harga) || 0;\n        var subtotal = Number(it.subtotal) || (qty * harga);\n        var subtotalHpp = hpp * qty;\n        var profit = subtotal - subtotalHpp;\n\n        sheetTrx.appendRow([\n          Utilities.formatDate(now, \"GMT+7\", \"M/d/yyyy HH:mm:ss\"),\n          idOrder,\n          d.nama || 'Pelanggan Umum',\n          it.layanan || 'Layanan',\n          qty,\n          hpp,\n          harga,\n          subtotal,\n          subtotalHpp,\n          profit,\n          d.catatan || '-'\n        ]);\n      });\n\n      return responJson({ status: 'sukses', id: idOrder });\n    }\n\n    // 2. TAMBAH PRODUK / LAYANAN KE KATALOG\n    if (aksi === 'tambahProduk') {\n      var sheetProd = dapatkanSheetProduk(ss);\n      var p = param.data || {};\n      sheetProd.appendRow([\n        p.nama || 'Produk Baru',\n        Number(p.hpp || 0),\n        Number(p.jual || 0)\n      ]);\n      return responJson({ status: 'sukses' });\n    }\n\n    // 3. HAPUS PRODUK DARI KATALOG\n    if (aksi === 'hapusProduk') {\n      var sheetProd = dapatkanSheetProduk(ss);\n      var namaTarget = param.nama;\n      var rows = sheetProd.getDataRange().getValues();\n      for (var i = 1; i < rows.length; i++) {\n        if (rows[i][0] == namaTarget) {\n          sheetProd.deleteRow(i + 1);\n          break;\n        }\n      }\n      return responJson({ status: 'sukses' });\n    }\n\n    // 4. EDIT PRODUK / LAYANAN DI KATALOG\n    if (aksi === 'editProduk') {\n      var sheetProd = dapatkanSheetProduk(ss);\n      var targetNamaLama = param.namaLama;\n      var p = param.data || {};\n      var rows = sheetProd.getDataRange().getValues();\n      for (var i = 1; i < rows.length; i++) {\n        if (rows[i][0] == targetNamaLama) {\n          var rowNum = i + 1;\n          sheetProd.getRange(rowNum, 1).setValue(p.nama || targetNamaLama);\n          sheetProd.getRange(rowNum, 2).setValue(Number(p.hpp || 0));\n          sheetProd.getRange(rowNum, 3).setValue(Number(p.jual || 0));\n          return responJson({ status: 'sukses' });\n        }\n      }\n      return responJson({ status: 'error', pesan: 'Produk tidak ditemukan' });\n    }\n\n    // 5. HAPUS TRANSAKSI DARI RIWAYAT\n    if (aksi === 'hapusTransaksi') {\n      var sheetTrx = dapatkanSheetTransaksi(ss);\n      var idTarget = param.id;\n      var rows = sheetTrx.getDataRange().getValues();\n      // Hapus dari baris paling bawah ke atas agar indeks tidak bergeser\n      for (var i = rows.length - 1; i >= 1; i--) {\n        if (rows[i][1] == idTarget) {\n          sheetTrx.deleteRow(i + 1);\n        }\n      }\n      return responJson({ status: 'sukses' });\n    }\n\n    // 5. SIMPAN NOTA SERVIS GADGET\n    if (aksi === 'simpanService') {\n      var sheetSrv = dapatkanSheetServis(ss);\n      var s = param.data || {};\n      var now = new Date();\n      var biaya = s.biaya || {};\n      var spareparts = biaya.spareparts || [];\n      var sparepartsText = spareparts.map(function(x) {\n        return x.nama + ' (' + x.qty + 'x @' + x.harga + ')';\n      }).join('; ');\n\n      sheetSrv.appendRow([\n        Utilities.formatDate(now, \"GMT+7\", \"M/d/yyyy HH:mm:ss\"),\n        s.id,\n        s.tanggal || Utilities.formatDate(now, \"GMT+7\", \"yyyy-MM-dd HH:mm\"),\n        s.estimasi || '-',\n        s.teknisi || 'Teknisi Signline',\n        (s.pelanggan && s.pelanggan.nama) || 'Pelanggan',\n        (s.pelanggan && s.pelanggan.hp) || '',\n        (s.pelanggan && s.pelanggan.alamat) || '-',\n        (s.perangkat && s.perangkat.kategori) || 'Gadget',\n        (s.perangkat && s.perangkat.model) || '-',\n        (s.perangkat && s.perangkat.imei) || '-',\n        (s.perangkat && s.perangkat.warna) || '-',\n        (s.perangkat && s.perangkat.password) || '-',\n        (s.perangkat && s.perangkat.kondisiFisik) || '-',\n        (s.perangkat && s.perangkat.kelengkapan) || '-',\n        s.keluhan || '-',\n        s.kondisiMasuk || '-',\n        biaya.namaJasa || 'Jasa Servis',\n        Number(biaya.biayaJasa || 0),\n        sparepartsText || '-',\n        Number(biaya.totalSpareparts || 0),\n        Number(biaya.grandTotal || 0),\n        Number(biaya.dp || 0),\n        Number(biaya.sisa || 0),\n        biaya.statusBayar || 'Belum Bayar',\n        s.garansi || '30 Hari',\n        s.status || 'Diterima',\n        s.catatanTeknisi || '-'\n      ]);\n\n      return responJson({ status: 'sukses', id: s.id });\n    }\n\n    // 6. UPDATE STATUS SERVIS GADGET\n    if (aksi === 'updateStatusService') {\n      var sheetSrv = dapatkanSheetServis(ss);\n      var idTarget = param.id;\n      var rows = sheetSrv.getDataRange().getValues();\n      for (var i = 1; i < rows.length; i++) {\n        if (rows[i][1] == idTarget) {\n          var rowNum = i + 1;\n          if (param.status) sheetSrv.getRange(rowNum, 27).setValue(param.status);\n          if (param.catatanTeknisi) sheetSrv.getRange(rowNum, 28).setValue(param.catatanTeknisi);\n          if (param.sisa !== undefined) sheetSrv.getRange(rowNum, 24).setValue(Number(param.sisa));\n          if (param.statusBayar) sheetSrv.getRange(rowNum, 25).setValue(param.statusBayar);\n          break;\n        }\n      }\n      return responJson({ status: 'sukses' });\n    }\n\n    // 7. HAPUS SERVIS GADGET\n    if (aksi === 'hapusService') {\n      var sheetSrv = dapatkanSheetServis(ss);\n      var idTarget = param.id;\n      var rows = sheetSrv.getDataRange().getValues();\n      for (var i = 1; i < rows.length; i++) {\n        if (rows[i][1] == idTarget) {\n          sheetSrv.deleteRow(i + 1);\n          break;\n        }\n      }\n      return responJson({ status: 'sukses' });\n    }\n\n    return responJson({ status: 'error', pesan: 'Aksi tidak dikenali: ' + aksi });\n\n  } catch (err) {\n    return responJson({ status: 'error', pesan: err.toString() });\n  } finally {\n    lock.releaseLock();\n  }\n}\n\n// ============================================================================\n// HELPER SHEET MANAGEMENT (AUTO-CREATE JIKA BELUM ADA)\n// ============================================================================\n\nfunction dapatkanSheetTransaksi(ss) {\n  var s = ss.getSheetByName('Transaksi');\n  if (!s) {\n    // Gunakan sheet pertama jika bernama lain, atau buat sheet baru\n    var sheets = ss.getSheets();\n    if (sheets.length > 0 && sheets[0].getName() !== 'Produk' && sheets[0].getName() !== 'Servis') {\n      s = sheets[0];\n    } else {\n      s = ss.insertSheet('Transaksi');\n    }\n  }\n  if (s.getLastRow() === 0) {\n    s.appendRow([\n      \"Timestamp\", \"ID Order\", \"Nama Pelanggan\", \"Nama Layanan\", \"Qty\",\n      \"HPP\", \"Harga Jual\", \"Subtotal Jual\", \"Subtotal HPP\", \"Profit\", \"Catatan\"\n    ]);\n  }\n  return s;\n}\n\nfunction dapatkanSheetProduk(ss) {\n  var s = ss.getSheetByName('Produk');\n  if (!s) {\n    s = ss.insertSheet('Produk');\n    s.appendRow([\"Nama Produk\", \"HPP\", \"Harga Jual\"]);\n    s.appendRow([\"Cetak Foto 3x4\", 1000, 2500]);\n    s.appendRow([\"Cetak Foto 4x6\", 1000, 3000]);\n    s.appendRow([\"Copy B/W\", 500, 1000]);\n    s.appendRow([\"Laminating Press\", 4000, 10000]);\n  }\n  return s;\n}\n\nfunction dapatkanSheetServis(ss) {\n  var s = ss.getSheetByName('Servis');\n  if (!s) {\n    s = ss.insertSheet('Servis');\n    s.appendRow([\n      \"Timestamp\", \"No_Nota\", \"Tanggal_Masuk\", \"Estimasi_Selesai\", \"Teknisi\",\n      \"Nama_Pelanggan\", \"No_HP\", \"Alamat_Pelanggan\", \"Kategori_Perangkat\", \"Tipe_Model\",\n      \"No_Seri_IMEI\", \"Warna_Unit\", \"Pola_Password\", \"Kondisi_Fisik\", \"Kelengkapan\",\n      \"Keluhan_Kerusakan\", \"Kondisi_Masuk\", \"Nama_Jasa\", \"Biaya_Jasa\", \"Rincian_Sparepart\",\n      \"Total_Sparepart\", \"Grand_Total\", \"Uang_Muka_DP\", \"Sisa_Tagihan\", \"Status_Bayar\",\n      \"Garansi\", \"Status_Servis\", \"Catatan_Teknisi\"\n    ]);\n  }\n  return s;\n}\n\nfunction responJson(obj) {\n  return ContentService.createTextOutput(JSON.stringify(obj))\n    .setMimeType(ContentService.MimeType.JSON);\n}\n";
+        const code = "/**\r\n * ============================================================================\r\n * SIGNLINE STUDIO - GOOGLE APPS SCRIPT BACKEND (ALL-IN-ONE FULL CODE)\r\n * ============================================================================\r\n * Cara Pasang:\r\n * 1. Buka Google Spreadsheet Anda.\r\n * 2. Klik menu \"Ekstensi\" > \"Apps Script\".\r\n * 3. Hapus seluruh isi file Code.gs yang lama, lalu tempelkan SELURUH KODE ini.\r\n * 4. Klik ikon \"Simpan\" (Ctrl + S).\r\n * 5. Klik tombol \"Terapkan\" (Deploy) di kanan atas > pilih \"Penerapan baru\" (New deployment).\r\n * 6. Pilih jenis: \"Aplikasi Web\" (Web app).\r\n * 7. Konfigurasi penting:\r\n *    - Jalankan sebagai (Execute as): \"Saya\" (Me / akun Google Anda)\r\n *    - Siapa yang memiliki akses (Who has access): \"Siapa saja\" (Anyone) -> WAJIB!\r\n * 8. Klik \"Terapkan\" (Deploy). Jika muncul izin akses, klik \"Beri Akses\" (Review Permissions) > Pilih Akun > Advanced > Go to (unsafe) > Allow.\r\n * 9. Salin URL Aplikasi Web yang berakhiran \"/exec\", lalu masukkan ke menu [URL Sheet] di aplikasi Signline POS.\r\n * ============================================================================\r\n */\r\n\r\nfunction doGet(e) {\r\n  var param = (e && e.parameter) ? e.parameter : {};\r\n  var aksi = param.aksi || '';\r\n\r\n  try {\r\n    var ss = SpreadsheetApp.getActiveSpreadsheet();\r\n\r\n    // 1. AMBIL KATALOG PRODUK / LAYANAN\r\n    if (aksi === 'getProduk') {\r\n      var sheetProd = dapatkanSheetProduk(ss);\r\n      var data = sheetProd.getDataRange().getValues();\r\n      return responJson(data);\r\n    }\r\n\r\n    // 2. AMBIL RIWAYAT TRANSAKSI POS\r\n    if (aksi === 'getTransaksi') {\r\n      var sheetTrx = dapatkanSheetTransaksi(ss);\r\n      var lastRow = sheetTrx.getLastRow();\r\n      if (lastRow <= 1) {\r\n        return responJson([]);\r\n      }\r\n      var rows = sheetTrx.getRange(2, 1, lastRow - 1, sheetTrx.getLastColumn()).getValues();\r\n      // Urutkan transaksi terbaru di atas\r\n      rows.reverse();\r\n      return responJson(rows);\r\n    }\r\n\r\n    // 3. AMBIL DATA GRAFIK OMZET & PROFIT HARIAN & BULANAN\r\n    if (aksi === 'getDataGrafik') {\r\n      var sheetTrx = dapatkanSheetTransaksi(ss);\r\n      var lastRow = sheetTrx.getLastRow();\r\n      var namaBulan = [\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"Mei\", \"Jun\", \"Jul\", \"Agu\", \"Sep\", \"Okt\", \"Nov\", \"Des\"];\r\n      var harian = {};\r\n      var bulanan = {};\r\n\r\n      if (lastRow > 1) {\r\n        var data = sheetTrx.getRange(2, 1, lastRow - 1, sheetTrx.getLastColumn()).getValues();\r\n        for (var i = 0; i < data.length; i++) {\r\n          var row = data[i];\r\n          var rawDate = row[0];\r\n          if (!rawDate) continue;\r\n\r\n          var d = new Date(rawDate);\r\n          if (isNaN(d.getTime())) continue;\r\n\r\n          var strHari = d.getDate() + \" \" + namaBulan[d.getMonth()] + \" \" + d.getFullYear();\r\n          var strBulan = namaBulan[d.getMonth()] + \" \" + d.getFullYear();\r\n\r\n          var omzet = Number(row[7]) || 0;\r\n          var profit = Number(row[9]) || 0;\r\n\r\n          // Akumulasi Harian\r\n          if (!harian[strHari]) harian[strHari] = { omzet: 0, profit: 0 };\r\n          harian[strHari].omzet += omzet;\r\n          harian[strHari].profit += profit;\r\n\r\n          // Akumulasi Bulanan\r\n          if (!bulanan[strBulan]) bulanan[strBulan] = { omzet: 0, profit: 0 };\r\n          bulanan[strBulan].omzet += omzet;\r\n          bulanan[strBulan].profit += profit;\r\n        }\r\n      }\r\n      return responJson({ harian: harian, bulanan: bulanan });\r\n    }\r\n\r\n    // 4. AMBIL DATA SERVIS GADGET\r\n    if (aksi === 'getService') {\r\n      var sheetSrv = dapatkanSheetServis(ss);\r\n      var lastRow = sheetSrv.getLastRow();\r\n      if (lastRow <= 1) {\r\n        return responJson([]);\r\n      }\r\n      var rows = sheetSrv.getRange(1, 1, lastRow, sheetSrv.getLastColumn()).getValues();\r\n      return responJson(rows);\r\n    }\r\n\r\n    // 5. AMBIL DATA PROYEK DIGITAL (WEBSITE, DESAIN, APPS)\r\n    if (aksi === 'getDigitalProjects') {\r\n      var sheetDgt = dapatkanSheetProyekDigital(ss);\r\n      var lastRow = sheetDgt.getLastRow();\r\n      if (lastRow <= 1) {\r\n        return responJson([]);\r\n      }\r\n      var rows = sheetDgt.getRange(1, 1, lastRow, sheetDgt.getLastColumn()).getValues();\r\n      return responJson(rows);\r\n    }\r\n\r\n    // DEFAULT / PING TES\r\n    return responJson({\r\n      status: \"online\",\r\n      pesan: \"Google Apps Script Signline Studio Aktif & Siap Digunakan\",\r\n      waktu: new Date().toLocaleString(\"id-ID\")\r\n    });\r\n\r\n  } catch (err) {\r\n    return responJson({ status: \"error\", pesan: err.toString() });\r\n  }\r\n}\r\n\r\nfunction doPost(e) {\r\n  var lock = LockService.getScriptLock();\r\n  lock.tryLock(10000);\r\n\r\n  try {\r\n    var ss = SpreadsheetApp.getActiveSpreadsheet();\r\n    var contents = (e && e.postData && e.postData.contents) ? e.postData.contents : '{}';\r\n    var param = JSON.parse(contents);\r\n    var aksi = param.aksi || '';\r\n\r\n    // 1. SIMPAN TRANSAKSI MULTI-ITEM KASIR POS\r\n    if (aksi === 'simpanOrder') {\r\n      var sheetTrx = dapatkanSheetTransaksi(ss);\r\n      var d = param.data || {};\r\n      var now = new Date();\r\n      var idOrder = 'SL-' + Math.floor(1000 + Math.random() * 9000);\r\n      var items = d.items || [];\r\n\r\n      items.forEach(function(it) {\r\n        var qty = Number(it.qty) || 1;\r\n        var hpp = Number(it.hpp) || 0;\r\n        var harga = Number(it.harga) || 0;\r\n        var subtotal = Number(it.subtotal) || (qty * harga);\r\n        var subtotalHpp = hpp * qty;\r\n        var profit = subtotal - subtotalHpp;\r\n\r\n        sheetTrx.appendRow([\r\n          Utilities.formatDate(now, \"GMT+7\", \"M/d/yyyy HH:mm:ss\"),\r\n          idOrder,\r\n          d.nama || 'Pelanggan Umum',\r\n          it.layanan || 'Layanan',\r\n          qty,\r\n          hpp,\r\n          harga,\r\n          subtotal,\r\n          subtotalHpp,\r\n          profit,\r\n          d.catatan || '-'\r\n        ]);\r\n      });\r\n\r\n      return responJson({ status: 'sukses', id: idOrder });\r\n    }\r\n\r\n    // 2. TAMBAH PRODUK / LAYANAN KE KATALOG\r\n    if (aksi === 'tambahProduk') {\r\n      var sheetProd = dapatkanSheetProduk(ss);\r\n      var p = param.data || {};\r\n      sheetProd.appendRow([\r\n        p.nama || 'Produk Baru',\r\n        Number(p.hpp || 0),\r\n        Number(p.jual || 0)\r\n      ]);\r\n      return responJson({ status: 'sukses' });\r\n    }\r\n\r\n    // 3. HAPUS PRODUK DARI KATALOG\r\n    if (aksi === 'hapusProduk') {\r\n      var sheetProd = dapatkanSheetProduk(ss);\r\n      var namaTarget = param.nama;\r\n      var rows = sheetProd.getDataRange().getValues();\r\n      for (var i = 1; i < rows.length; i++) {\r\n        if (rows[i][0] == namaTarget) {\r\n          sheetProd.deleteRow(i + 1);\r\n          break;\r\n        }\r\n      }\r\n      return responJson({ status: 'sukses' });\r\n    }\r\n\r\n    // 4. EDIT PRODUK / LAYANAN DI KATALOG\r\n    if (aksi === 'editProduk') {\r\n      var sheetProd = dapatkanSheetProduk(ss);\r\n      var targetNamaLama = param.namaLama;\r\n      var p = param.data || {};\r\n      var rows = sheetProd.getDataRange().getValues();\r\n      for (var i = 1; i < rows.length; i++) {\r\n        if (rows[i][0] == targetNamaLama) {\r\n          var rowNum = i + 1;\r\n          sheetProd.getRange(rowNum, 1).setValue(p.nama || targetNamaLama);\r\n          sheetProd.getRange(rowNum, 2).setValue(Number(p.hpp || 0));\r\n          sheetProd.getRange(rowNum, 3).setValue(Number(p.jual || 0));\r\n          return responJson({ status: 'sukses' });\r\n        }\r\n      }\r\n      return responJson({ status: 'error', pesan: 'Produk tidak ditemukan' });\r\n    }\r\n\r\n    // 5. HAPUS TRANSAKSI DARI RIWAYAT\r\n    if (aksi === 'hapusTransaksi') {\r\n      var sheetTrx = dapatkanSheetTransaksi(ss);\r\n      var idTarget = param.id;\r\n      var rows = sheetTrx.getDataRange().getValues();\r\n      // Hapus dari baris paling bawah ke atas agar indeks tidak bergeser\r\n      for (var i = rows.length - 1; i >= 1; i--) {\r\n        if (rows[i][1] == idTarget) {\r\n          sheetTrx.deleteRow(i + 1);\r\n        }\r\n      }\r\n      return responJson({ status: 'sukses' });\r\n    }\r\n\r\n    // 5. SIMPAN NOTA SERVIS GADGET\r\n    if (aksi === 'simpanService') {\r\n      var sheetSrv = dapatkanSheetServis(ss);\r\n      var s = param.data || {};\r\n      var now = new Date();\r\n      var biaya = s.biaya || {};\r\n      var spareparts = biaya.spareparts || [];\r\n      var sparepartsText = spareparts.map(function(x) {\r\n        return x.nama + ' (' + x.qty + 'x @' + x.harga + ')';\r\n      }).join('; ');\r\n\r\n      sheetSrv.appendRow([\r\n        Utilities.formatDate(now, \"GMT+7\", \"M/d/yyyy HH:mm:ss\"),\r\n        s.id,\r\n        s.tanggal || Utilities.formatDate(now, \"GMT+7\", \"yyyy-MM-dd HH:mm\"),\r\n        s.estimasi || '-',\r\n        s.teknisi || 'Teknisi Signline',\r\n        (s.pelanggan && s.pelanggan.nama) || 'Pelanggan',\r\n        (s.pelanggan && s.pelanggan.hp) || '',\r\n        (s.pelanggan && s.pelanggan.alamat) || '-',\r\n        (s.perangkat && s.perangkat.kategori) || 'Gadget',\r\n        (s.perangkat && s.perangkat.model) || '-',\r\n        (s.perangkat && s.perangkat.imei) || '-',\r\n        (s.perangkat && s.perangkat.warna) || '-',\r\n        (s.perangkat && s.perangkat.password) || '-',\r\n        (s.perangkat && s.perangkat.kondisiFisik) || '-',\r\n        (s.perangkat && s.perangkat.kelengkapan) || '-',\r\n        s.keluhan || '-',\r\n        s.kondisiMasuk || '-',\r\n        biaya.namaJasa || 'Jasa Servis',\r\n        Number(biaya.biayaJasa || 0),\r\n        sparepartsText || '-',\r\n        Number(biaya.totalSpareparts || 0),\r\n        Number(biaya.grandTotal || 0),\r\n        Number(biaya.dp || 0),\r\n        Number(biaya.sisa || 0),\r\n        biaya.statusBayar || 'Belum Bayar',\r\n        s.garansi || '30 Hari',\r\n        s.status || 'Diterima',\r\n        s.catatanTeknisi || '-'\r\n      ]);\r\n\r\n      return responJson({ status: 'sukses', id: s.id });\r\n    }\r\n\r\n    // 6. UPDATE STATUS SERVIS GADGET\r\n    if (aksi === 'updateStatusService') {\r\n      var sheetSrv = dapatkanSheetServis(ss);\r\n      var idTarget = param.id;\r\n      var rows = sheetSrv.getDataRange().getValues();\r\n      for (var i = 1; i < rows.length; i++) {\r\n        if (rows[i][1] == idTarget) {\r\n          var rowNum = i + 1;\r\n          if (param.status) sheetSrv.getRange(rowNum, 27).setValue(param.status);\r\n          if (param.catatanTeknisi) sheetSrv.getRange(rowNum, 28).setValue(param.catatanTeknisi);\r\n          if (param.sisa !== undefined) sheetSrv.getRange(rowNum, 24).setValue(Number(param.sisa));\r\n          if (param.statusBayar) sheetSrv.getRange(rowNum, 25).setValue(param.statusBayar);\r\n          break;\r\n        }\r\n      }\r\n      return responJson({ status: 'sukses' });\r\n    }\r\n\r\n    // 7. HAPUS SERVIS GADGET\r\n    if (aksi === 'hapusService') {\r\n      var sheetSrv = dapatkanSheetServis(ss);\r\n      var idTarget = param.id;\r\n      var rows = sheetSrv.getDataRange().getValues();\r\n      for (var i = 1; i < rows.length; i++) {\r\n        if (rows[i][1] == idTarget) {\r\n          sheetSrv.deleteRow(i + 1);\r\n          break;\r\n        }\r\n      }\r\n      return responJson({ status: 'sukses' });\r\n    }\r\n\r\n    // 8. SIMPAN PROYEK DIGITAL (WEBSITE, DESAIN, APPS)\r\n    if (aksi === 'simpanDigitalProject') {\r\n      var sheetDgt = dapatkanSheetProyekDigital(ss);\r\n      var p = param.data || {};\r\n      var now = new Date();\r\n      var rincianText = (p.rincianBiaya || []).map(function(x) {\r\n        return x.nama + ' (Rp ' + Number(x.biaya || 0).toLocaleString('id-ID') + ')';\r\n      }).join('; ');\r\n\r\n      sheetDgt.appendRow([\r\n        Utilities.formatDate(now, \"GMT+7\", \"M/d/yyyy HH:mm:ss\"),\r\n        p.id,\r\n        p.tanggal || Utilities.formatDate(now, \"GMT+7\", \"yyyy-MM-dd HH:mm\"),\r\n        p.deadline || '-',\r\n        p.subLayanan || 'Website',\r\n        (p.klien && p.klien.nama) || 'Klien',\r\n        (p.klien && p.klien.kontak) || '',\r\n        (p.klien && p.klien.email) || '-',\r\n        p.judul || '-',\r\n        p.scope || '-',\r\n        p.teknis || '-',\r\n        rincianText || '-',\r\n        Number(p.totalBiaya || 0),\r\n        Number(p.dp || 0),\r\n        Number(p.sisa || 0),\r\n        p.statusBayar || 'Belum Bayar',\r\n        p.statusProyek || 'Brief / Antrean',\r\n        p.pic || 'Tim Signline',\r\n        p.catatanProgres || '-'\r\n      ]);\r\n\r\n      return responJson({ status: 'sukses', id: p.id });\r\n    }\r\n\r\n    // 9. UPDATE STATUS PROYEK DIGITAL\r\n    if (aksi === 'updateStatusDigitalProject') {\r\n      var sheetDgt = dapatkanSheetProyekDigital(ss);\r\n      var idTarget = param.id;\r\n      var rows = sheetDgt.getDataRange().getValues();\r\n      for (var i = 1; i < rows.length; i++) {\r\n        if (rows[i][1] == idTarget) {\r\n          var rowNum = i + 1;\r\n          if (param.statusProyek) sheetDgt.getRange(rowNum, 17).setValue(param.statusProyek);\r\n          if (param.catatanProgres) sheetDgt.getRange(rowNum, 19).setValue(param.catatanProgres);\r\n          if (param.sisa !== undefined) sheetDgt.getRange(rowNum, 15).setValue(Number(param.sisa));\r\n          if (param.statusBayar) sheetDgt.getRange(rowNum, 16).setValue(param.statusBayar);\r\n          break;\r\n        }\r\n      }\r\n      return responJson({ status: 'sukses' });\r\n    }\r\n\r\n    // 10. HAPUS PROYEK DIGITAL\r\n    if (aksi === 'hapusDigitalProject') {\r\n      var sheetDgt = dapatkanSheetProyekDigital(ss);\r\n      var idTarget = param.id;\r\n      var rows = sheetDgt.getDataRange().getValues();\r\n      for (var i = 1; i < rows.length; i++) {\r\n        if (rows[i][1] == idTarget) {\r\n          sheetDgt.deleteRow(i + 1);\r\n          break;\r\n        }\r\n      }\r\n      return responJson({ status: 'sukses' });\r\n    }\r\n\r\n    return responJson({ status: 'error', pesan: 'Aksi tidak dikenali: ' + aksi });\r\n\r\n  } catch (err) {\r\n    return responJson({ status: 'error', pesan: err.toString() });\r\n  } finally {\r\n    lock.releaseLock();\r\n  }\r\n}\r\n\r\n// ============================================================================\r\n// HELPER SHEET MANAGEMENT (AUTO-CREATE JIKA BELUM ADA)\r\n// ============================================================================\r\n\r\nfunction dapatkanSheetTransaksi(ss) {\r\n  var s = ss.getSheetByName('Transaksi');\r\n  if (!s) {\r\n    // Gunakan sheet pertama jika bernama lain, atau buat sheet baru\r\n    var sheets = ss.getSheets();\r\n    if (sheets.length > 0 && sheets[0].getName() !== 'Produk' && sheets[0].getName() !== 'Servis') {\r\n      s = sheets[0];\r\n    } else {\r\n      s = ss.insertSheet('Transaksi');\r\n    }\r\n  }\r\n  if (s.getLastRow() === 0) {\r\n    s.appendRow([\r\n      \"Timestamp\", \"ID Order\", \"Nama Pelanggan\", \"Nama Layanan\", \"Qty\",\r\n      \"HPP\", \"Harga Jual\", \"Subtotal Jual\", \"Subtotal HPP\", \"Profit\", \"Catatan\"\r\n    ]);\r\n  }\r\n  return s;\r\n}\r\n\r\nfunction dapatkanSheetProduk(ss) {\r\n  var s = ss.getSheetByName('Produk');\r\n  if (!s) {\r\n    s = ss.insertSheet('Produk');\r\n    s.appendRow([\"Nama Produk\", \"HPP\", \"Harga Jual\"]);\r\n    s.appendRow([\"Cetak Foto 3x4\", 1000, 2500]);\r\n    s.appendRow([\"Cetak Foto 4x6\", 1000, 3000]);\r\n    s.appendRow([\"Copy B/W\", 500, 1000]);\r\n    s.appendRow([\"Laminating Press\", 4000, 10000]);\r\n  }\r\n  return s;\r\n}\r\n\r\nfunction dapatkanSheetServis(ss) {\r\n  var s = ss.getSheetByName('Servis');\r\n  if (!s) {\r\n    s = ss.insertSheet('Servis');\r\n    s.appendRow([\r\n      \"Timestamp\", \"No_Nota\", \"Tanggal_Masuk\", \"Estimasi_Selesai\", \"Teknisi\",\r\n      \"Nama_Pelanggan\", \"No_HP\", \"Alamat_Pelanggan\", \"Kategori_Perangkat\", \"Tipe_Model\",\r\n      \"No_Seri_IMEI\", \"Warna_Unit\", \"Pola_Password\", \"Kondisi_Fisik\", \"Kelengkapan\",\r\n      \"Keluhan_Kerusakan\", \"Kondisi_Masuk\", \"Nama_Jasa\", \"Biaya_Jasa\", \"Rincian_Sparepart\",\r\n      \"Total_Sparepart\", \"Grand_Total\", \"Uang_Muka_DP\", \"Sisa_Tagihan\", \"Status_Bayar\",\r\n      \"Garansi\", \"Status_Servis\", \"Catatan_Teknisi\"\r\n    ]);\r\n  }\r\n  return s;\r\n}\r\n\r\nfunction dapatkanSheetProyekDigital(ss) {\r\n  var s = ss.getSheetByName('ProyekDigital');\r\n  if (!s) {\r\n    s = ss.insertSheet('ProyekDigital');\r\n    s.appendRow([\r\n      \"Timestamp\", \"No_Proyek\", \"Tanggal_Mulai\", \"Estimasi_Deadline\", \"Sub_Layanan\",\r\n      \"Nama_Klien\", \"No_Kontak\", \"Email_Alamat\", \"Judul_Proyek\", \"Scope_Deliverables\",\r\n      \"Catatan_Teknis\", \"Rincian_Biaya\", \"Total_Biaya\", \"Uang_Muka_DP\", \"Sisa_Tagihan\",\r\n      \"Status_Bayar\", \"Status_Proyek\", \"Project_Lead\", \"Catatan_Progres\"\r\n    ]);\r\n  }\r\n  return s;\r\n}\r\n\r\nfunction responJson(obj) {\r\n  return ContentService.createTextOutput(JSON.stringify(obj))\r\n    .setMimeType(ContentService.MimeType.JSON);\r\n}\r\n";
         document.getElementById('apps-script-snippet').value = code;
         bukaModal('modal-script-code');
     }
@@ -4165,6 +4497,918 @@ Timestamp	No_Nota	Tanggal_Masuk	Estimasi_Selesai	Teknisi	Nama_Pelanggan	No_HP	Al
                         <div>
                             Teknisi Penanggung Jawab,
                             <div class="sign-line">( ${escapeHtml(srv.teknisi)} )</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.print();
+    }
+
+    // ==============================================
+    // MODUL PROYEK DIGITAL & DESAIN KREATIF (WEBSITE, GRAPHIC DESIGN, APPS DEVELOPMENT)
+    // ==============================================
+    let activeDigitalDetailId = null;
+
+    function gantiSubDigital(sub) {
+        const vList = document.getElementById('view-dgt-list');
+        const vForm = document.getElementById('view-dgt-form');
+        const bList = document.getElementById('btn-sub-dgt-list');
+        const bForm = document.getElementById('btn-sub-dgt-form');
+
+        if (sub === 'form') {
+            if (vList) vList.style.display = 'none';
+            if (vForm) vForm.style.display = 'block';
+            if (bList) bList.classList.remove('active');
+            if (bForm) bForm.classList.add('active');
+            initDgtNoBaru();
+        } else {
+            if (vList) vList.style.display = 'block';
+            if (vForm) vForm.style.display = 'none';
+            if (bList) bList.classList.add('active');
+            if (bForm) bForm.classList.remove('active');
+            filterDaftarProyekDigital();
+        }
+    }
+
+    function initDgtNoBaru() {
+        const catSelect = document.getElementById('dgt-category');
+        const cat = catSelect ? catSelect.value : 'Website';
+        let prefix = 'PRJ-WEB';
+        if (cat === 'Graphic Design') prefix = 'PRJ-DSG';
+        if (cat === 'Apps Development') prefix = 'PRJ-APP';
+
+        const now = new Date();
+        const y = String(now.getFullYear()).slice(-2);
+        const m = String(now.getMonth() + 1).padStart(2, '0');
+        const rand = Math.floor(1000 + Math.random() * 9000);
+
+        const noEl = document.getElementById('dgt-no');
+        if (noEl) noEl.value = `${prefix}-${y}${m}-${rand}`;
+
+        const dateInput = document.getElementById('dgt-date');
+        if (dateInput && !dateInput.value) {
+            const localIso = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+            dateInput.value = localIso;
+        }
+
+        const deadlineInput = document.getElementById('dgt-deadline');
+        if (deadlineInput && !deadlineInput.value) {
+            const dl = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+            deadlineInput.value = dl.toISOString().slice(0, 10);
+        }
+
+        const tbody = document.getElementById('dgt-costs-body');
+        if (tbody && tbody.children.length === 0) {
+            tambahBarisBiayaDigital('', 0);
+        }
+
+        hitungTotalDigital();
+    }
+
+    function sesuaikanFormDigital() {
+        const catSelect = document.getElementById('dgt-category');
+        const cat = catSelect ? catSelect.value : 'Website';
+        const noEl = document.getElementById('dgt-no');
+        const now = new Date();
+        const y = String(now.getFullYear()).slice(-2);
+        const m = String(now.getMonth() + 1).padStart(2, '0');
+        const rand = Math.floor(1000 + Math.random() * 9000);
+
+        let prefix = 'PRJ-WEB';
+        let placeholderTitle = 'Contoh: Website Profil Perusahaan & Katalog';
+        let defaultTerms = 'Revisi Minor 3x, Garansi Bug & Maintenance 30 Hari';
+        let placeholderScope = 'Contoh: Desain 5 halaman responsif, integrasi payment gateway, form kontak WhatsApp, setup hosting & domain...';
+        let placeholderSpecs = 'Contoh: WordPress + Elementor, domain .com 1 tahun, atau Next.js + Tailwind';
+
+        if (cat === 'Graphic Design') {
+            prefix = 'PRJ-DSG';
+            placeholderTitle = 'Contoh: Desain Kemasan & Brand Identity Produk';
+            defaultTerms = 'Revisi 3x Putaran, File Master AI/PSD & Ekspor HD';
+            placeholderScope = 'Contoh: 3 alternatif logo, guideline warna/font, mockup 3D box kemasan, label stiker die-cut...';
+            placeholderSpecs = 'Contoh: Adobe Illustrator (Vector), CMYK 300 DPI, format PDF/X-1a siap cetak & PNG';
+        } else if (cat === 'Apps Development') {
+            prefix = 'PRJ-APP';
+            placeholderTitle = 'Contoh: Sistem POS Kasir Multi-Cabang Android & Web';
+            defaultTerms = 'Garansi Bug 60 Hari, Free Training Penggunaan, SLA Support 1x24 Jam';
+            placeholderScope = 'Contoh: Modul Kasir POS, Manajemen Stok Gudang, Laporan Penjualan, Dashboard Pemilik, Export Excel & PDF...';
+            placeholderSpecs = 'Contoh: Flutter Android/iOS, Backend Node.js/PostgreSQL, Cloud Server VPS';
+        }
+
+        if (noEl) noEl.value = `${prefix}-${y}${m}-${rand}`;
+
+        const titleInput = document.getElementById('dgt-title');
+        if (titleInput) titleInput.placeholder = placeholderTitle;
+
+        const termsInput = document.getElementById('dgt-terms');
+        if (termsInput && (!termsInput.value || termsInput.value.includes('Revisi'))) {
+            termsInput.value = defaultTerms;
+        }
+
+        const scopeInput = document.getElementById('dgt-scope');
+        if (scopeInput) scopeInput.placeholder = placeholderScope;
+
+        const specsInput = document.getElementById('dgt-specs');
+        if (specsInput) specsInput.placeholder = placeholderSpecs;
+    }
+
+    function tambahBarisBiayaDigital(nama = '', biaya = 0) {
+        digitalCostCount++;
+        const tbody = document.getElementById('dgt-costs-body');
+        if (!tbody) return;
+        const tr = document.createElement('tr');
+        tr.id = `row-dgt-cost-${digitalCostCount}`;
+        tr.innerHTML = `
+            <td>
+                <input type="text" class="form-control dgt-item-name" placeholder="Nama item/modul (contoh: Setup UI/UX, Lisensi Domain, dsb)" value="${escapeHtml(nama)}">
+            </td>
+            <td>
+                <input type="number" class="form-control num-cell dgt-item-cost" placeholder="0" value="${biaya || ''}" min="0" oninput="hitungTotalDigital()" style="text-align:right;">
+            </td>
+            <td align="center">
+                <button type="button" class="btn btn-danger btn-icon btn-sm" onclick="hapusBarisBiayaDigital('row-dgt-cost-${digitalCostCount}')" aria-label="Hapus Baris">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+        hitungTotalDigital();
+    }
+
+    function hapusBarisBiayaDigital(rowId) {
+        const el = document.getElementById(rowId);
+        if (el) el.remove();
+        hitungTotalDigital();
+    }
+
+    function hitungTotalDigital() {
+        let total = 0;
+        const rows = document.querySelectorAll('#dgt-costs-body tr');
+        rows.forEach(tr => {
+            const cost = parseFloat(tr.querySelector('.dgt-item-cost').value) || 0;
+            total += cost;
+        });
+
+        const dpInput = document.getElementById('dgt-dp');
+        const dp = parseFloat(dpInput ? dpInput.value : 0) || 0;
+        const balance = Math.max(0, total - dp);
+
+        const sumTotalEl = document.getElementById('dgt-sum-total');
+        if (sumTotalEl) sumTotalEl.innerText = 'Rp ' + total.toLocaleString('id-ID');
+
+        const grandTotalEl = document.getElementById('dgt-grand-total');
+        if (grandTotalEl) grandTotalEl.innerText = 'Rp ' + total.toLocaleString('id-ID');
+
+        const balanceEl = document.getElementById('dgt-balance');
+        if (balanceEl) balanceEl.innerText = 'Rp ' + balance.toLocaleString('id-ID');
+
+        const payStatus = document.getElementById('dgt-pay-status');
+        if (payStatus) {
+            if (dp >= total && total > 0) {
+                payStatus.value = 'Lunas';
+            } else if (dp > 0) {
+                payStatus.value = 'DP (Uang Muka)';
+            } else {
+                payStatus.value = 'Belum Bayar';
+            }
+        }
+
+        return { total, dp, balance };
+    }
+
+    function simpanProyekDigital() {
+        const no = document.getElementById('dgt-no').value;
+        const category = document.getElementById('dgt-category').value;
+        const date = document.getElementById('dgt-date').value;
+        const deadline = document.getElementById('dgt-deadline').value;
+        const lead = document.getElementById('dgt-lead').value.trim();
+        const custName = document.getElementById('dgt-cust-name').value.trim();
+        const custPhone = document.getElementById('dgt-cust-phone').value.trim();
+        const custEmail = document.getElementById('dgt-cust-email').value.trim();
+        const title = document.getElementById('dgt-title').value.trim();
+        const terms = document.getElementById('dgt-terms').value.trim();
+        const scope = document.getElementById('dgt-scope').value.trim();
+        const specs = document.getElementById('dgt-specs').value.trim();
+        const assetLink = document.getElementById('dgt-asset-link').value.trim();
+        const projectStatus = document.getElementById('dgt-project-status').value;
+
+        if (!title || !custName || !custPhone) {
+            tampilToast('Harap lengkapi nama klien, nomor WhatsApp, dan judul proyek!', 'error');
+            return;
+        }
+
+        const rincianBiaya = [];
+        let totalBiaya = 0;
+        const costRows = document.querySelectorAll('#dgt-costs-body tr');
+        costRows.forEach(tr => {
+            const nama = (tr.querySelector('.dgt-item-name').value || '').trim();
+            const biaya = parseFloat(tr.querySelector('.dgt-item-cost').value) || 0;
+            if (nama || biaya > 0) {
+                rincianBiaya.push({ nama: nama || 'Pekerjaan', biaya: biaya });
+                totalBiaya += biaya;
+            }
+        });
+
+        if (rincianBiaya.length === 0) {
+            tampilToast('Harap masukkan minimal 1 baris komponen rincian biaya!', 'error');
+            return;
+        }
+
+        const dp = parseFloat(document.getElementById('dgt-dp').value) || 0;
+        const sisa = Math.max(0, totalBiaya - dp);
+        const payStatus = document.getElementById('dgt-pay-status').value;
+
+        const newProject = {
+            id: no,
+            subLayanan: category,
+            tanggal: date || new Date().toISOString(),
+            deadline: deadline || '-',
+            pic: lead || 'Tim Signline',
+            klien: {
+                nama: custName,
+                kontak: custPhone,
+                email: custEmail || '-'
+            },
+            judul: title,
+            ketentuan: terms || 'Revisi Minor 3x, Garansi Bug 30 Hari',
+            scope: scope,
+            teknis: specs || '-',
+            linkAset: assetLink || '-',
+            rincianBiaya: rincianBiaya,
+            totalBiaya: totalBiaya,
+            dp: dp,
+            sisa: sisa,
+            statusBayar: payStatus,
+            statusProyek: projectStatus,
+            catatanProgres: 'SPK Proyek resmi diterbitkan.',
+            riwayatStatus: [
+                {
+                    status: projectStatus,
+                    waktu: new Date().toLocaleString('id-ID'),
+                    catatan: 'SPK Proyek resmi diterbitkan.'
+                }
+            ]
+        };
+
+        // 1. Simpan Lokal
+        dataDigital.unshift(newProject);
+        simpanDataDigitalLokal();
+
+        // 2. Kirim ke Google Sheets di background
+        fetch(getApiUrl(), {
+            method: 'POST',
+            body: JSON.stringify({ aksi: 'simpanDigitalProject', data: newProject })
+        })
+        .then(res => res.json())
+        .then(() => {
+            tampilToast(`SPK Proyek ${no} tersinkron ke Google Sheets!`, 'success');
+        })
+        .catch(err => {
+            console.warn("Gagal sinkron proyek digital ke Google Sheets (tersimpan lokal):", err);
+        });
+
+        tampilToast(`SPK Proyek ${no} berhasil disimpan!`, 'success');
+
+        // Reset form
+        document.getElementById('form-digital').reset();
+        document.getElementById('dgt-costs-body').innerHTML = '';
+        digitalCostCount = 0;
+
+        gantiSubDigital('list');
+
+        if (confirm(`SPK Proyek ${no} tersimpan. Ingin cetak dokumen SPK / Kontrak A4 sekarang?`)) {
+            cetakDokumenDigital(newProject, 'a4');
+        }
+    }
+
+    function simpanDataDigitalLokal() {
+        try {
+            localStorage.setItem('signline_pos_digital_projects', JSON.stringify(dataDigital));
+            updateBadgeDigitalAktif();
+        } catch (e) {
+            console.error("Gagal menyimpan data digital lokal:", e);
+        }
+    }
+
+    function muatDataDigitalLokal() {
+        const local = localStorage.getItem('signline_pos_digital_projects');
+        if (local) {
+            try {
+                dataDigital = JSON.parse(local);
+            } catch (e) {
+                console.error("Gagal membaca cache lokal proyek digital:", e);
+                dataDigital = [];
+            }
+        } else {
+            dataDigital = [];
+        }
+        updateBadgeDigitalAktif();
+        filterDaftarProyekDigital();
+    }
+
+    function updateBadgeDigitalAktif() {
+        const badge = document.getElementById('badge-active-digital');
+        if (!badge) return;
+        const aktif = dataDigital.filter(x => x.statusProyek !== 'Selesai (Delivered)' && x.statusProyek !== 'Dibatalkan').length;
+        badge.innerText = aktif;
+        badge.style.display = aktif > 0 ? 'inline-block' : 'none';
+    }
+
+    function muatDataDigitalDariServer() {
+        tampilToast('Menghubungkan ke Google Sheets...', 'info');
+        fetch(`${getApiUrl()}?aksi=getDigitalProjects`)
+        .then(res => res.json())
+        .then(rows => {
+            if (Array.isArray(rows) && rows.length > 1) {
+                const fromServer = [];
+                for (let i = 1; i < rows.length; i++) {
+                    const r = rows[i];
+                    if (!r[1]) continue;
+
+                    let parsedCosts = [];
+                    const rincianStr = String(r[11] || '');
+                    if (rincianStr && rincianStr !== '-') {
+                        const items = rincianStr.split(';');
+                        items.forEach(it => {
+                            const match = it.match(/(.+)\(Rp\s*([\d\.\,]+)\)/);
+                            if (match) {
+                                const cleanNum = match[2].replace(/\./g, '').replace(',', '.');
+                                parsedCosts.push({
+                                    nama: match[1].trim(),
+                                    biaya: parseFloat(cleanNum) || 0
+                                });
+                            } else {
+                                parsedCosts.push({ nama: it.trim(), biaya: 0 });
+                            }
+                        });
+                    }
+
+                    fromServer.push({
+                        id: String(r[1]),
+                        tanggal: r[2] || r[0],
+                        deadline: r[3] || '-',
+                        subLayanan: r[4] || 'Website',
+                        klien: {
+                            nama: r[5] || 'Klien',
+                            kontak: String(r[6] || ''),
+                            email: r[7] || '-'
+                        },
+                        judul: r[8] || '-',
+                        scope: r[9] || '-',
+                        teknis: r[10] || '-',
+                        rincianBiaya: parsedCosts,
+                        totalBiaya: Number(r[12]) || 0,
+                        dp: Number(r[13]) || 0,
+                        sisa: Number(r[14]) || 0,
+                        statusBayar: r[15] || 'Belum Bayar',
+                        statusProyek: r[16] || 'Brief / Antrean',
+                        pic: r[17] || 'Tim Signline',
+                        catatanProgres: r[18] || '-',
+                        ketentuan: 'Revisi Minor 3x, Garansi Bug 30 Hari',
+                        riwayatStatus: []
+                    });
+                }
+
+                const mapLokal = new Map();
+                dataDigital.forEach(x => mapLokal.set(x.id, x));
+                fromServer.forEach(s => {
+                    if (!mapLokal.has(s.id)) {
+                        mapLokal.set(s.id, s);
+                    }
+                });
+
+                dataDigital = Array.from(mapLokal.values());
+                simpanDataDigitalLokal();
+                filterDaftarProyekDigital();
+                tampilToast(`Data Proyek Digital disinkronkan (${fromServer.length} proyek dari cloud)!`, 'success');
+            } else {
+                tampilToast('Data cloud proyek digital kosong atau belum diisi.', 'info');
+            }
+        })
+        .catch(err => {
+            console.warn("Gagal ambil proyek digital dari server:", err);
+            tampilToast('Gagal sinkronisasi data cloud. Menggunakan data tersimpan di perangkat ini.', 'info');
+        });
+    }
+
+    function filterSubLayananDigital(kategori) {
+        subLayananAktif = kategori;
+        const pills = [
+            { id: 'pill-dgt-all', cat: '' },
+            { id: 'pill-dgt-web', cat: 'Website' },
+            { id: 'pill-dgt-dsg', cat: 'Graphic Design' },
+            { id: 'pill-dgt-app', cat: 'Apps Development' }
+        ];
+
+        pills.forEach(p => {
+            const btn = document.getElementById(p.id);
+            if (!btn) return;
+            if (p.cat === kategori) {
+                btn.className = 'btn btn-sm btn-primary';
+            } else {
+                btn.className = 'btn btn-sm btn-secondary';
+            }
+        });
+
+        filterDaftarProyekDigital();
+    }
+
+    function filterDaftarProyekDigital() {
+        const query = (document.getElementById('dgt-search') ? document.getElementById('dgt-search').value : '').toLowerCase().trim();
+        const statusFilter = document.getElementById('dgt-filter-status') ? document.getElementById('dgt-filter-status').value : '';
+
+        let filtered = dataDigital;
+
+        if (subLayananAktif) {
+            filtered = filtered.filter(x => x.subLayanan === subLayananAktif);
+        }
+
+        if (statusFilter) {
+            filtered = filtered.filter(x => x.statusProyek === statusFilter);
+        }
+
+        if (query) {
+            filtered = filtered.filter(x => {
+                return (x.id && x.id.toLowerCase().includes(query)) ||
+                       (x.judul && x.judul.toLowerCase().includes(query)) ||
+                       (x.klien && x.klien.nama && x.klien.nama.toLowerCase().includes(query)) ||
+                       (x.klien && x.klien.kontak && x.klien.kontak.toLowerCase().includes(query)) ||
+                       (x.subLayanan && x.subLayanan.toLowerCase().includes(query));
+            });
+        }
+
+        renderDaftarProyekDigital(filtered);
+    }
+
+    function renderDaftarProyekDigital(list) {
+        const tbody = document.querySelector('#t-digital-list tbody');
+        const emptyEl = document.getElementById('empty-digital');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        if (!list || list.length === 0) {
+            if (emptyEl) emptyEl.style.display = 'block';
+            return;
+        }
+        if (emptyEl) emptyEl.style.display = 'none';
+
+        list.forEach(prj => {
+            let badgeClass = 'badge-neutral';
+            if (prj.statusProyek === 'Brief / Antrean') badgeClass = 'badge-warning';
+            if (prj.statusProyek === 'Dalam Pengerjaan') badgeClass = 'badge-info';
+            if (prj.statusProyek === 'Review & Revisi') badgeClass = 'badge-warning';
+            if (prj.statusProyek === 'Selesai (Delivered)') badgeClass = 'badge-success';
+            if (prj.statusProyek === 'Garansi / Maintenance') badgeClass = 'badge-info';
+            if (prj.statusProyek === 'Dibatalkan') badgeClass = 'badge-danger';
+
+            let catIcon = '<i class="fa-solid fa-laptop-code"></i>';
+            if (prj.subLayanan === 'Website') catIcon = '<i class="fa-solid fa-globe" style="color:var(--accent);"></i>';
+            if (prj.subLayanan === 'Graphic Design') catIcon = '<i class="fa-solid fa-palette" style="color:#f59e0b;"></i>';
+            if (prj.subLayanan === 'Apps Development') catIcon = '<i class="fa-solid fa-mobile-screen-button" style="color:#8b5cf6;"></i>';
+
+            const cleanPhone = (prj.klien && prj.klien.kontak ? prj.klien.kontak : '').replace(/\D/g, '');
+            const waPhone = cleanPhone.startsWith('0') ? '62' + cleanPhone.slice(1) : cleanPhone;
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>
+                    <strong class="num-cell" style="color:var(--accent);">${escapeHtml(prj.id)}</strong><br>
+                    <small style="color:var(--text-muted);">${catIcon} ${escapeHtml(prj.subLayanan)}</small>
+                </td>
+                <td style="font-size:0.8125rem;">
+                    <div>Mulai: <strong>${formatTgl(prj.tanggal)}</strong></div>
+                    <div style="color:var(--text-muted);">DL: ${prj.deadline || '-'}</div>
+                </td>
+                <td>
+                    <strong>${escapeHtml(prj.klien.nama)}</strong><br>
+                    <small style="color:var(--text-muted);"><i class="fa-brands fa-whatsapp"></i> ${escapeHtml(prj.klien.kontak)}</small>
+                </td>
+                <td>
+                    <div style="font-weight:600; max-width:220px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${escapeHtml(prj.judul)}">
+                        ${escapeHtml(prj.judul)}
+                    </div>
+                    <div style="font-size:0.75rem; color:var(--text-muted); max-width:220px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                        PIC: ${escapeHtml(prj.pic || 'Tim Signline')}
+                    </div>
+                </td>
+                <td align="right" class="num-cell">
+                    <strong>Rp ${(prj.totalBiaya || 0).toLocaleString('id-ID')}</strong><br>
+                    <small style="color:var(--success);">DP: Rp ${(prj.dp || 0).toLocaleString('id-ID')}</small>
+                </td>
+                <td align="right" class="num-cell">
+                    <strong style="color:${(prj.sisa || 0) > 0 ? 'var(--danger)' : 'var(--success)'}; font-size:0.9rem;">
+                        ${(prj.sisa || 0) > 0 ? 'Rp ' + (prj.sisa || 0).toLocaleString('id-ID') : 'Lunas'}
+                    </strong><br>
+                    <small style="color:var(--text-muted); font-size:0.72rem;">${escapeHtml(prj.statusBayar || '-')}</small>
+                </td>
+                <td><span class="badge ${badgeClass}">${escapeHtml(prj.statusProyek)}</span></td>
+                <td align="center">
+                    <div style="display:flex; gap:5px; justify-content:center; flex-wrap:wrap;">
+                        <button class="btn btn-secondary btn-icon btn-sm" onclick="bukaModalDetailDigital('${prj.id}')" title="Detail & Update Status" aria-label="Detail Proyek">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button class="btn btn-primary btn-icon btn-sm" onclick="cetakDokumenDigitalById('${prj.id}', 'thermal')" title="Cetak Nota DP Thermal 58mm" aria-label="Cetak Thermal">
+                            <i class="fa-solid fa-receipt"></i>
+                        </button>
+                        <button class="btn btn-info btn-icon btn-sm" onclick="cetakDokumenDigitalById('${prj.id}', 'a4')" title="Cetak SPK & Kontrak A4 Resmi" aria-label="Cetak SPK A4">
+                            <i class="fa-solid fa-file-contract"></i>
+                        </button>
+                        <a href="https://wa.me/${waPhone}?text=${encodeURIComponent(buatPesanWhatsAppDigital(prj))}" target="_blank" class="btn btn-success btn-icon btn-sm" title="Kirim Update via WhatsApp" aria-label="WhatsApp">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </a>
+                        <button class="btn btn-danger btn-icon btn-sm" onclick="hapusProyekDigital('${prj.id}')" title="Hapus Proyek" aria-label="Hapus Proyek">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function buatPesanWhatsAppDigital(prj) {
+        return `Halo Kak ${prj.klien.nama},\n\n` +
+               `Berikut pembaruan status proyek dari *Signline Studio*:\n` +
+               `*No. SPK:* ${prj.id}\n` +
+               `*Layanan:* ${prj.subLayanan} - ${prj.judul}\n` +
+               `*Status Proyek:* *${prj.statusProyek}*\n` +
+               `*Estimasi Deadline:* ${prj.deadline || '-'}\n` +
+               `*Total Nilai Proyek:* Rp ${(prj.totalBiaya || 0).toLocaleString('id-ID')}\n` +
+               `*DP Masuk:* Rp ${(prj.dp || 0).toLocaleString('id-ID')}\n` +
+               `*Sisa Tagihan:* Rp ${(prj.sisa || 0).toLocaleString('id-ID')} (${prj.statusBayar})\n` +
+               (prj.catatanProgres && prj.catatanProgres !== '-' ? `*Catatan Progres:* ${prj.catatanProgres}\n` : '') +
+               (prj.linkAset && prj.linkAset !== '-' ? `*Link Acuan / Preview:* ${prj.linkAset}\n` : '') +
+               `\nTerima kasih atas kerja samanya! Tim kami akan terus memberikan yang terbaik untuk proyek Anda. 🙏`;
+    }
+
+    function cetakDokumenDigitalById(id, tipe) {
+        const prj = dataDigital.find(x => x.id === id);
+        if (!prj) return;
+        cetakDokumenDigital(prj, tipe);
+    }
+
+    function bukaModalDetailDigital(id) {
+        const prj = dataDigital.find(x => x.id === id);
+        if (!prj) return;
+        activeDigitalDetailId = id;
+
+        const body = document.getElementById('modal-dgt-body');
+        if (!body) return;
+
+        let costsListHtml = '';
+        if (prj.rincianBiaya && prj.rincianBiaya.length > 0) {
+            costsListHtml = `
+                <table style="width:100%; font-size:0.8125rem; border-collapse:collapse; margin-top:6px;">
+                    <thead>
+                        <tr style="border-bottom:1px solid var(--border-color); color:var(--text-muted);">
+                            <th align="left" style="padding:4px 0;">Komponen Biaya</th>
+                            <th align="right" style="padding:4px 0;">Nominal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${prj.rincianBiaya.map(c => `
+                            <tr style="border-bottom:1px dashed var(--border-color);">
+                                <td style="padding:4px 0;">${escapeHtml(c.nama)}</td>
+                                <td align="right" class="num-cell" style="padding:4px 0; font-weight:600;">Rp ${(c.biaya || 0).toLocaleString('id-ID')}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        } else {
+            costsListHtml = '<div style="font-size:0.8125rem; color:var(--text-muted);">-</div>';
+        }
+
+        body.innerHTML = `
+            <div style="font-size:0.875rem; margin-bottom:16px;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                    <div>
+                        <div style="font-size:1.1rem; font-weight:700; color:var(--accent);">${escapeHtml(prj.judul)}</div>
+                        <div style="font-size:0.8125rem; color:var(--text-muted);">No. SPK: <span class="num-cell" style="font-weight:600;">${prj.id}</span> | Sub-Layanan: <strong>${escapeHtml(prj.subLayanan)}</strong></div>
+                    </div>
+                    <span class="badge badge-info" style="font-size:0.75rem;">${escapeHtml(prj.statusProyek)}</span>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:var(--bg-subtle); padding:10px; border-radius:var(--radius-md); font-size:0.8125rem;">
+                    <div><strong>Klien:</strong> ${escapeHtml(prj.klien.nama)}</div>
+                    <div><strong>WhatsApp:</strong> ${escapeHtml(prj.klien.kontak)}</div>
+                    <div><strong>Tgl Mulai:</strong> ${formatTgl(prj.tanggal)}</div>
+                    <div><strong>Deadline:</strong> ${escapeHtml(prj.deadline || '-')}</div>
+                    <div><strong>PIC / Lead:</strong> ${escapeHtml(prj.pic || 'Tim Signline')}</div>
+                    <div><strong>Email / Alamat:</strong> ${escapeHtml(prj.klien.email || '-')}</div>
+                </div>
+
+                <div style="margin-top:10px;">
+                    <div style="font-weight:600; font-size:0.8125rem; margin-bottom:2px;">Ruang Lingkup & Deliverables:</div>
+                    <div style="font-size:0.8125rem; background:var(--bg-surface); border:1px solid var(--border-color); padding:8px; border-radius:var(--radius-md); white-space:pre-wrap;">${escapeHtml(prj.scope || '-')}</div>
+                </div>
+
+                ${prj.teknis && prj.teknis !== '-' ? `
+                    <div style="margin-top:8px;">
+                        <div style="font-weight:600; font-size:0.8125rem; margin-bottom:2px;">Catatan Teknis / Platform:</div>
+                        <div style="font-size:0.8125rem; color:var(--text-secondary);">${escapeHtml(prj.teknis)}</div>
+                    </div>
+                ` : ''}
+
+                ${prj.linkAset && prj.linkAset !== '-' ? `
+                    <div style="margin-top:8px; font-size:0.8125rem;">
+                        <strong>Link Acuan / Drive:</strong> <a href="${escapeHtml(prj.linkAset)}" target="_blank" style="color:var(--accent); text-decoration:underline;">Buka Dokumen / Preview</a>
+                    </div>
+                ` : ''}
+
+                <!-- Rincian Biaya & Status Finansial -->
+                <div style="margin-top:12px; padding:10px; background:var(--bg-subtle); border-radius:var(--radius-md);">
+                    <div style="font-weight:700; font-size:0.8125rem; margin-bottom:4px; color:var(--accent);"><i class="fa-solid fa-coins"></i> Rincian Nilai Kontrak:</div>
+                    ${costsListHtml}
+                    <div style="display:flex; justify-content:space-between; margin-top:8px; padding-top:6px; border-top:1px solid var(--border-color);">
+                        <span>Total Nilai Kontrak:</span> <strong>Rp ${(prj.totalBiaya || 0).toLocaleString('id-ID')}</strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span>Uang Muka (DP) Masuk:</span> <strong style="color:var(--success);">Rp ${(prj.dp || 0).toLocaleString('id-ID')}</strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; color:${(prj.sisa || 0) > 0 ? 'var(--danger)' : 'var(--success)'}; font-size:0.95rem; font-weight:700; border-top:1px dashed var(--border-color); padding-top:4px; margin-top:4px;">
+                        <span>Sisa Tagihan Pelunasan:</span> <span>Rp ${(prj.sisa || 0).toLocaleString('id-ID')}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom:12px;">
+                <label class="form-label" for="update-dgt-status">Perbarui Status Proyek:</label>
+                <select id="update-dgt-status" class="form-control">
+                    <option value="Brief / Antrean" ${prj.statusProyek === 'Brief / Antrean' ? 'selected' : ''}>🟡 Brief / Antrean</option>
+                    <option value="Dalam Pengerjaan" ${prj.statusProyek === 'Dalam Pengerjaan' ? 'selected' : ''}>🔵 Dalam Pengerjaan (In Progress)</option>
+                    <option value="Review & Revisi" ${prj.statusProyek === 'Review & Revisi' ? 'selected' : ''}>🟠 Review & Revisi Klien</option>
+                    <option value="Selesai (Delivered)" ${prj.statusProyek === 'Selesai (Delivered)' ? 'selected' : ''}>🟢 Selesai / Serah Terima Final</option>
+                    <option value="Garansi / Maintenance" ${prj.statusProyek === 'Garansi / Maintenance' ? 'selected' : ''}>🟣 Masa Garansi / Maintenance</option>
+                    <option value="Dibatalkan" ${prj.statusProyek === 'Dibatalkan' ? 'selected' : ''}>🔴 Dibatalkan</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom:12px;">
+                <label class="form-label" for="update-dgt-note">Catatan Progres / Log Pekerjaan Terbaru:</label>
+                <textarea id="update-dgt-note" class="form-control" placeholder="Contoh: Slicing HTML selesai 100%, staging URL siap diuji klien: https://staging..."></textarea>
+            </div>
+
+            <div class="form-group" style="border-top:1px solid var(--border-color); padding-top:12px;">
+                <label style="display:flex; align-items:center; gap:8px; font-weight:600; cursor:pointer;">
+                    <input type="checkbox" id="update-dgt-settle" ${(prj.sisa || 0) === 0 ? 'checked disabled' : ''}>
+                    Pelunasan Sisa Kontrak (Tandai Lunas)
+                </label>
+                <small style="color:var(--text-muted); margin-left:24px;">Centang jika sisa pembayaran sebesar Rp ${(prj.sisa || 0).toLocaleString('id-ID')} telah dibayar oleh klien.</small>
+            </div>
+        `;
+
+        const btnThermal = document.getElementById('btn-modal-dgt-print-thermal');
+        if (btnThermal) {
+            btnThermal.onclick = () => cetakDokumenDigital(prj, 'thermal');
+        }
+
+        const btnA4 = document.getElementById('btn-modal-dgt-print-a4');
+        if (btnA4) {
+            btnA4.onclick = () => cetakDokumenDigital(prj, 'a4');
+        }
+
+        const btnSave = document.getElementById('btn-modal-save-dgt-status');
+        if (btnSave) {
+            btnSave.onclick = () => simpanUpdateStatusDigital();
+        }
+
+        bukaModal('modal-detail-digital');
+    }
+
+    function simpanUpdateStatusDigital() {
+        if (!activeDigitalDetailId) return;
+        const prj = dataDigital.find(x => x.id === activeDigitalDetailId);
+        if (!prj) return;
+
+        const st = document.getElementById('update-dgt-status').value;
+        const note = document.getElementById('update-dgt-note').value.trim();
+        const settle = document.getElementById('update-dgt-settle').checked;
+
+        prj.statusProyek = st;
+        if (note) prj.catatanProgres = note;
+        if (settle && (prj.sisa || 0) > 0) {
+            prj.dp += prj.sisa;
+            prj.sisa = 0;
+            prj.statusBayar = 'Lunas';
+        }
+        if (st === 'Selesai (Delivered)' && (prj.sisa || 0) === 0) {
+            prj.statusBayar = 'Lunas';
+        }
+
+        if (!prj.riwayatStatus) prj.riwayatStatus = [];
+        prj.riwayatStatus.push({
+            status: st,
+            waktu: new Date().toLocaleString('id-ID'),
+            catatan: note || 'Perubahan status proyek'
+        });
+
+        simpanDataDigitalLokal();
+
+        // Update ke Google Sheets
+        fetch(getApiUrl(), {
+            method: 'POST',
+            body: JSON.stringify({
+                aksi: 'updateStatusDigitalProject',
+                id: prj.id,
+                statusProyek: st,
+                catatanProgres: note,
+                sisa: prj.sisa,
+                statusBayar: prj.statusBayar
+            })
+        }).catch(e => console.warn("Update status proyek di Sheets gagal:", e));
+
+        tampilToast(`Status proyek ${prj.id} berhasil diperbarui!`, 'success');
+        tutupModal('modal-detail-digital');
+        filterDaftarProyekDigital();
+    }
+
+    function hapusProyekDigital(id) {
+        if (confirm(`Hapus proyek digital ${id}? Tindakan ini tidak dapat dibatalkan.`)) {
+            dataDigital = dataDigital.filter(x => x.id !== id);
+            simpanDataDigitalLokal();
+
+            // Hapus juga di Google Sheets
+            fetch(getApiUrl(), {
+                method: 'POST',
+                body: JSON.stringify({ aksi: 'hapusDigitalProject', id: id })
+            }).catch(e => console.warn("Hapus proyek di Sheets gagal:", e));
+
+            tampilToast(`Proyek ${id} telah dihapus`, 'info');
+            filterDaftarProyekDigital();
+        }
+    }
+
+    // CETAK DOKUMEN PROYEK DIGITAL (THERMAL 58mm & A4 SPK RESMI)
+    function cetakDokumenDigital(prj, tipe) {
+        const area = document.getElementById('print-area');
+        if (!prj || !area) return;
+
+        if (tipe === 'thermal') {
+            // NOTA DP / KWITANSI THERMAL 58mm
+            let costsRows = '';
+            if (prj.rincianBiaya && prj.rincianBiaya.length > 0) {
+                prj.rincianBiaya.forEach(c => {
+                    costsRows += `<tr><td style="padding-left:4px;">- ${escapeHtml(c.nama)}</td><td class="right">Rp ${(c.biaya || 0).toLocaleString('id-ID')}</td></tr>`;
+                });
+            }
+
+            area.innerHTML = `
+                <div class="print-thermal">
+                    <div class="center bold" style="font-size: 10.5pt;">SIGNLINE STUDIO</div>
+                    <div class="center bold" style="font-size: 8.5pt;">KONTRAK & TANDA TERIMA PROYEK</div>
+                    <div class="center" style="font-size: 7.5pt;">Divisi Digital, Web & Desain Kreatif</div>
+                    <div class="center" style="font-size: 7.5pt;">WhatsApp: 0821-5558-7770</div>
+                    <hr>
+                    <table style="font-size: 8pt;">
+                        <tr><td>No. SPK  :</td><td class="right bold">${escapeHtml(prj.id)}</td></tr>
+                        <tr><td>Tanggal  :</td><td class="right">${formatTgl(prj.tanggal)}</td></tr>
+                        <tr><td>Layanan  :</td><td class="right bold">${escapeHtml(prj.subLayanan)}</td></tr>
+                        <tr><td>Klien    :</td><td class="right bold">${escapeHtml(prj.klien.nama)}</td></tr>
+                        <tr><td>WhatsApp :</td><td class="right">${escapeHtml(prj.klien.kontak)}</td></tr>
+                        <tr><td>Deadline :</td><td class="right">${escapeHtml(prj.deadline || '-')}</td></tr>
+                    </table>
+                    <hr>
+                    <div style="font-size: 8pt;">
+                        <b>Judul Proyek:</b><br>${escapeHtml(prj.judul)}
+                    </div>
+                    <hr>
+                    <table style="font-size: 8pt;">
+                        <tr><td colspan="2" class="bold">RINCIAN BIAYA & KOMPONEN:</td></tr>
+                        ${costsRows}
+                        <tr class="bold"><td>Total Kontrak:</td><td class="right">Rp ${(prj.totalBiaya || 0).toLocaleString('id-ID')}</td></tr>
+                        <tr><td>Uang Muka (DP):</td><td class="right">Rp ${(prj.dp || 0).toLocaleString('id-ID')}</td></tr>
+                        <tr class="bold"><td>Sisa Pelunasan:</td><td class="right">Rp ${(prj.sisa || 0).toLocaleString('id-ID')}</td></tr>
+                        <tr><td>Status Bayar:</td><td class="right">${escapeHtml(prj.statusBayar || '-')}</td></tr>
+                    </table>
+                    <hr>
+                    <div style="font-size: 7pt; line-height: 1.3;">
+                        <b>KETENTUAN KERJA SAMA:</b><br>
+                        1. Pengerjaan dimulai setelah DP diterima.<br>
+                        2. Garansi & Revisi: ${escapeHtml(prj.ketentuan || 'Sesuai SPK')}.<br>
+                        3. Serah terima aset final dilakukan setelah pelunasan sisa biaya.<br>
+                        4. Nota ini sah sebagai bukti pembayaran uang muka resmi.
+                    </div>
+                    <hr>
+                    <div class="center" style="font-size: 8pt;">
+                        Project Lead: ${escapeHtml(prj.pic || 'Tim Signline')}<br>
+                        Terima Kasih Atas Kepercayaannya!
+                    </div>
+                </div>
+            `;
+        } else {
+            // SURAT PERINTAH KERJA (SPK) & CONTRACT INVOICE A4 RESMI
+            let costsRowsA4 = '';
+            if (prj.rincianBiaya && prj.rincianBiaya.length > 0) {
+                prj.rincianBiaya.forEach((c, idx) => {
+                    costsRowsA4 += `
+                        <tr>
+                            <td align="center">${idx + 1}</td>
+                            <td><strong>${escapeHtml(c.nama)}</strong></td>
+                            <td align="center">1 Paket</td>
+                            <td align="right">Rp ${(c.biaya || 0).toLocaleString('id-ID')}</td>
+                            <td align="right" style="font-weight:600;">Rp ${(c.biaya || 0).toLocaleString('id-ID')}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            area.innerHTML = `
+                <div class="print-a4">
+                    <div class="print-a4-header">
+                        <div>
+                            <div class="print-a4-title">SIGNLINE STUDIO</div>
+                            <div style="font-size: 0.85rem; color: #475569;">Digital Creative, Website & Application Development</div>
+                            <div style="font-size: 0.8rem; color: #64748b;">WhatsApp: 0821-5558-7770 | Email: project@signlinestudio.com</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <h2 style="margin: 0; font-size: 1.25rem; color: #1e3a8a;">SPK & KONTRAK KERJA DIGITAL</h2>
+                            <div style="font-size: 0.85rem; font-weight: 700;">No. SPK: ${escapeHtml(prj.id)}</div>
+                            <div style="font-size: 0.8rem; color: #64748b;">Tanggal Terbit: ${formatTgl(prj.tanggal)}</div>
+                        </div>
+                    </div>
+
+                    <!-- Grid Informasi Klien & Proyek -->
+                    <table style="border:none; margin-bottom:16px;">
+                        <tr style="border:none;">
+                            <td style="border:none; padding:4px 0; width:50%; vertical-align:top;">
+                                <strong>DATA KLIEN / PEMESAN:</strong><br>
+                                Nama Klien / Brand: <strong>${escapeHtml(prj.klien.nama)}</strong><br>
+                                No. WhatsApp / HP : ${escapeHtml(prj.klien.kontak)}<br>
+                                Email / Domisili  : ${escapeHtml(prj.klien.email || '-')}
+                            </td>
+                            <td style="border:none; padding:4px 0; width:50%; vertical-align:top;">
+                                <strong>DETAIL PROYEK & TIMELINE:</strong><br>
+                                Sub-Layanan    : <strong>${escapeHtml(prj.subLayanan)}</strong><br>
+                                Project Lead   : ${escapeHtml(prj.pic || 'Tim Signline Studio')}<br>
+                                Target Deadline: <strong>${escapeHtml(prj.deadline || '-')}</strong><br>
+                                Status Proyek  : <span style="font-weight:700;">${escapeHtml(prj.statusProyek)}</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div style="margin-bottom:14px; background:#f8fafc; border:1px solid #cbd5e1; padding:10px; border-radius:6px;">
+                        <div style="font-size:0.95rem; font-weight:700; color:#1e293b; margin-bottom:4px;">
+                            Judul Proyek: ${escapeHtml(prj.judul)}
+                        </div>
+                        <div style="font-size:0.85rem; color:#334155; margin-bottom:4px;">
+                            <strong>Ruang Lingkup & Deliverables:</strong><br>
+                            <span style="white-space:pre-wrap;">${escapeHtml(prj.scope || '-')}</span>
+                        </div>
+                        ${prj.teknis && prj.teknis !== '-' ? `
+                            <div style="font-size:0.8rem; color:#64748b; border-top:1px dashed #cbd5e1; padding-top:4px; margin-top:4px;">
+                                <strong>Catatan Teknis / Platform:</strong> ${escapeHtml(prj.teknis)}
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <!-- Tabel Rincian Biaya -->
+                    <table class="print-a4-table">
+                        <thead>
+                            <tr>
+                                <th width="35">No</th>
+                                <th>Deskripsi Item / Komponen Pekerjaan</th>
+                                <th width="75">Volume</th>
+                                <th width="125" style="text-align:right;">Biaya Satuan</th>
+                                <th width="130" style="text-align:right;">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${costsRowsA4}
+                            <tr style="background:#f8fafc;">
+                                <td colspan="4" align="right"><strong>TOTAL NILAI KONTRAK:</strong></td>
+                                <td align="right" style="font-weight:700;">Rp ${(prj.totalBiaya || 0).toLocaleString('id-ID')}</td>
+                            </tr>
+                            <tr style="background:#f8fafc;">
+                                <td colspan="4" align="right">Uang Muka (DP) Diterima:</td>
+                                <td align="right" style="font-weight:600; color:#10b981;">Rp ${(prj.dp || 0).toLocaleString('id-ID')}</td>
+                            </tr>
+                            <tr style="background:#f1f5f9; font-weight:700;">
+                                <td colspan="4" align="right">SISA TAGIHAN PELUNASAN:</td>
+                                <td align="right" style="color:#dc2626; font-size:1.05rem;">Rp ${(prj.sisa || 0).toLocaleString('id-ID')}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Standar Ketentuan Kontrak Proyek Digital -->
+                    <div class="terms-box">
+                        <strong>KETENTUAN & SYARAT KERJA SAMA:</strong><br>
+                        1. Surat Perintah Kerja (SPK) ini merupakan dasar kesepakatan pengerjaan antara Klien dan Signline Studio.<br>
+                        2. Pengerjaan proyek dimulai resmi setelah tanda tangan SPK dan pembayaran Uang Muka (DP) terverifikasi.<br>
+                        3. Ketentuan Revisi & Garansi: <strong>${escapeHtml(prj.ketentuan || 'Revisi Minor 3x, Garansi Bug 30 Hari')}</strong>. Permintaan fitur baru di luar lingkup ini akan dibuatkan addendum/biaya terpisah.<br>
+                        4. Hak Akses, source code master, dan file final akan diserahkan secara penuh setelah sisa tagihan dilunasi.<br>
+                        5. Pembayaran sah ditransfer ke rekening resmi Signline Studio atau tunai dengan kuitansi/nota bertanda tangan.
+                    </div>
+
+                    <div class="print-a4-signatures">
+                        <div>
+                            Pihak Klien / Pemesan,
+                            <div class="sign-line">( ${escapeHtml(prj.klien.nama)} )</div>
+                        </div>
+                        <div>
+                            Signline Studio (Project Lead),
+                            <div class="sign-line">( ${escapeHtml(prj.pic || 'Tim Signline Studio')} )</div>
                         </div>
                     </div>
                 </div>
