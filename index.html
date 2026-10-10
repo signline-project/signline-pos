@@ -2007,6 +2007,9 @@
                                         <strong>Total Nilai Kontrak:</strong>
                                         <strong id="dgt-grand-total" class="num-cell" style="color:var(--accent);">Rp 0</strong>
                                     </div>
+                                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px; font-style:italic;">
+                                        *Seluruh nominal tertera sudah termasuk pajak
+                                    </div>
                                 </div>
 
                                 <div style="display:flex; gap:16px; flex-wrap:wrap; align-items:flex-end;">
@@ -2036,6 +2039,17 @@
                                             <option value="Selesai (Delivered)">Selesai</option>
                                         </select>
                                     </div>
+                                </div>
+                            </div>
+
+                            <!-- Catatan Instruksi Pembayaran & Pajak Resmi -->
+                            <div style="margin-top:12px; font-size:0.8125rem; color:var(--text-secondary); background:var(--bg-subtle); padding:10px 14px; border-radius:var(--radius-md); border:1px solid var(--border-color);">
+                                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                                    <span style="font-weight:700; color:var(--accent);"><i class="fa-solid fa-building-columns"></i> Rekening Pembayaran Resmi:</span>
+                                    <span>Direct Transfer: <strong>BCA 4451300819</strong> a/n Ahmad Shobirin</span>
+                                    <span>|</span>
+                                    <span>Paypal: <strong>callmeoby@gmail.com</strong></span>
+                                    <span class="badge badge-success" style="font-size:0.7rem; margin-left:auto;">Termasuk Pajak</span>
                                 </div>
                             </div>
                         </div>
@@ -5034,12 +5048,16 @@
                `*Layanan:* ${prj.subLayanan} - ${prj.judul}\n` +
                `*Status Proyek:* *${prj.statusProyek}*\n` +
                `*Estimasi Deadline:* ${prj.deadline || '-'}\n` +
-               `*Total Nilai Proyek:* Rp ${(prj.totalBiaya || 0).toLocaleString('id-ID')}\n` +
+               `*Total Nilai Proyek:* Rp ${(prj.totalBiaya || 0).toLocaleString('id-ID')} _(Termasuk Pajak)_\n` +
                `*DP Masuk:* Rp ${(prj.dp || 0).toLocaleString('id-ID')}\n` +
                `*Sisa Tagihan:* Rp ${(prj.sisa || 0).toLocaleString('id-ID')} (${prj.statusBayar})\n` +
                (prj.catatanProgres && prj.catatanProgres !== '-' ? `*Catatan Progres:* ${prj.catatanProgres}\n` : '') +
                (prj.linkAset && prj.linkAset !== '-' ? `*Link Acuan / Preview:* ${prj.linkAset}\n` : '') +
-               `\nTerima kasih atas kerja samanya! Tim kami akan terus memberikan yang terbaik untuk proyek Anda. 🙏`;
+               `\n*Detail Pembayaran (Payment Details):*\n` +
+               `• Direct Transfer: BCA *4451300819* a/n *Ahmad Shobirin*\n` +
+               `• Paypal: *callmeoby@gmail.com*\n` +
+               `_(Semua nominal yang tertera sudah termasuk pajak)_\n\n` +
+               `Terima kasih atas kerja samanya! Tim kami akan terus memberikan yang terbaik untuk proyek Anda. 🙏`;
     }
 
     function cetakDokumenDigitalById(id, tipe) {
@@ -5129,6 +5147,14 @@
                     </div>
                     <div style="display:flex; justify-content:space-between; color:${(prj.sisa || 0) > 0 ? 'var(--danger)' : 'var(--success)'}; font-size:0.95rem; font-weight:700; border-top:1px dashed var(--border-color); padding-top:4px; margin-top:4px;">
                         <span>Sisa Tagihan Pelunasan:</span> <span>Rp ${(prj.sisa || 0).toLocaleString('id-ID')}</span>
+                    </div>
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px; font-style:italic; text-align:right;">
+                        *Seluruh nominal tertera sudah termasuk pajak
+                    </div>
+                    <div style="margin-top:8px; padding-top:8px; border-top:1px dashed var(--border-color); font-size:0.8rem; color:var(--text-secondary); line-height:1.45;">
+                        <div style="font-weight:700; color:var(--accent); margin-bottom:2px;"><i class="fa-solid fa-building-columns"></i> Detail Pembayaran (Payment Details):</div>
+                        <div>• Direct Transfer: <strong>BCA 4451300819</strong> a/n <strong>Ahmad Shobirin</strong></div>
+                        <div>• Paypal: <strong>callmeoby@gmail.com</strong></div>
                     </div>
                 </div>
             </div>
@@ -5282,13 +5308,25 @@
                         <tr class="bold"><td>Sisa Pelunasan:</td><td class="right">Rp ${(prj.sisa || 0).toLocaleString('id-ID')}</td></tr>
                         <tr><td>Status Bayar:</td><td class="right">${escapeHtml(prj.statusBayar || '-')}</td></tr>
                     </table>
+                    <div style="font-size: 6.8pt; text-align: right; font-style: italic; margin-top: 3px; color: #475569;">
+                        *Nominal tertera sudah termasuk pajak
+                    </div>
+                    <hr>
+                    <div style="font-size: 7.5pt; line-height: 1.35;">
+                        <b>DETAIL PEMBAYARAN RESMI:</b><br>
+                        • Direct Transfer:<br>
+                        &nbsp;&nbsp;BCA 4451300819 a/n Ahmad Shobirin<br>
+                        • Paypal:<br>
+                        &nbsp;&nbsp;callmeoby@gmail.com
+                    </div>
                     <hr>
                     <div style="font-size: 7pt; line-height: 1.3;">
                         <b>KETENTUAN KERJA SAMA:</b><br>
                         1. Pengerjaan dimulai setelah DP diterima.<br>
                         2. Garansi & Revisi: ${escapeHtml(prj.ketentuan || 'Sesuai SPK')}.<br>
                         3. Serah terima aset final dilakukan setelah pelunasan sisa biaya.<br>
-                        4. Nota ini sah sebagai bukti pembayaran uang muka resmi.
+                        4. Pembayaran via transfer BCA / Paypal tertera di atas.<br>
+                        5. Nota ini sah sebagai bukti pembayaran uang muka resmi.
                     </div>
                     <hr>
                     <div class="center" style="font-size: 8pt;">
@@ -5391,6 +5429,26 @@
                         </tbody>
                     </table>
 
+                    <!-- Note Pajak & Kotak Informasi Pembayaran Resmi -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px; margin-bottom:12px; font-size:0.8rem; color:#475569; font-style:italic;">
+                        <span>*Spesifikasi pekerjaan telah diverifikasi sesuai rincian SPK</span>
+                        <strong style="color:#0f766e;">*Seluruh nominal yang tertera di atas sudah termasuk pajak</strong>
+                    </div>
+
+                    <div style="background:#f8fafc; border:1px solid #cbd5e1; border-left:4px solid #2563eb; padding:10px 14px; border-radius:6px; margin-bottom:14px;">
+                        <div style="font-size:0.85rem; font-weight:700; color:#1e3a8a; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center;">
+                            <span><i class="fa-solid fa-building-columns"></i> INSTRUKSI PEMBAYARAN RESMI (PAYMENT DETAILS):</span>
+                            <span style="font-size:0.75rem; font-weight:600; background:#dcfce7; color:#15803d; border:1px solid #bbf7d0; padding:2px 8px; border-radius:4px;">Nominal Sudah Termasuk Pajak</span>
+                        </div>
+                        <div style="font-size:0.825rem; color:#1e293b; line-height:1.55;">
+                            <div>• <strong>Direct Transfer:</strong> Bank Central Asia (BCA) <strong>4451300819</strong> a/n <strong>Ahmad Shobirin</strong></div>
+                            <div>• <strong>Paypal:</strong> <strong>callmeoby@gmail.com</strong></div>
+                            <div style="font-size:0.75rem; color:#64748b; margin-top:4px;">
+                                *Harap konfirmasikan dan lampirkan bukti transfer pembayaran kepada admin/kasir Signline Studio.
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Standar Ketentuan Kontrak Proyek Digital -->
                     <div class="terms-box">
                         <strong>KETENTUAN & SYARAT KERJA SAMA:</strong><br>
@@ -5398,7 +5456,7 @@
                         2. Pengerjaan proyek dimulai resmi setelah tanda tangan SPK dan pembayaran Uang Muka (DP) terverifikasi.<br>
                         3. Ketentuan Revisi & Garansi: <strong>${escapeHtml(prj.ketentuan || 'Revisi Minor 3x, Garansi Bug 30 Hari')}</strong>. Permintaan fitur baru di luar lingkup ini akan dibuatkan addendum/biaya terpisah.<br>
                         4. Hak Akses, source code master, dan file final akan diserahkan secara penuh setelah sisa tagihan dilunasi.<br>
-                        5. Pembayaran sah ditransfer ke rekening resmi Signline Studio atau tunai dengan kuitansi/nota bertanda tangan.
+                        5. Pembayaran sah ditransfer ke rekening resmi: Direct Transfer BCA 4451300819 a/n Ahmad Shobirin atau Paypal callmeoby@gmail.com. Seluruh nominal kontrak sudah termasuk pajak.
                     </div>
 
                     <div class="print-a4-signatures">
